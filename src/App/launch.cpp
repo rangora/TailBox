@@ -1,5 +1,6 @@
 #include <iostream>
 #include "EngineMath.h"
+#include "spdlog/spdlog.h"
 
 using namespace std;
 
@@ -12,6 +13,8 @@ int main() {
     int val2 = EngineMath::EngineMathMul(3, 2);
 
     cout << val1 << " " << val2 << endl;
+
+    spdlog::info("BBB");
 
     return 0;
 }

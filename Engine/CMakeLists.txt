@@ -8,9 +8,11 @@ set(CMAKE_CXX_STANDARD 20)
 file(GLOB SOURCES "./*.cpp" "./*.c")
 file(GLOB HEADERS "./*.hpp" "./*.h")
 
-#include_directories("../")
-
 add_library(Engine SHARED ${SOURCES} ${HEADERS})
+
+target_include_directories(Engine PUBLIC "../external/include")
+target_link_directories(Engine PUBLIC "../external/lib")
+target_link_libraries(Engine PUBLIC spdlog)
 
 target_compile_definitions(Engine PRIVATE ENGINE_EXPORTS)
 target_compile_definitions(Engine INTERFACE ENGINE_IMPORTS)

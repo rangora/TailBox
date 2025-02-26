@@ -8,9 +8,6 @@ project(${PROJECT_NAME})
 # CMake settings
 set(DCMAKE_GENERATOR_PLATFORM "x64")
 
-# Variables
-# set(SOURCE_ROOT src)
-
 # Sources
 file(GLOB_RECURSE MAIN_SOURCE RELATIVE
     ${CMAKE_CURRENT_SOURCE_DIR}
