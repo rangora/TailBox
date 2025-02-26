@@ -5,14 +5,15 @@ project(Engine LANGUAGES CXX)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 set(CMAKE_CXX_STANDARD 20)
 
-file(GLOB SOURCES "./*.cpp" "./*.c")
-file(GLOB HEADERS "./*.hpp" "./*.h")
+file(GLOB SOURCES "./*.cpp" "./*.c" "imgui/*.cpp")
+file(GLOB HEADERS "./*.hpp" "./*.h" "imgui/*.h")
 
 add_library(Engine SHARED ${SOURCES} ${HEADERS})
 
 target_include_directories(Engine PUBLIC "../external/include")
 target_link_directories(Engine PUBLIC "../external/lib")
 target_link_libraries(Engine PUBLIC spdlog)
+target_link_libraries(Engine PUBLIC d3d12 dxgi)
 
 target_compile_definitions(Engine PRIVATE ENGINE_EXPORTS)
 target_compile_definitions(Engine INTERFACE ENGINE_IMPORTS)
