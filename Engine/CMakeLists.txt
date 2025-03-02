@@ -5,8 +5,17 @@ project(Engine LANGUAGES CXX)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 set(CMAKE_CXX_STANDARD 20)
 
-file(GLOB SOURCES "./*.cpp" "./*.c" "imgui/*.cpp")
-file(GLOB HEADERS "./*.hpp" "./*.h" "imgui/*.h")
+file(GLOB_RECURSE SOURCES RELATIVE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+)
+
+file(GLOB_RECURSE HEADERS RELATIVE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
+)
 
 add_library(Engine SHARED ${SOURCES} ${HEADERS})
 

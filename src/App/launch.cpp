@@ -1,6 +1,7 @@
 #include <iostream>
 #include "EngineMath.h"
 #include "spdlog/spdlog.h"
+#include "Engine.h"
 
 using namespace std;
 
@@ -15,6 +16,9 @@ int main() {
     cout << val1 << " " << val2 << endl;
 
     spdlog::info("BBB");
+
+    tb::Engine engine;
+    engine.Launch();
 
     return 0;
 }
