@@ -3,6 +3,15 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 
+#ifdef _DEBUG
+#define DX12_ENABLE_DEBUG_LAYER
+#endif
+
+#ifdef DX12_ENABLE_DEBUG_LAYER
+#include <dxgidebug.h>
+#pragma comment(lib, "dxguid.lib")
+#endif
+
 namespace tb
 {
     DX12Device::DX12Device()
@@ -114,7 +123,7 @@ namespace tb
 
         _swapChain1->QueryInterface(IID_PPV_ARGS(&_swapChain));
         _swapChain1->Release();
-        _dxgi->Release();
+        _dxgi.Reset();
         _swapChain->SetMaximumFrameLatency(BUFFERCOUNT);                        // drop
         _swapChainWaitableObject = _swapChain->GetFrameLatencyWaitableObject(); // drop
     }
@@ -192,6 +201,82 @@ namespace tb
             _dsHeap->SetName(L"depth/stencil resource heap");
             _device->CreateDepthStencilView(_dsBuffer.Get(), &dsvDesc, _dsHeap->GetCPUDescriptorHandleForHeapStart());
         }
+    }
+
+    void DX12Device::ReleaseDevice()
+{
+        CleanupRenderTarget();
+        if (_swapChain)
+        {
+            _swapChain->SetFullscreenState(false, nullptr);
+            _swapChain.Reset();
+        }
+        if (_swapChainWaitableObject != nullptr)
+        {
+            CloseHandle(_swapChainWaitableObject);
+            _swapChainWaitableObject = nullptr;
+        }
+        for (int i = 0; i < BUFFERCOUNT; ++i)
+        {
+            if (_frameContexts[i]._commandAllocator)
+            {
+                _frameContexts[i]._commandAllocator->Release();
+                _frameContexts[i]._commandAllocator = nullptr;
+            }
+        }
+        if (_dxgi)
+        {
+            _dxgi.Reset();
+        }
+        if (_dsHeap)
+        {
+            _dsHeap.Reset();
+        }
+        if (_commandQueue)
+        {
+            _commandQueue.Reset();
+        }
+        if (_commandList)
+        {
+            _commandList.Reset();
+        }
+        if (_imguiDescHeap)
+        {
+            _imguiDescHeap.Reset();
+        }
+        if (_srvHeap)
+        {
+            _srvHeap.Reset();
+        }
+        if (_mainRtvHeap)
+        {
+            _mainRtvHeap.Reset();
+        }
+        if (_dsBuffer)
+        {
+            _dsBuffer.Reset();
+        }
+        if (_fence)
+        {
+            _fence.Reset();
+        }
+        if (_fenceEvent)
+        {
+            CloseHandle(_fenceEvent);
+            _fenceEvent = nullptr;
+        }
+        if (_device)
+        {
+            _device.Reset();
+        }
+#ifdef DX12_ENABLE_DEBUG_LAYER
+        IDXGIDebug1* pDebug = nullptr;
+        if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
+        {
+            pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_SUMMARY);
+            pDebug->Release();
+        }
+#endif
     }
 
     void DX12Device::Update()

@@ -24,14 +24,20 @@ namespace tb
     {
         _DX12device = new DX12Device;
         _window = new Window({"TailBox", 1000, 600});
-        _DX12device->CreateSwapChain(_window->GethWndRef());
+        _DX12device->CreateSwapChain(_window->GetWndRef());
         _DX12device->PostSwapChainCreated();
         _window->Initialize();
 
-        while (true)
+        while (!_bQuit)
         {
             Tick(0.f);
         }
+
+        // Sutting down
+        _DX12device->WaitForLastSubmittedFrame();
+        _window->ShutdownImGuiContext();
+        _DX12device->ReleaseDevice();
+        _window->ShutdownWindow();
     }
 
     void Engine::Tick(const float tick)
@@ -43,8 +49,14 @@ namespace tb
             ::DispatchMessage(&msg);
             if (msg.message == WM_QUIT)
             {
-             //   break;
+                _bQuit = true;
+                break;
             }
+        }
+
+        if (_bQuit)
+        {
+            return;
         }
 
         if (_DX12device->IsScreenLocked())

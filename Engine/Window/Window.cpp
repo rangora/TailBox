@@ -135,4 +135,17 @@ namespace tb
             ImGui::RenderPlatformWindowsDefault();
         }
     }
+
+    void Window::ShutdownImGuiContext()
+    {
+        ImGui_ImplDX12_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+    }
+
+    void Window::ShutdownWindow()
+    {
+        ::DestroyWindow(_hWnd);
+        ::UnregisterClassW(_wc.lpszClassName, _wc.hInstance);
+    }
 } // namespace tb

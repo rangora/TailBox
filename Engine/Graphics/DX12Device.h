@@ -22,6 +22,7 @@ namespace tb
 
         void CreateSwapChain(const HWND& hWnd);
         void PostSwapChainCreated();
+        void ReleaseDevice();
 
         void Update();
         void RenderBegin();
@@ -40,8 +41,8 @@ namespace tb
         void CleanupRenderTarget();
         FrameContext* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
-    private:
 
+    private:
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
         ComPtr<ID3D12Debug> _debugController = nullptr;

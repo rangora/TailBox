@@ -30,7 +30,10 @@ namespace tb
         void Update();
         void PostRenderEnd();
 
-        HWND& GethWndRef() { return _hWnd; }
+        void ShutdownImGuiContext();
+        void ShutdownWindow();
+
+        HWND& GetWndRef() { return _hWnd; }
 
         static DescHeapAllocator _heapAlloc;
 

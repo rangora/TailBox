@@ -21,5 +21,7 @@ namespace tb
     private:
         static class DX12Device* _DX12device;
         class Window* _window = nullptr;
+
+        bool _bQuit = false;
     };
 }
