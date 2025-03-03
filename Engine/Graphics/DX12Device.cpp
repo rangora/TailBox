@@ -52,9 +52,9 @@ namespace tb
 
         // Create commandList
         {
-            _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, GetCurrentFrameContext()._commandAllocator,
+            _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frameContexts[0]._commandAllocator,
                                        nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
-
+            _commandList->Close();
             // _rootDescriptorHeap = std::make_unique<DescriptorHeap>(256);
 
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
@@ -82,64 +82,10 @@ namespace tb
             spdlog::error("[FATAL] Failed to create fenceEvent.");
             return;
         }
-
-        _commandList->Close(); // Hardcode
     }
 
     DX12Device::~DX12Device()
     {
-    }
-
-    void DX12Device::Initialize()
-    {
-        // Create commandQueue
-        {
-            D3D12_COMMAND_QUEUE_DESC desc = {};
-            desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-            desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-            desc.NodeMask = 1;
-
-            _device->CreateCommandQueue(&desc, IID_PPV_ARGS(_commandQueue.GetAddressOf()));
-
-            for (int32 i = 0; i < BUFFERCOUNT; ++i)
-            {
-                _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
-                                                IID_PPV_ARGS(&_frameContexts[i]._commandAllocator));
-            }
-        }
-
-        // Create commandList
-        {
-            _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, GetCurrentFrameContext()._commandAllocator,
-                                       nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
-
-            _rootDescriptorHeap = std::make_unique<DescriptorHeap>(256);
-
-            D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-            desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            desc.NumDescriptors = 1;
-            if (_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) != S_OK)
-            {
-                spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
-                return;
-            }
-        }
-
-        // Create fence
-        if (_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&_fence)) != S_OK)
-        {
-            spdlog::error("[FATAL] Failed to create fence.");
-            return;
-        }
-
-        // Create fenceEvent
-        _fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-        if (_fenceEvent == nullptr)
-        {
-            spdlog::error("[FATAL] Failed to create fenceEvent.");
-            return;
-        }
     }
 
     void DX12Device::CreateSwapChain(const HWND& hWnd)
@@ -168,6 +114,7 @@ namespace tb
 
         _swapChain1->QueryInterface(IID_PPV_ARGS(&_swapChain));
         _swapChain1->Release();
+        _dxgi->Release();
         _swapChain->SetMaximumFrameLatency(BUFFERCOUNT);                        // drop
         _swapChainWaitableObject = _swapChain->GetFrameLatencyWaitableObject(); // drop
     }
@@ -195,18 +142,15 @@ namespace tb
             }
 
             uint32 rtvHandleIncrementSize = _device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-            D3D12_CPU_DESCRIPTOR_HANDLE cpuRtvHandleBegin = _mainRtvHeap->GetCPUDescriptorHandleForHeapStart();
-            D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = cpuRtvHandleBegin;
+            D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = _mainRtvHeap->GetCPUDescriptorHandleForHeapStart();
             for (int32 i = 0; i < BUFFERCOUNT; ++i)
             {
                 _mainRtvCpuHandle[i] = rtvHandle;
                 rtvHandle.ptr += rtvHandleIncrementSize;
 
-                ID3D12Resource* pBackBuffer = nullptr;
-                _swapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
-                _device->CreateRenderTargetView(pBackBuffer, nullptr, _mainRtvCpuHandle[i]);
-                _mainRtvResources[i] = pBackBuffer;
             }
+
+            CreateRenderTarget();
         }
 
         // Create DepthStencil
@@ -259,11 +203,9 @@ namespace tb
 
     void DX12Device::RenderBegin()
     {
+        _nextFrameCtx = WaitForNextFrameResources();
         _backBufferIndex = _swapChain->GetCurrentBackBufferIndex();
-
-        FrameContext* ctx = WaitForNextFrameResources();
-        ctx->_commandAllocator->Reset();
-        _commandList->Reset(ctx->_commandAllocator, nullptr);
+        _nextFrameCtx->_commandAllocator->Reset();
 
         D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -272,9 +214,10 @@ namespace tb
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
         _commandList->ResourceBarrier(1, &barrier);
 
-        const float clearColors[4] = {1.f, 0.f, 0.f, 1.f}; // TEMP
+        const float clearColors[4] = {0.45f, 0.55f, 0.6f, 1.f}; // TEMP
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
 
@@ -309,13 +252,22 @@ namespace tb
 
         ID3D12CommandList* ppCommandLists[] = {_commandList.Get()};
         _commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-        _swapChain->Present(1, 0); // 1 == vsync
 
-        FrameContext* ctx = &_frameContexts[_frameIndex];
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+
+        HRESULT hr = _swapChain->Present(1, 0); // 1 == vsync
+        _bSwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
+
         uint64 fenceValue = _fenceLastSignalValue + 1;
         _commandQueue->Signal(_fence.Get(), fenceValue);
         _fenceLastSignalValue = fenceValue;
-        ctx->_fenceValue = fenceValue;
+        _nextFrameCtx->_fenceValue = fenceValue;
     }
 
     void DX12Device::RenderImGui()
@@ -326,14 +278,50 @@ namespace tb
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
 
+    bool DX12Device::IsScreenLocked()
+{
+        if (_bSwapChainOccluded && _swapChain->Present(0, DXGI_PRESENT_TEST) == DXGI_STATUS_CLIPPED)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    void DX12Device::CreateRenderTarget()
+    {
+        for (int i = 0; i < BUFFERCOUNT; ++i)
+        {
+            ID3D12Resource* pBackBuffer = nullptr;
+            _swapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
+            _device->CreateRenderTargetView(pBackBuffer, nullptr, _mainRtvCpuHandle[i]);
+            _mainRtvResources[i] = pBackBuffer;
+        }
+    }
+
+    void DX12Device::CleanupRenderTarget()
+    {
+        WaitForLastSubmittedFrame();
+
+        for (int i = 0; i < BUFFERCOUNT; ++i)
+        {
+            if (_mainRtvResources[i])
+            {
+                _mainRtvResources[i]->Release();
+                _mainRtvResources[i] = nullptr;
+            }
+        }
+    }
+
     FrameContext* DX12Device::WaitForNextFrameResources()
     {
-        _frameIndex++;
+        uint64 nextFrameIndex = _frameIndex + 1;
+        _frameIndex = nextFrameIndex;
 
         HANDLE waitableObjects[] = {_swapChainWaitableObject, nullptr};
         DWORD numWaitableObjects = 1;
 
-        FrameContext* ctx = &_frameContexts[_frameIndex % BUFFERCOUNT];
+        FrameContext* ctx = &_frameContexts[nextFrameIndex % BUFFERCOUNT];
         uint64 fenceValue = ctx->_fenceValue;
         if (fenceValue != 0)
         {
@@ -346,5 +334,24 @@ namespace tb
         WaitForMultipleObjects(numWaitableObjects, waitableObjects, TRUE, INFINITE);
 
         return ctx;
+    }
+
+    void DX12Device::WaitForLastSubmittedFrame()
+    {
+        FrameContext* ctx = &_frameContexts[_frameIndex % BUFFERCOUNT];
+        uint64 fenceValue = ctx->_fenceValue;
+        if (fenceValue == 0)
+        {
+            return;
+        }
+
+        ctx->_fenceValue = 0;
+        if (_fence->GetCompletedValue() >= fenceValue)
+        {
+            return;
+        }
+
+        _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
+        WaitForSingleObject(_fenceEvent, INFINITE);
     }
 } // namespace tb

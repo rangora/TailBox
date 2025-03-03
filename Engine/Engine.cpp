@@ -24,9 +24,9 @@ namespace tb
     {
         _DX12device = new DX12Device;
         _window = new Window({"TailBox", 1000, 600});
-        _window->Initialize();
         _DX12device->CreateSwapChain(_window->GethWndRef());
         _DX12device->PostSwapChainCreated();
+        _window->Initialize();
 
         while (true)
         {
@@ -36,8 +36,26 @@ namespace tb
 
     void Engine::Tick(const float tick)
     {
+        MSG msg;
+        while (::PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+            {
+             //   break;
+            }
+        }
+
+        if (_DX12device->IsScreenLocked())
+        {
+            ::Sleep(10);
+            return;
+        }
+
         _window->Update();
         _DX12device->Update();
-        _window->PostRenderEnd(); // hardcode
+
+        //_window->PostRenderEnd(); // hardcode
     }
 } // namespace tb

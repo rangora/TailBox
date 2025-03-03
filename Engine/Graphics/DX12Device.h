@@ -20,7 +20,6 @@ namespace tb
         DX12Device();
          ~DX12Device();
 
-        void Initialize();
         void CreateSwapChain(const HWND& hWnd);
         void PostSwapChainCreated();
 
@@ -29,15 +28,19 @@ namespace tb
         void Render();
         void RenderEnd();
         void RenderImGui(); // ¾Ö¸Å..
+        bool IsScreenLocked();
 
         ID3D12Device* GetDevice() const { return _device.Get(); }
+
+        IDXGISwapChain3* GetSwapChain() const { return _swapChain.Get(); }
         ID3D12DescriptorHeap* GetImGuiDescHeap() const { return _imguiDescHeap.Get(); }
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
-        FrameContext& GetCurrentFrameContext() { return _frameContexts[_frameIndex]; }
 
-
-    private:
+        void CreateRenderTarget();
+        void CleanupRenderTarget();
         FrameContext* WaitForNextFrameResources();
+        void WaitForLastSubmittedFrame();
+    private:
 
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
@@ -66,7 +69,9 @@ namespace tb
         uint32 _fenceLastSignalValue = 0;
 
         FrameContext _frameContexts[BUFFERCOUNT] = {};
+        FrameContext* _nextFrameCtx = nullptr;
         uint32 _frameIndex = 0;
         uint32 _backBufferIndex = 0;
+        bool _bSwapChainOccluded = false;
     };
 }

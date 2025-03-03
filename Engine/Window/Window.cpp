@@ -16,6 +16,34 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         return true;
     }
 
+    switch (msg)
+    {
+        case WM_SIZE:
+        {
+            if (tb::Engine::GetDevice() != nullptr && wParam != SIZE_MINIMIZED)
+            {
+                auto dx12Device = tb::Engine::GetDX12Device();
+                dx12Device->WaitForLastSubmittedFrame();
+                dx12Device->CleanupRenderTarget();
+                HRESULT result = tb::Engine::GetDX12Device()->GetSwapChain()->ResizeBuffers(
+                    0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN,
+                    DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
+                assert(SUCCEEDED(result) && "Failed to resize swapchain.");
+                dx12Device->CreateRenderTarget();
+            }
+            return 0;
+        }
+
+        case WM_SYSCOMMAND:
+            if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+                return 0;
+            break;
+        case WM_DESTROY:
+            ::PostQuitMessage(0);
+            return 0;
+    }
+    return ::DefWindowProcW(hWnd, msg, wParam, lParam);
+
     return true;
 }
 
@@ -57,6 +85,12 @@ namespace tb
         io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
         ImGui::StyleColorsDark();
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            style.WindowRounding = 0.f;
+            style.Colors[ImGuiCol_WindowBg].w = 1.f;
+        }
 
         ::ShowWindow(_hWnd, SW_SHOWDEFAULT);
         ::UpdateWindow(_hWnd);
