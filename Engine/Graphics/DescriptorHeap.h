@@ -11,15 +11,18 @@ namespace tb
     class DescriptorHeap
     {
     public:
-        DescriptorHeap(uint32 count);
+        DescriptorHeap(ID3D12Device* device, uint32 count);
         DescriptorHeap();
         ~DescriptorHeap();
 
+        D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(uint32 reg);
 
+        void SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, D3D12_CPU_DESCRIPTOR_HANDLE destHandle);
+        ID3D12DescriptorHeap* GetDescriptorHeap() const { return _descHeap.Get(); }
 
         void Clear(); // ?
 
-        ID3D12DescriptorHeap* GetDescriptorHeap() const { return _descHeap.Get(); }
+        void CommitTable();
 
     private:
         ComPtr<ID3D12DescriptorHeap> _descHeap = nullptr;

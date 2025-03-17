@@ -36,6 +36,9 @@ namespace tb
         IDXGISwapChain3* GetSwapChain() const { return _swapChain.Get(); }
         ID3D12DescriptorHeap* GetImGuiDescHeap() const { return _imguiDescHeap.Get(); }
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
+        ID3D12GraphicsCommandList* GetCommmandList() const { return _commandList.Get(); }
+        ID3D12RootSignature* GetRootSignature() const { return _rootSignature.Get(); }
+        DescriptorHeap* GetRootDescriptorHeap() const { return _rootDescriptorHeap.get(); }
 
         void CreateRenderTarget();
         void CleanupRenderTarget();
@@ -48,7 +51,10 @@ namespace tb
         ComPtr<ID3D12Debug> _debugController = nullptr;
         ComPtr<ID3D12CommandQueue> _commandQueue = nullptr; // 우선 imgui에 넘겨보자.
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
+        ComPtr<ID3D12GraphicsCommandList> _graphicsCommandList = nullptr;
         ComPtr<IDXGISwapChain3> _swapChain = nullptr;
+
+        ComPtr<ID3D12RootSignature> _rootSignature = nullptr;
 
         std::unique_ptr<DescriptorHeap> _rootDescriptorHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _imguiDescHeap = nullptr;

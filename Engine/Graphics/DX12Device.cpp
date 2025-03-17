@@ -1,5 +1,8 @@
 #include "DX12Device.h"
 #include "DescriptorHeap.h"
+#include "Engine.h"
+#include "Mesh.h"
+#include "Graphics/Shader.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 
@@ -75,6 +78,30 @@ namespace tb
                 spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
                 return;
             }
+        }
+
+        // Create rootSignature
+        {
+            // D3D12_DESCRIPTOR_RANGE
+            CD3DX12_DESCRIPTOR_RANGE ranges[] = {CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0)};
+            //CD3DX12_DESCRIPTOR_RANGE ranges;
+            //ranges.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0);
+            CD3DX12_ROOT_PARAMETER param[1] = {};
+            param[0].InitAsDescriptorTable(_countof(ranges), ranges);
+
+            D3D12_ROOT_SIGNATURE_DESC sigdc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param);
+            sigdc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+
+            ComPtr<ID3DBlob> blobSignature;
+            ComPtr<ID3DBlob> blobError;
+            ::D3D12SerializeRootSignature(&sigdc, D3D_ROOT_SIGNATURE_VERSION_1, &blobSignature, &blobError);
+            _device->CreateRootSignature(0, blobSignature->GetBufferPointer(), blobSignature->GetBufferSize(),
+                                         IID_PPV_ARGS(_rootSignature.GetAddressOf()));
+        }
+
+        // Create rootDescriptorHeap
+        {
+            _rootDescriptorHeap = std::make_unique<DescriptorHeap>(_device.Get(), 256);
         }
 
         // Create fence
@@ -300,6 +327,14 @@ namespace tb
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
+
+        _commandList->SetGraphicsRootSignature(_rootSignature.Get());
+        Engine::Get()._mesh->Clear();
+        _rootDescriptorHeap->Clear();
+
+        ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();
+        _commandList->SetDescriptorHeaps(1, &mainHeap);
+
         _commandList->ResourceBarrier(1, &barrier);
 
         const float clearColors[4] = {0.45f, 0.55f, 0.6f, 1.f}; // TEMP
@@ -312,6 +347,7 @@ namespace tb
         */
 
         _commandList->ClearRenderTargetView(_mainRtvCpuHandle[_backBufferIndex], clearColors, 0, nullptr);
+        //_commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, nullptr);
         _commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
     }
 
@@ -320,6 +356,16 @@ namespace tb
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
+
+        // Render things..
+        _commandList->SetPipelineState(Engine::Get()._shader->_pipelineState.Get());
+        Transform t;
+        t._offset = {0.f, 0.f, 0.f, 0.f};
+        auto mesh = Engine::Get()._mesh;
+        mesh->SetTransform(t);
+        mesh->Render();
+
+        // imgui
         RenderImGui();
     }
 
@@ -359,7 +405,7 @@ namespace tb
     {
         ID3D12DescriptorHeap* descHeaps[] = {_imguiDescHeap.Get()};
         _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
-        // TODO : ¾Æ·¡ ÁÙ »©¾ß ÇÔ
+        //// TODO : ¾Æ·¡ ÁÙ »©¾ß ÇÔ
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
 

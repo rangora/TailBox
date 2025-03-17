@@ -24,3 +24,20 @@ using uint64 = unsigned __int64;
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
+
+using Vector2D = XMFLOAT2;
+using Vector   = XMFLOAT3;
+using Vector4D = XMFLOAT4;
+using Matrix   = XMMATRIX;
+
+// ¾Ö¸Å..
+struct Vertex
+{
+    Vector _pos;
+    Vector4D _color;
+};
+
+struct Transform
+{
+    Vector4D _offset;
+};
