@@ -88,6 +88,7 @@ namespace tb
         D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle = Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(0);
         Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         Engine::GetDX12Device()->GetRootDescriptorHeap()->CommitTable();
+        Engine::GetDX12Device()->GetCommmandList()->DrawIndexedInstanced(_indexCount, 1, 0, 0, 0);
     }
 
     void Mesh::Clear()

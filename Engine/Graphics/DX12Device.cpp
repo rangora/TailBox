@@ -84,8 +84,6 @@ namespace tb
         {
             // D3D12_DESCRIPTOR_RANGE
             CD3DX12_DESCRIPTOR_RANGE ranges[] = {CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0)};
-            //CD3DX12_DESCRIPTOR_RANGE ranges;
-            //ranges.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0);
             CD3DX12_ROOT_PARAMETER param[1] = {};
             param[0].InitAsDescriptorTable(_countof(ranges), ranges);
 
@@ -341,13 +339,20 @@ namespace tb
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
 
-        /* later..
+
+        ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+        if(platform_io.Viewports.Data)
+        {
+            _viewport.Height = platform_io.Viewports[0]->DrawData->DisplaySize.y;
+            _viewport.Width = platform_io.Viewports[0]->DrawData->DisplaySize.x;
+            _rect.bottom = platform_io.Viewports[0]->DrawData->DisplaySize.y;
+            _rect.right = platform_io.Viewports[0]->DrawData->DisplaySize.x;
+        }
+
         _commandList->RSSetViewports(1, &_viewport);
         _commandList->RSSetScissorRects(1, &_rect);
-        */
 
         _commandList->ClearRenderTargetView(_mainRtvCpuHandle[_backBufferIndex], clearColors, 0, nullptr);
-        //_commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, nullptr);
         _commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
     }
 
