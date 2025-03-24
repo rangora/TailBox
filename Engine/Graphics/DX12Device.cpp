@@ -490,4 +490,23 @@ namespace tb
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
         WaitForSingleObject(_fenceEvent, INFINITE);
     }
+
+    void DX12Device::Flush()
+    {
+        FrameContext& ctx = _frameContexts[_frameIndex];
+        _commandList->Reset(ctx._commandAllocator, nullptr);
+    }
+
+    void DX12Device::Signal()
+    {
+        uint64 fenceValue = _fenceLastSignalValue + 1;
+        _commandQueue->Signal(_fence.Get(), fenceValue);
+        _fenceLastSignalValue = fenceValue;
+
+        FrameContext& ctx = _frameContexts[_frameIndex];
+        ctx._fenceValue = fenceValue;
+
+        _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
+        WaitForSingleObject(_fenceEvent, INFINITE);
+    }
 } // namespace tb

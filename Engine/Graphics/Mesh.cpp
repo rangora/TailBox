@@ -16,21 +16,15 @@ namespace tb
             _vertexCount = static_cast<uint32>(vertexBuffer.size());
             uint32 bufferSize = _vertexCount * sizeof(Vertex);
 
-            D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-            D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
+            UploadBuffer vBuffer;
+            vBuffer.Create(bufferSize);
+            void* mem = vBuffer.Map();
+            ::memcpy(mem, &vertexBuffer[0], bufferSize);
+            vBuffer.Unmap(0, bufferSize);
 
-            Engine::GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
-                                                         D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
-                                                         IID_PPV_ARGS(&_vertexBuffer));
+            _vBuffer.Create(L"VertexBuffer", bufferSize, &vBuffer, vertexBuffer);
 
-            // UpdateSubresources와 차이 구분하기.
-            void* vertexDataBuffer = nullptr;
-            CD3DX12_RANGE readRange(0, 0);
-            _vertexBuffer->Map(0, &readRange, &vertexDataBuffer);
-            ::memcpy(vertexDataBuffer, &vertexBuffer[0], bufferSize);
-            _vertexBuffer->Unmap(0, nullptr);
-
-            _vertexBufferView.BufferLocation = _vertexBuffer->GetGPUVirtualAddress();
+            _vertexBufferView.BufferLocation = _vBuffer._gpuVirtualAddress;
             _vertexBufferView.StrideInBytes = sizeof(Vertex);
             _vertexBufferView.SizeInBytes = bufferSize;
         }

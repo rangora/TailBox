@@ -45,6 +45,10 @@ namespace tb
         FrameContext* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
 
+        // 애매한 함수들..
+        void Flush();
+        void Signal();
+
     private:
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;

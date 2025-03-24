@@ -8,7 +8,7 @@ namespace tb
     {
     public:
         GpuBuffer() = default;
-        ~GpuBuffer();
+        virtual ~GpuBuffer();
 
         void CreateConstantBuffer(uint32 _size, uint32 _count);
 
@@ -25,5 +25,14 @@ namespace tb
         int _reg = 0; // temp
         D3D12_CPU_DESCRIPTOR_HANDLE _cpuHandleBegin = {};
         uint32 _handleIncrementSize = 0;
+    };
+
+    class GeometryBuffer : public GpuBuffer
+    {
+    public:
+        GeometryBuffer() = default;
+        virtual ~GeometryBuffer() = default;
+
+        void Create(const std::wstring& name, int32 size, class UploadBuffer* buffer, std::vector<Vertex>& vertexArray);
     };
 } // namespace tb

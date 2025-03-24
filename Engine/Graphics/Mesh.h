@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core.h"
+#include "UploadBuffer.h"
+#include "GpuBuffer.h"
 
 namespace tb
 {
@@ -25,7 +27,8 @@ namespace tb
         D3D12_INDEX_BUFFER_VIEW _indexBufferView = {};
         uint32 _indexCount = 0;
 
-        class GpuBuffer* _gBuffer = nullptr;
+        class GpuBuffer* _gBuffer = nullptr; // CB
+        GeometryBuffer _vBuffer = {};
 
         Transform _transform = {};
     };

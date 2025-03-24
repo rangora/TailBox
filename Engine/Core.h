@@ -30,6 +30,8 @@ using Vector   = XMFLOAT3;
 using Vector4D = XMFLOAT4;
 using Matrix   = XMMATRIX;
 
+#define D3D12_GPU_VIRTUAL_ADDRESS_NULL ((D3D12_GPU_VIRTUAL_ADDRESS)0)
+
 // ¾Ö¸Å..
 struct Vertex
 {

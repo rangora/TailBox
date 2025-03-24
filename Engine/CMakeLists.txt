@@ -19,6 +19,7 @@ file(GLOB_RECURSE HEADERS RELATIVE
 
 add_library(Engine SHARED ${SOURCES} ${HEADERS})
 
+target_precompile_headers(Engine PRIVATE Enginepch.h)
 target_include_directories(Engine PUBLIC "../external/include")
 target_link_directories(Engine PUBLIC "../external/lib")
 target_link_libraries(Engine PUBLIC spdlog)
