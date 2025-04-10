@@ -7,11 +7,17 @@ namespace tb
     static constexpr int BUFFERCOUNT = 2;
 
     class DescriptorHeap;
+    class UploadBuffer;
 
     struct FrameContext
     {
         ID3D12CommandAllocator* _commandAllocator = nullptr;
         uint64 _fenceValue = 0;
+    };
+
+    struct StageEntry
+    {
+        ComPtr<ID3D12Resource> _stagedBuffer = nullptr;
     };
 
     class DX12Device
@@ -30,6 +36,8 @@ namespace tb
         void RenderEnd();
         void RenderImGui(); // ¾Ö¸Å..
         bool IsScreenLocked();
+
+        void StageBuffer(UploadBuffer* uploadBuffer);
 
         ID3D12Device* GetDevice() const { return _device.Get(); }
 
@@ -50,6 +58,8 @@ namespace tb
         void Signal();
 
     private:
+        void PreRenderBegin();
+
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
         ComPtr<ID3D12Debug> _debugController = nullptr;
@@ -76,12 +86,14 @@ namespace tb
         ComPtr<ID3D12Fence> _fence = nullptr;
         HANDLE _fenceEvent = INVALID_HANDLE_VALUE;
         HANDLE _swapChainWaitableObject = nullptr;
-        uint32 _fenceLastSignalValue = 0;
+        uint64 _fenceLastSignalValue = 0;
 
         FrameContext _frameContexts[BUFFERCOUNT] = {};
         FrameContext* _nextFrameCtx = nullptr;
         uint32 _frameIndex = 0;
         uint32 _backBufferIndex = 0;
         bool _bSwapChainOccluded = false;
+
+        std::vector<StageEntry> _staged;
     };
 }

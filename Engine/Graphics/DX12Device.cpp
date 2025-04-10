@@ -306,6 +306,7 @@ namespace tb
 
     void DX12Device::Update()
     {
+        PreRenderBegin();
         RenderBegin();
         Render();
         RenderEnd();
@@ -415,13 +416,18 @@ namespace tb
     }
 
     bool DX12Device::IsScreenLocked()
-{
+    {
         if (_bSwapChainOccluded && _swapChain->Present(0, DXGI_PRESENT_TEST) == DXGI_STATUS_CLIPPED)
         {
             return true;
         }
 
         return false;
+    }
+
+    void DX12Device::StageBuffer(UploadBuffer* uploadBuffer)
+    {
+        _staged.emplace_back(uploadBuffer->_resource);
     }
 
     void DX12Device::CreateRenderTarget()
@@ -508,5 +514,17 @@ namespace tb
 
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
         WaitForSingleObject(_fenceEvent, INFINITE);
+    }
+
+    void DX12Device::PreRenderBegin()
+    {
+        if (_staged.size())
+        {
+            Signal();
+            Flush();
+
+            _commandList->Close();
+            _staged.clear();
+        }
     }
 } // namespace tb

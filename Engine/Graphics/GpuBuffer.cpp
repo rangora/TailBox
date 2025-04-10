@@ -81,9 +81,9 @@ namespace tb
             Engine::GetDX12Device()->GetCommmandList()->Close();
             ID3D12CommandList* ppCommandLists[] = {Engine::GetDX12Device()->GetCommmandList()};
             Engine::GetDX12Device()->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-            Engine::GetDX12Device()->Signal();
-            Engine::GetDX12Device()->Flush();
-            Engine::GetDX12Device()->GetCommmandList()->Close();
+
+            // staged
+            Engine::GetDX12Device()->StageBuffer(buffer);
         }
     }
 } // namespace tb
