@@ -4,6 +4,16 @@
 
 namespace tb
 {
+    struct MeshResource
+    {
+        ComPtr<ID3D12Resource> _vertexBuffer = nullptr;
+        D3D12_VERTEX_BUFFER_VIEW _vertexBufferView = {};
+
+        ComPtr<ID3D12Resource> _indexBuffer = nullptr;
+        D3D12_INDEX_BUFFER_VIEW _indexBufferView = {};
+        uint32 _indexCount = 0;
+    };
+
     class GpuResource
     {
     public:

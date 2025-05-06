@@ -22,6 +22,9 @@ using uint64 = unsigned __int64;
 #include "SimpleMath.h"
 #include <d3dx12.h>
 
+// Core
+#include "Core/Transform.h"
+
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
@@ -39,7 +42,7 @@ struct Vertex
     Vector4D _color;
 };
 
-struct Transform
+struct Transform_2
 {
     Vector4D _offset;
 };

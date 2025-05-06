@@ -6,6 +6,7 @@ namespace tb
 {
     static constexpr int BUFFERCOUNT = 2;
 
+    class Renderer;
     class DescriptorHeap;
     class UploadBuffer;
 
@@ -28,6 +29,7 @@ namespace tb
 
         void CreateSwapChain(const HWND& hWnd);
         void PostSwapChainCreated();
+        void PostDeviceCreated();
         void ReleaseDevice();
 
         void Update();

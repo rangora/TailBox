@@ -3,7 +3,11 @@
 #include "Graphics/Mesh.h"
 #include "Graphics/Shader.h"
 #include "Window/Window.h"
+#include "Scene/SceneManager.h"
 #include <vector>
+
+// TEMP
+#include "Scene/Actor.h"
 
 namespace tb
 {
@@ -34,6 +38,7 @@ namespace tb
         _window = new Window({"TailBox", 1000, 600});
         _DX12device->CreateSwapChain(_window->GetWndRef());
         _DX12device->PostSwapChainCreated();
+        _DX12device->PostDeviceCreated();
         _window->Initialize();
 
         TEMP_Initial();
@@ -83,6 +88,13 @@ namespace tb
 
     void Engine::TEMP_Initial()
     {
+        // Scene
+        SceneManager* sceneMgr = SceneManager::Get();
+        sceneMgr->SetLayer(SceneType::World, "World");
+
+        // Temp world & actor
+        Actor* box = new Actor;
+
         // TEMP
         std::vector<Vertex> Vertexvec(4);
         Vertexvec[0]._pos = Vector(-0.5f, 0.5f, 0.5f);

@@ -34,5 +34,12 @@ namespace tb
         virtual ~GeometryBuffer() = default;
 
         void Create(const std::wstring& name, int32 size, class UploadBuffer* buffer, std::vector<Vertex>& vertexArray);
+
+        ComPtr<ID3D12Resource> _vertexBuffer = nullptr;
+        D3D12_VERTEX_BUFFER_VIEW _vertexBufferView = {};
+
+        ComPtr<ID3D12Resource> _indexBuffer = nullptr;
+        D3D12_INDEX_BUFFER_VIEW _indexBufferView = {};
+        uint32 _indexCount = 0;
     };
 } // namespace tb
