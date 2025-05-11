@@ -6,6 +6,7 @@
 namespace tb
 {
     class SceneProxy;
+    class Mesh;
 
     class Scene
     {
@@ -14,8 +15,10 @@ namespace tb
         void Render();
 
         void AddProxy(SceneProxy* proxy);
+        void AddMesh(Mesh* mesh);
 
     private:
         std::vector<SceneProxy*> _sceneProxies;
+        std::vector<Mesh*> _meshes;
     };
 }; // namespace tb

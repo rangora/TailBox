@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "Graphics/Shader.h"
+#include "Scene/SceneManager.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 
@@ -371,11 +372,10 @@ namespace tb
 
         // Render things..
         _commandList->SetPipelineState(Engine::Get()._shader->_pipelineState.Get());
-        Transform_2 t;
-        t._offset = {0.f, 0.f, 0.f, 0.f};
-        auto mesh = Engine::Get()._mesh;
-        mesh->SetTransform(t);
-        mesh->Render();
+
+        // Render from sceneManager
+        SceneManager* sceneMgr = SceneManager::Get();
+        sceneMgr->Render();
 
         // imgui
         RenderImGui();

@@ -5,6 +5,7 @@
 namespace tb
 {
     class Scene;
+    class Mesh;
 
     enum SceneType
     {
@@ -23,23 +24,22 @@ namespace tb
         void SetLayer(uint32 index, const std::string& name);
 
         // Scene
-        void HandleNewActor();
+        void RegisterMesh(Mesh* mesh);
+
+        // Render
+        void Render();
 
     private:
-        SceneManager()
-        {
-        }
-        ~SceneManager()
-        {
-        }
+        SceneManager() = default;
+        ~SceneManager() = default;
 
         enum
         {
             MAX_LAYER = 32
         };
 
-        std::array<std::string, MAX_LAYER> _layers;
         std::map<std::string, uint32> _layerIndex;
+        std::array<Scene*, MAX_LAYER> _scenes;
 
         uint32 _activeIndex = -1;
     };
