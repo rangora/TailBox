@@ -93,7 +93,5 @@ namespace tb
         sceneMgr->SetLayer(SceneType::World, "World");
 
         _mesh = new Mesh();
-        _shader = new Shader(L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli",
-                            L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli");
     }
 } // namespace tb

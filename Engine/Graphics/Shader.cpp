@@ -4,6 +4,14 @@
 
 namespace tb
 {
+    Shader::Shader()
+    {
+    }
+
+    Shader::~Shader()
+    {
+    }
+
     Shader::Shader(const std::wstring& vp, const std::wstring& pp)
     {
 #ifdef _DEBUG

@@ -369,9 +369,8 @@ namespace tb
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
-
         // Render things..
-        _commandList->SetPipelineState(Engine::Get()._shader->_pipelineState.Get());
+        _commandList->SetPipelineState(Renderer::Get()->GetShader("Box")->_pipelineState.Get());
 
         // Render from sceneManager
         SceneManager* sceneMgr = SceneManager::Get();

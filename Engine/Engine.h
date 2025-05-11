@@ -4,6 +4,8 @@
 
 namespace tb
 {
+    class Mesh;
+
     class Engine
     {
     public:
@@ -19,8 +21,7 @@ namespace tb
         void Launch();
         void Tick(const float tick);
 
-        class Mesh* _mesh = nullptr;
-        class Shader* _shader = nullptr;
+        Mesh* _mesh = nullptr;
 
     private:
 

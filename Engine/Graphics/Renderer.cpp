@@ -1,15 +1,20 @@
 #include "Renderer.h"
 #include "UploadBuffer.h"
 #include "Engine.h"
-//#include "DX12Device.h"
 
 namespace tb
 {
     void Renderer::Initialize()
     {
         _geoemtryBuffers.reserve(100);
+        _shaders.reserve(100);
 
-        // TEMP
+        InitBuffers();
+        InitShaders();
+    }
+
+    void Renderer::InitBuffers()
+    {
         if (_geoemtryBuffers.find("Box") == _geoemtryBuffers.end())
         {
             std::vector<Vertex> Vertexvec(4);
@@ -79,11 +84,18 @@ namespace tb
 
             _geoemtryBuffers.emplace("Box", std::move(geometryBuffer));
         }
-        // ~TEMP
     }
 
-    GeometryBuffer* Renderer::GetGeometryBuffer(const std::string& name)
+    void Renderer::InitShaders()
     {
-        return _geoemtryBuffers.find(name)->second.get();
+        static std::array<std::string, 1> baseShaderNames = {"Box"};
+
+        for (const auto name : baseShaderNames)
+        {
+            auto newShader = std::make_unique<Shader>(L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli",
+                                                      L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli");
+
+            _shaders.emplace(name, std::move(newShader));
+        }
     }
 }; // namespace tb
