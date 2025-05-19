@@ -50,12 +50,12 @@ namespace tb
         _currentGroupIndex = 0;
     }
 
-    void DescriptorHeap::CommitTable()
-    {
+    void DescriptorHeap::CommitTable(const uint32 rootIndex)
+{
         D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = _descHeap->GetGPUDescriptorHandleForHeapStart();
         GPUHandle.ptr += _currentGroupIndex * _groupSize;
 
-        Engine::GetDX12Device()->GetCommmandList()->SetGraphicsRootDescriptorTable(0, GPUHandle);
+        Engine::GetDX12Device()->GetCommmandList()->SetGraphicsRootDescriptorTable(rootIndex, GPUHandle);
         _currentGroupIndex++;
     }
 } // namespace tb

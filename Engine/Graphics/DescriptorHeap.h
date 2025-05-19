@@ -22,7 +22,7 @@ namespace tb
 
         void Clear(); // ?
 
-        void CommitTable();
+        void CommitTable(const uint32 rootIndex);
 
     private:
         ComPtr<ID3D12DescriptorHeap> _descHeap = nullptr;

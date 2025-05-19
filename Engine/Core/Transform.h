@@ -6,10 +6,10 @@ using namespace DirectX;
 
 namespace tb
 {
-    struct Transform
+    struct alignas(256) Transform
     {
-        DirectX::XMFLOAT3 _pos   = {};
-        DirectX::XMFLOAT3 _rot   = {};
-        DirectX::XMFLOAT3 _scale = {};
+        DirectX::XMFLOAT4 _pos   = {};
+        DirectX::XMFLOAT4 _rot   = {};
+        DirectX::XMFLOAT4 _scale = {};
     };
 }; // namespace tb
