@@ -7,7 +7,7 @@
 #include <vector>
 
 // TEMP
-#include "Scene/Actor.h"
+#include "Scene/Cube.h"
 
 namespace tb
 {
@@ -93,5 +93,6 @@ namespace tb
         sceneMgr->SetLayer(SceneType::World, "World");
 
         _mesh = new Mesh();
+        _cube = new Cube();
     }
 } // namespace tb

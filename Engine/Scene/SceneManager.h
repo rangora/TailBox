@@ -6,6 +6,7 @@ namespace tb
 {
     class Scene;
     class Mesh;
+    class Cube;
 
     enum SceneType
     {
@@ -25,6 +26,7 @@ namespace tb
 
         // Scene
         void RegisterMesh(Mesh* mesh);
+        void RegisterMesh(Cube* cube);
 
         // Render
         void Render();

@@ -22,6 +22,12 @@ namespace tb
         scene->AddMesh(mesh);
     }
 
+    void SceneManager::RegisterMesh(Cube* cube)
+    {
+        auto scene = _scenes[_activeIndex];
+        scene->AddCube(cube);
+    }
+
     void SceneManager::Render()
     {
         Scene* scene = _scenes[_activeIndex];

@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Graphics/Shader.h"
 #include "Scene/SceneManager.h"
+#include "Scene/Cube.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 
@@ -336,6 +337,7 @@ namespace tb
 
         _commandList->SetGraphicsRootSignature(_rootSignature.Get());
         Engine::Get()._mesh->Clear();
+        Engine::Get()._cube->Clear();
         _rootDescriptorHeap->Clear();
 
         ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();

@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Graphics/Mesh.h"
+#include "Scene/Cube.h"
 
 namespace tb
 {
@@ -11,7 +12,12 @@ namespace tb
     {
         for (const auto mesh : _meshes)
         {
-            mesh->Render();
+            //mesh->Render();
+        }
+
+        for (const auto cube : _cubes)
+        {
+            cube->Render();
         }
     }
 
@@ -22,5 +28,10 @@ namespace tb
     void Scene::AddMesh(Mesh* mesh)
     {
         _meshes.emplace_back(mesh);
+    }
+
+    void Scene::AddCube(Cube* cube)
+    {
+        _cubes.emplace_back(cube);
     }
 } // namespace tb

@@ -23,7 +23,11 @@ namespace tb
             if (FAILED(::D3DCompileFromFile(vp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_Main", "vs_5_0",
                                             compileFlag, 0, &_vsBlob, &_errBlob)))
             {
-                // failed..
+                const char* errMsg = reinterpret_cast<const char*>(_errBlob->GetBufferPointer());
+                spdlog::error("Shader Compile {}", errMsg);
+                _errBlob->Release();
+                _errBlob = nullptr;
+                return;
             }
 
             _pipelineDesc.VS = {_vsBlob->GetBufferPointer(), _vsBlob->GetBufferSize()};
@@ -34,7 +38,11 @@ namespace tb
             if (FAILED(::D3DCompileFromFile(vp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_Main", "ps_5_0",
                                             compileFlag, 0, &_psBlob, &_errBlob)))
             {
-                // failed..
+                const char* errMsg = reinterpret_cast<const char*>(_errBlob->GetBufferPointer());
+                spdlog::error("Shader Compile {}", errMsg);
+                _errBlob->Release();
+                _errBlob = nullptr;
+                return;
             }
 
             _pipelineDesc.PS = {_psBlob->GetBufferPointer(), _psBlob->GetBufferSize()};

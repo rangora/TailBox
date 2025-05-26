@@ -5,6 +5,7 @@
 namespace tb
 {
     class Mesh;
+    class Cube;
 
     class Engine
     {
@@ -22,6 +23,7 @@ namespace tb
         void Tick(const float tick);
 
         Mesh* _mesh = nullptr;
+        Cube* _cube = nullptr;
 
     private:
 

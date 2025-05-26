@@ -12,4 +12,9 @@ namespace tb
         DirectX::XMFLOAT4 _rot   = {};
         DirectX::XMFLOAT4 _scale = {};
     };
+
+    struct alignas(256) Matrix
+    {
+        XMFLOAT4X4 _wvpMat;
+    };
 }; // namespace tb
