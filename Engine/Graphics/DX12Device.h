@@ -62,6 +62,8 @@ namespace tb
     private:
         void PreRenderBegin();
 
+        void UpdateTimer();
+
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
         ComPtr<ID3D12Debug> _debugController = nullptr;
@@ -95,6 +97,13 @@ namespace tb
         uint32 _frameIndex = 0;
         uint32 _backBufferIndex = 0;
         bool _bSwapChainOccluded = false;
+
+        // time
+        DWORD _lastTime = 0;
+        float _deltaTime = 0.f;
+        float _fpsTimer = 0.f;
+        int64 _frameCount = 0;
+        int64 _currentFPS = 0;
 
         std::vector<StageEntry> _staged;
     };

@@ -9,6 +9,10 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 
+// Windows
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+
 #ifdef _DEBUG
 #define DX12_ENABLE_DEBUG_LAYER
 #endif
@@ -22,6 +26,9 @@ namespace tb
 {
     DX12Device::DX12Device()
     {
+        timeBeginPeriod(1);
+        _lastTime = timeGetTime();
+
 #ifdef _DEBUG
         // device에게 알려줘야 해서 전에 호출.
         ::D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController));
@@ -314,10 +321,15 @@ namespace tb
 
     void DX12Device::Update()
     {
+        UpdateTimer();
+
         PreRenderBegin();
         RenderBegin();
         Render();
         RenderEnd();
+
+        spdlog::info("tick:{}", _deltaTime);
+        spdlog::info("fps:{}", _currentFPS);
     }
 
     void DX12Device::RenderBegin()
@@ -532,6 +544,22 @@ namespace tb
 
             _commandList->Close();
             _staged.clear();
+        }
+    }
+
+    void DX12Device::UpdateTimer()
+    {
+        DWORD now = timeGetTime();
+        _deltaTime = (now - _lastTime) * 0.001f; // ms -> s
+        _lastTime = now;
+
+        _frameCount++;
+        _fpsTimer += _deltaTime;
+        if (_fpsTimer >= 1.f)
+        {
+            _currentFPS = _frameCount;
+            _frameCount = 0;
+            _fpsTimer -= 1.f;
         }
     }
 } // namespace tb
