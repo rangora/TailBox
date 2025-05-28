@@ -121,6 +121,7 @@ namespace tb
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+        Overlay();
         ImGui::ShowDemoWindow();
 
         ImGui::Render();
@@ -147,5 +148,60 @@ namespace tb
     {
         ::DestroyWindow(_hWnd);
         ::UnregisterClassW(_wc.lpszClassName, _wc.hInstance);
+    }
+
+    void Window::Overlay()
+    {
+        static int location = 0;
+        static bool fps = false;
+
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+                                        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                        ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+        if (location >= 0)
+        {
+            const float PAD = 10.f;
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImVec2 work_pos = viewport->WorkPos;
+            ImVec2 work_size = viewport->WorkSize;
+            ImVec2 window_pos, window_pos_pivot;
+
+            window_pos.x = work_pos.x + PAD;
+            window_pos.y = work_pos.y + PAD;
+
+            window_pos_pivot.x = 0.f;
+            window_pos_pivot.y = 0.f;
+
+            ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            window_flags |= ImGuiWindowFlags_NoMove;
+        }
+
+        ImGui::SetNextWindowBgAlpha(0.35f);
+        if (ImGui::Begin("Simple overlay", nullptr, window_flags))
+        {
+            ImGui::Text("SSSSimple ovelay");
+            if (ImGui::IsMousePosValid())
+            {
+                ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
+            }
+            else
+            {
+                ImGui::Text("Mouse Position: <invalid>");
+            }
+
+            if (ImGui::BeginPopupContextWindow())
+            {
+                if (ImGui::MenuItem("fps", nullptr, fps == true))
+                {
+                    fps = true;
+                }
+                ImGui::EndPopup();
+            }
+        }
+
+        ImGui::End();
     }
 } // namespace tb

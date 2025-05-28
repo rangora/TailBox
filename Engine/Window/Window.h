@@ -38,6 +38,8 @@ namespace tb
         static DescHeapAllocator _heapAlloc;
 
     private:
+        void Overlay();
+
         WindowContext _windowContext;
 
         // Window stuff
