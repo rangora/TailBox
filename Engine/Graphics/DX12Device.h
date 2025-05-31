@@ -102,8 +102,8 @@ namespace tb
         DWORD _lastTime = 0;
         float _deltaTime = 0.f;
         float _fpsTimer = 0.f;
-        int64 _frameCount = 0;
-        int64 _currentFPS = 0;
+        int32 _frameCount = 0;
+        int32 _currentFPS = 0;
 
         std::vector<StageEntry> _staged;
     };

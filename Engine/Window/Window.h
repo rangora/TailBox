@@ -33,6 +33,8 @@ namespace tb
         void ShutdownImGuiContext();
         void ShutdownWindow();
 
+        void OnUpdateRenderTime(float fps, float deltaTime);
+
         HWND& GetWndRef() { return _hWnd; }
 
         static DescHeapAllocator _heapAlloc;
@@ -48,5 +50,8 @@ namespace tb
 
         // ImGui stuff
         ImGuiContext* _imguiCtx = nullptr;
+
+        int32 _fps = 0;
+        float _deltaTime = 0.f;
     };
 }

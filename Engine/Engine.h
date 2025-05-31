@@ -22,6 +22,8 @@ namespace tb
         void Launch();
         void Tick(const float tick);
 
+        class Window* GetWindow() { return _window; }
+
         Mesh* _mesh = nullptr;
         Cube* _cube = nullptr;
 

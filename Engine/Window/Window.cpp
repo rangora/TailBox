@@ -150,39 +150,46 @@ namespace tb
         ::UnregisterClassW(_wc.lpszClassName, _wc.hInstance);
     }
 
+    void Window::OnUpdateRenderTime(float fps, float deltaTime)
+    {
+        _fps = fps;
+        _deltaTime = deltaTime;
+    }
+
     void Window::Overlay()
     {
-        static int location = 0;
-        static bool fps = false;
+        static bool bRenderInfo = true;
 
         ImGuiIO& io = ImGui::GetIO();
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
                                         ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
                                         ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
 
-        if (location >= 0)
-        {
-            const float PAD = 10.f;
-            const ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImVec2 work_pos = viewport->WorkPos;
-            ImVec2 work_size = viewport->WorkSize;
-            ImVec2 window_pos, window_pos_pivot;
+        const float PAD = 10.f;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImVec2 work_pos = viewport->WorkPos;
+        ImVec2 work_size = viewport->WorkSize;
+        ImVec2 window_pos, window_pos_pivot;
 
-            window_pos.x = work_pos.x + PAD;
-            window_pos.y = work_pos.y + PAD;
+        window_pos.x = work_pos.x + PAD;
+        window_pos.y = work_pos.y + PAD;
 
-            window_pos_pivot.x = 0.f;
-            window_pos_pivot.y = 0.f;
+        window_pos_pivot.x = 0.f;
+        window_pos_pivot.y = 0.f;
 
-            ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-            ImGui::SetNextWindowViewport(viewport->ID);
-            window_flags |= ImGuiWindowFlags_NoMove;
-        }
+        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        window_flags |= ImGuiWindowFlags_NoMove;
 
-        ImGui::SetNextWindowBgAlpha(0.35f);
+        ImGui::SetNextWindowBgAlpha(0.4f);
         if (ImGui::Begin("Simple overlay", nullptr, window_flags))
         {
-            ImGui::Text("SSSSimple ovelay");
+            if (bRenderInfo)
+            {
+                ImGui::Text("fps:%d, deltaTime:%f", _fps, _deltaTime);
+            }
+            ImGui::Separator();
+
             if (ImGui::IsMousePosValid())
             {
                 ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
@@ -194,9 +201,9 @@ namespace tb
 
             if (ImGui::BeginPopupContextWindow())
             {
-                if (ImGui::MenuItem("fps", nullptr, fps == true))
+                if (ImGui::MenuItem("bRenderInfo", nullptr, bRenderInfo == true))
                 {
-                    fps = true;
+                    bRenderInfo = !bRenderInfo;
                 }
                 ImGui::EndPopup();
             }

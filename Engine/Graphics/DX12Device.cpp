@@ -8,6 +8,8 @@
 #include "Scene/Cube.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
+#include "Core/Event.h"
+#include "Window/Window.h"
 
 // Windows
 #include <mmsystem.h>
@@ -328,8 +330,14 @@ namespace tb
         Render();
         RenderEnd();
 
-        spdlog::info("tick:{}", _deltaTime);
-        spdlog::info("fps:{}", _currentFPS);
+        RenderTimeUpdateEvent event(_currentFPS, _deltaTime);
+        EventDispatcher dispatcher(event);
+
+        dispatcher.Dispatch<RenderTimeUpdateEvent>([](RenderTimeUpdateEvent& e)
+            {
+                Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
+                return true;
+            });
     }
 
     void DX12Device::RenderBegin()
