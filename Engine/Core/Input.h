@@ -24,12 +24,14 @@ namespace tb
         MouseButton _button;
         KeyState _state = KeyState::None;
         KeyState _oldState = KeyState::None;
-        bool _bHandled = false;
+        bool _bHandled = true;
     };
 
     class Input
     {
     public:
+        static bool IsMouseButtonPressed(MouseButton button);
+        static bool IsMouseButtonHeld(MouseButton button);
         static bool IsMouseButtonDown(MouseButton button);
         static void TransitionPressedButtons();
         static void UpdateButtonState(MouseButton button, KeyState state);

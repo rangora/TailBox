@@ -9,6 +9,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 #include "Core/Event.h"
+#include "Core/Input.h"
 #include "Window/Window.h"
 
 // Windows
@@ -548,6 +549,25 @@ namespace tb
 
             _commandList->Close();
             _staged.clear();
+        }
+
+        if (Input::IsMouseButtonDown(MouseButton::Right))
+        {
+            static int32 preMousePosX = 0;
+            static int32 preMousePosY = 0;
+
+            auto window = Engine::Get().GetWindow();
+            int32 mousePosX = window->GetMousePosX();
+            int32 mousePosY = window->GetMousePosY();
+
+            int32 x_delta = mousePosX - preMousePosX;
+            int32 y_delta = mousePosY - preMousePosY;
+
+            static float speed = 3.f;
+            _camera.AddRotation(y_delta * -(speed * _deltaTime), x_delta * -(speed * _deltaTime), 0.f);
+
+            preMousePosX = mousePosX;
+            preMousePosY = mousePosY;
         }
     }
 

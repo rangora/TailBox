@@ -38,10 +38,16 @@ namespace tb
 
         HWND& GetWndRef() { return _hWnd; }
 
+        int32 GetMousePosX() const { return _mousePosX; }
+        int32 GetMousePosY() const { return _mousePosY; }
+
         static DescHeapAllocator _heapAlloc;
 
     private:
         void Overlay();
+
+        // Input
+        void ProcessKeyInput();
 
         WindowContext _windowContext;
 
@@ -57,5 +63,8 @@ namespace tb
 
         XMFLOAT3 _cameraPos = {};
         XMFLOAT3 _cameraRot = {};
+
+        int32 _mousePosX = 0;
+        int32 _mousePosY = 0;
     };
 }

@@ -4,6 +4,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 #include "imgui/imgui_impl_win32.h"
+#include "Core/Input.h"
 #include <Windowsx.h>
 
 // forward declare
@@ -117,6 +118,8 @@ namespace tb
 
     void Window::Update()
     {
+        ProcessKeyInput();
+
         ImGui_ImplDX12_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
@@ -184,6 +187,12 @@ namespace tb
         window_pos_pivot.x = 0.f;
         window_pos_pivot.y = 0.f;
 
+        if (ImGui::IsMousePosValid())
+        {
+            _mousePosX = static_cast<int32>(io.MousePos.x);
+            _mousePosY = static_cast<int32>(io.MousePos.y);
+        }
+
         ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
         ImGui::SetNextWindowViewport(viewport->ID);
         window_flags |= ImGuiWindowFlags_NoMove;
@@ -191,6 +200,28 @@ namespace tb
         ImGui::SetNextWindowBgAlpha(0.4f);
         if (ImGui::Begin("[Infos]", nullptr, window_flags))
         {
+            {
+                // TEMP
+                ImGuiKey start_key = ImGuiKey_NamedKey_BEGIN;
+                ImGui::Text("Keys down:");
+                for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+                {
+                    if (!ImGui::IsKeyDown(key))
+                    {
+                        continue;
+                    }
+                    ImGui::SameLine();
+
+                    //key == ImGuiKey::
+
+                    if (key == ImGuiKey_MouseRight)
+                    {
+                        ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key),
+                                    key);
+                    }
+                }
+            }
+
             if (bRenderInfo)
             {
                 ImGui::Text("fps:%d, deltaTime:%f", _fps, _deltaTime);
@@ -202,14 +233,7 @@ namespace tb
             }
             ImGui::Separator();
 
-            if (ImGui::IsMousePosValid())
-            {
-                ImGui::Text("Mouse Position: (%.1f,%.1f)", io.MousePos.x, io.MousePos.y);
-            }
-            else
-            {
-                ImGui::Text("Mouse Position: <invalid>");
-            }
+            ImGui::Text("Mouse Position: (%.1f,%.1f)", _mousePosX, _mousePosY);
 
             if (ImGui::BeginPopupContextWindow())
             {
@@ -226,5 +250,36 @@ namespace tb
         }
 
         ImGui::End();
+    }
+
+    void Window::ProcessKeyInput()
+    {
+        Input::ClearReleasedInput();
+        Input::TransitionPressedButtons();
+
+        ImGuiKey startKey = ImGuiKey_NamedKey_BEGIN;
+        for (ImGuiKey key = startKey; key < ImGuiKey_NamedKey_END; key = static_cast<ImGuiKey>(key + 1))
+        {
+            if (key == ImGuiKey_MouseRight)
+            {
+                if (ImGui::IsKeyDown(key))
+                {
+                    if (!Input::IsMouseButtonDown(MouseButton::Right))
+                    {
+                        Input::UpdateButtonState(MouseButton::Right, KeyState::Pressed);
+                        spdlog::info("button pressed");
+                    }
+                }
+                else if (Input::IsMouseButtonDown(MouseButton::Right))
+                {
+                    Input::UpdateButtonState(MouseButton::Right, KeyState::Released);
+                }
+            }
+        }
+
+        if (Input::IsMouseButtonHeld(MouseButton::Right))
+        {
+            spdlog::info("button held");
+        }
     }
 } // namespace tb
