@@ -189,7 +189,7 @@ namespace tb
         window_flags |= ImGuiWindowFlags_NoMove;
 
         ImGui::SetNextWindowBgAlpha(0.4f);
-        if (ImGui::Begin("Simple overlay", nullptr, window_flags))
+        if (ImGui::Begin("[Infos]", nullptr, window_flags))
         {
             if (bRenderInfo)
             {
@@ -213,7 +213,7 @@ namespace tb
 
             if (ImGui::BeginPopupContextWindow())
             {
-                if (ImGui::MenuItem("bRenderInfo", nullptr, bRenderInfo == true))
+                if (ImGui::MenuItem("RenderInfo", nullptr, bRenderInfo == true))
                 {
                     bRenderInfo = !bRenderInfo;
                 }

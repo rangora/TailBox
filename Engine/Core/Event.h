@@ -7,7 +7,7 @@ namespace tb
 {
     enum class EventType
     {
-        RenderTimeUpdate,
+        RenderInfoDisplay,
         CameraInfoDisplay
     };
 
@@ -46,14 +46,14 @@ namespace tb
         Event & _e;
     };
 
-    struct RenderTimeUpdateEvent : public Event
+    struct RenderInfoDisplayEvent : public Event
     {
-        RenderTimeUpdateEvent(int32 fps, float deltaTime) : _fps(fps), _deltaTime(deltaTime) {}
+        RenderInfoDisplayEvent(int32 fps, float deltaTime) : _fps(fps), _deltaTime(deltaTime) {}
 
         float GetDeltaTime() { return _deltaTime; }
         int32 GetFps() { return _fps; }
 
-        EVENT_TYPE(RenderTimeUpdate)
+        EVENT_TYPE(RenderInfoDisplay)
 
     private:
         int32 _fps = 0;

@@ -555,11 +555,11 @@ namespace tb
     {
         // RenderInfo event
         {
-            RenderTimeUpdateEvent event(_currentFPS, _deltaTime);
+            RenderInfoDisplayEvent event(_currentFPS, _deltaTime);
             EventDispatcher dispatcher(event);
 
-            dispatcher.Dispatch<RenderTimeUpdateEvent>(
-                [](RenderTimeUpdateEvent& e)
+            dispatcher.Dispatch<RenderInfoDisplayEvent>(
+                [](RenderInfoDisplayEvent& e)
                 {
                     Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
                     return true;
