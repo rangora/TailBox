@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Scene/Camera.h"
 
 namespace tb
 {
@@ -59,8 +60,12 @@ namespace tb
         void Flush();
         void Signal();
 
+        // Camera TEMP
+        Camera _camera;
+
     private:
         void PreRenderBegin();
+        void PostRenderEnd();
 
         void UpdateTimer();
 

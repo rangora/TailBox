@@ -34,6 +34,7 @@ namespace tb
         void ShutdownWindow();
 
         void OnUpdateRenderTime(float fps, float deltaTime);
+        void OnUpdateCameraInfo(const XMFLOAT3& pos, const XMFLOAT3& rot);
 
         HWND& GetWndRef() { return _hWnd; }
 
@@ -53,5 +54,8 @@ namespace tb
 
         int32 _fps = 0;
         float _deltaTime = 0.f;
+
+        XMFLOAT3 _cameraPos = {};
+        XMFLOAT3 _cameraRot = {};
     };
 }

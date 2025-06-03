@@ -128,6 +128,10 @@ namespace tb
             spdlog::error("[FATAL] Failed to create fenceEvent.");
             return;
         }
+
+        _camera.SetPosition(0.f, 5.f, -4.f);
+        _camera.SetRotation(0.f, 0.f, 0.f);
+
     }
 
     DX12Device::~DX12Device()
@@ -329,15 +333,7 @@ namespace tb
         RenderBegin();
         Render();
         RenderEnd();
-
-        RenderTimeUpdateEvent event(_currentFPS, _deltaTime);
-        EventDispatcher dispatcher(event);
-
-        dispatcher.Dispatch<RenderTimeUpdateEvent>([](RenderTimeUpdateEvent& e)
-            {
-                Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
-                return true;
-            });
+        PostRenderEnd();
     }
 
     void DX12Device::RenderBegin()
@@ -552,6 +548,33 @@ namespace tb
 
             _commandList->Close();
             _staged.clear();
+        }
+    }
+
+    void DX12Device::PostRenderEnd()
+    {
+        // RenderInfo event
+        {
+            RenderTimeUpdateEvent event(_currentFPS, _deltaTime);
+            EventDispatcher dispatcher(event);
+
+            dispatcher.Dispatch<RenderTimeUpdateEvent>(
+                [](RenderTimeUpdateEvent& e)
+                {
+                    Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
+                    return true;
+                });
+        }
+        // CameraInfo event
+        {
+            CameraInfoDisplayEvent event(_camera._pos, _camera._rot);
+            EventDispatcher dispatcher(event);
+
+            dispatcher.Dispatch<CameraInfoDisplayEvent>([](CameraInfoDisplayEvent& e)
+                {
+                    Engine::Get().GetWindow()->OnUpdateCameraInfo(e.GetPos(), e.GetRot());
+                    return true;
+                });
         }
     }
 

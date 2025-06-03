@@ -156,9 +156,16 @@ namespace tb
         _deltaTime = deltaTime;
     }
 
+    void Window::OnUpdateCameraInfo(const XMFLOAT3& pos, const XMFLOAT3& rot)
+    {
+        _cameraPos = pos;
+        _cameraRot = rot;
+    }
+
     void Window::Overlay()
     {
         static bool bRenderInfo = true;
+        static bool bCameraInfo = true;
 
         ImGuiIO& io = ImGui::GetIO();
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
@@ -188,6 +195,11 @@ namespace tb
             {
                 ImGui::Text("fps:%d, deltaTime:%f", _fps, _deltaTime);
             }
+            if (bCameraInfo)
+            {
+                ImGui::Text("CameraPos:(%0.2f,%0.2f,%0.2f), CameraPot:(%0.2f,%0.2f,%0.2f)", _cameraPos.x, _cameraPos.y,
+                            _cameraPos.z, _cameraRot.x, _cameraRot.y, _cameraRot.z);
+            }
             ImGui::Separator();
 
             if (ImGui::IsMousePosValid())
@@ -204,6 +216,10 @@ namespace tb
                 if (ImGui::MenuItem("bRenderInfo", nullptr, bRenderInfo == true))
                 {
                     bRenderInfo = !bRenderInfo;
+                }
+                if (ImGui::MenuItem("CameraInfo", nullptr, bCameraInfo == true))
+                {
+                    bCameraInfo = !bCameraInfo;
                 }
                 ImGui::EndPopup();
             }

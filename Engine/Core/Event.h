@@ -1,12 +1,14 @@
 #pragma once
 
+#include "Core.h"
 #include <functional>
 
 namespace tb
 {
     enum class EventType
     {
-        RenderTimeUpdate
+        RenderTimeUpdate,
+        CameraInfoDisplay
     };
 
     #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::type; } \
@@ -56,5 +58,19 @@ namespace tb
     private:
         int32 _fps = 0;
         float _deltaTime = 0.f;
+    };
+
+    struct CameraInfoDisplayEvent : public Event
+    {
+        CameraInfoDisplayEvent(XMFLOAT3 pos, XMFLOAT3 rot) : _pos(pos), _rot(rot) {}
+
+        XMFLOAT3 GetPos() { return _pos; }
+        XMFLOAT3 GetRot() { return _rot; }
+
+        EVENT_TYPE(CameraInfoDisplay)
+
+    private:
+        XMFLOAT3 _pos;
+        XMFLOAT3 _rot;
     };
 } // namespace tb
