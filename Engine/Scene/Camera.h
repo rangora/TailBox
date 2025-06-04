@@ -7,18 +7,18 @@ namespace tb
     class Camera
     {
     public:
-        XMVECTOR _posVector;
-        XMVECTOR _rotVector;
+        XMVECTOR _posVector = {};
+        XMVECTOR _rotVector = {};
         Vector _pos = {0.f, 0.f, 0.f};
         Vector _rot = {0.f, 0.f, 0.f};
 
-        XMMATRIX _viewMtx;
-        XMMATRIX _projMtx;
+        XMMATRIX _viewMtx = {};
+        XMMATRIX _projMtx = {};
 
-        XMVECTOR _forward;
-        XMVECTOR _left;
-        XMVECTOR _right;
-        XMVECTOR _backward;
+        XMVECTOR _forward = {};
+        XMVECTOR _left = {};
+        XMVECTOR _right = {};
+        XMVECTOR _backward = {};
 
         void UpdateViewMatrix(); // may be private
         void SetProjection(float fov, float aspectRatio, float nearZ, float farZ);

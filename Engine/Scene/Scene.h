@@ -13,7 +13,7 @@ namespace tb
     {
     public:
         void Update();
-        void Render();
+        void Render(const XMMATRIX& vpMtx);
 
         void AddProxy(SceneProxy* proxy);
         void AddMesh(Mesh* mesh);

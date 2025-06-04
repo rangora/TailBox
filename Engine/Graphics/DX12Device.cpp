@@ -33,7 +33,7 @@ namespace tb
         _lastTime = timeGetTime();
 
 #ifdef _DEBUG
-        // device¿¡°Ô ¾Ë·ÁÁà¾ß ÇØ¼­ Àü¿¡ È£Ãâ.
+        // deviceï¿½ï¿½ï¿½ï¿½ ï¿½Ë·ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½.
         ::D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController));
         _debugController->EnableDebugLayer();
 #endif
@@ -85,7 +85,7 @@ namespace tb
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
             desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            desc.NumDescriptors = 64; // 64°³ ¿ä±¸µÊ
+            desc.NumDescriptors = 64; // 64ï¿½ï¿½ ï¿½ä±¸ï¿½ï¿½
             if (_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) != S_OK)
             {
                 spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
@@ -129,10 +129,6 @@ namespace tb
             spdlog::error("[FATAL] Failed to create fenceEvent.");
             return;
         }
-
-        _camera.SetPosition(0.f, 5.f, -4.f);
-        _camera.SetRotation(0.f, 0.f, 0.f);
-
     }
 
     DX12Device::~DX12Device()
@@ -243,6 +239,15 @@ namespace tb
             _dsHeap->SetName(L"depth/stencil resource heap");
             _device->CreateDepthStencilView(_dsBuffer.Get(), &dsvDesc, _dsHeap->GetCPUDescriptorHandleForHeapStart());
         }
+
+        const uint32 backBufferIndex = _swapChain->GetCurrentBackBufferIndex();
+        const D3D12_RESOURCE_DESC rtvDesc = _mainRtvResources[backBufferIndex]->GetDesc();
+        const uint32 rw = rtvDesc.Width;
+        const uint32 rh = rtvDesc.Height;
+
+        _camera.SetPosition(0.f, 0.f, -4.f);
+        _camera.SetRotation(0.f, 0.f, 0.f);
+        _camera.SetProjection(90.f, (float)rw / (float)rh, 0.1f, 1000.f);
     }
 
     void DX12Device::PostDeviceCreated()
@@ -389,11 +394,12 @@ namespace tb
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
         // Render things..
-        _commandList->SetPipelineState(Renderer::Get()->GetShader("Box")->_pipelineState.Get());
+        _commandList->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
 
         // Render from sceneManager
+        XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         SceneManager* sceneMgr = SceneManager::Get();
-        sceneMgr->Render();
+        sceneMgr->Render(vpMtx);
 
         // imgui
         RenderImGui();
@@ -435,7 +441,7 @@ namespace tb
     {
         ID3D12DescriptorHeap* descHeaps[] = {_imguiDescHeap.Get()};
         _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
-        //// TODO : ¾Æ·¡ ÁÙ »©¾ß ÇÔ
+        //// TODO : ï¿½Æ·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
 

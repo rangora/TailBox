@@ -28,9 +28,9 @@ namespace tb
         scene->AddCube(cube);
     }
 
-    void SceneManager::Render()
-    {
+    void SceneManager::Render(XMMATRIX& vpMtx)
+{
         Scene* scene = _scenes[_activeIndex];
-        scene->Render();
+        scene->Render(vpMtx);
     }
 } // namespace tb

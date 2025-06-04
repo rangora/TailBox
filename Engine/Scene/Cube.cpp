@@ -26,16 +26,20 @@ namespace tb
         }
     }
 
-    void Cube::Render()
-    {
+    void Cube::Render(const XMMATRIX& vpMtx)
+{
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Cube");
 
         // b0
         {
-            FXMVECTOR posVec{4.2f, 4.2f, 1.f};
-            XMMATRIX translateMat = XMMatrixTranslationFromVector(posVec);
-            XMMATRIX transposed = XMMatrixTranspose(translateMat);
+            FXMVECTOR posVec{0.f, 0.f, 0.0f};
+            XMFLOAT3 rotVec{0.f, 0.f, 0.f};
+
+            XMMATRIX rotMtx = XMMatrixRotationRollPitchYaw(rotVec.x, rotVec.y, rotVec.z);
+            XMMATRIX translateMtx = XMMatrixTranslationFromVector(posVec);
+            XMMATRIX worldMtx = rotMtx * translateMtx;
+            XMMATRIX transposed = XMMatrixTranspose(worldMtx * vpMtx);
             XMStoreFloat4x4(&_matrix._wvpMat, transposed);
 
             int32 rootParamIndex = 0;
@@ -54,7 +58,7 @@ namespace tb
             Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
 
-        //// cbv push ╢ы го╟М
+        //// cbv push О©╫О©╫ О©╫о╟О©╫
         //// IASetPrimitiveTopology
         //// IASetVertexBuffers
         //// IASetIndexBuffer

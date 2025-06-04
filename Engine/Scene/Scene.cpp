@@ -8,8 +8,8 @@ namespace tb
     {
     }
 
-    void Scene::Render()
-    {
+    void Scene::Render(const XMMATRIX& vpMtx)
+{
         for (const auto mesh : _meshes)
         {
             //mesh->Render();
@@ -17,7 +17,7 @@ namespace tb
 
         for (const auto cube : _cubes)
         {
-            cube->Render();
+            cube->Render(vpMtx);
         }
     }
 

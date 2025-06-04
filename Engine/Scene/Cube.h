@@ -15,7 +15,7 @@ namespace tb
         Cube();
         ~Cube();
 
-        void Render();
+        void Render(const XMMATRIX& vpMtx);
         void Clear();
 
         GpuBuffer* _cBuffer = nullptr; // CB

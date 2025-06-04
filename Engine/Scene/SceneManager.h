@@ -29,7 +29,7 @@ namespace tb
         void RegisterMesh(Cube* cube);
 
         // Render
-        void Render();
+        void Render(XMMATRIX& vpMtx);
 
     private:
         SceneManager() = default;
