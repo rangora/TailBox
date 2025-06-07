@@ -64,7 +64,7 @@ namespace tb
         XMFLOAT3 _cameraPos = {};
         XMFLOAT3 _cameraRot = {};
 
-        int32 _mousePosX = 0;
-        int32 _mousePosY = 0;
+        float _mousePosX = 0.f;
+        float _mousePosY = 0.f;
     };
 }

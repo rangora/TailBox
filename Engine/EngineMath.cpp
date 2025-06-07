@@ -7,5 +7,5 @@ int EngineMath::EngineMathAdd(int a, int b)
 
 int EngineMath::EngineMathMul(int a, int b)
 {
-    return a + b;
+    return a * b;
 }

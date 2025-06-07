@@ -200,28 +200,6 @@ namespace tb
         ImGui::SetNextWindowBgAlpha(0.4f);
         if (ImGui::Begin("[Infos]", nullptr, window_flags))
         {
-            {
-                // TEMP
-                ImGuiKey start_key = ImGuiKey_NamedKey_BEGIN;
-                ImGui::Text("Keys down:");
-                for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
-                {
-                    if (!ImGui::IsKeyDown(key))
-                    {
-                        continue;
-                    }
-                    ImGui::SameLine();
-
-                    //key == ImGuiKey::
-
-                    if (key == ImGuiKey_MouseRight)
-                    {
-                        ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key),
-                                    key);
-                    }
-                }
-            }
-
             if (bRenderInfo)
             {
                 ImGui::Text("fps:%d, deltaTime:%f", _fps, _deltaTime);
