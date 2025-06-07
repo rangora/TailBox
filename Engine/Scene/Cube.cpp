@@ -31,6 +31,8 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Cube");
 
+        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
+
         // b0
         {
             FXMVECTOR posVec{0.f, 0.f, 0.0f};

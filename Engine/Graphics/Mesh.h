@@ -16,7 +16,7 @@ namespace tb
         void SetTransform(Transform_2& transform) { _transform_old = transform; }
         void SetTransform(Transform& transform) { _transform = transform; }
 
-        void Render();
+        void Render(const XMMATRIX& vpMtx);
         void Clear();
 
         class GpuBuffer* _gBuffer = nullptr; // CB

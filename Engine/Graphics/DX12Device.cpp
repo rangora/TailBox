@@ -393,9 +393,6 @@ namespace tb
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
-        // Render things..
-        _commandList->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
-
         // Render from sceneManager
         XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         SceneManager* sceneMgr = SceneManager::Get();

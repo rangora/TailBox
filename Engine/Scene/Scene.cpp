@@ -12,7 +12,7 @@ namespace tb
 {
         for (const auto mesh : _meshes)
         {
-            //mesh->Render();
+            mesh->Render(vpMtx);
         }
 
         for (const auto cube : _cubes)
