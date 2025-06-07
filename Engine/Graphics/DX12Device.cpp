@@ -557,20 +557,26 @@ namespace tb
             _staged.clear();
         }
 
+        static int32 preMousePosX = 0;
+        static int32 preMousePosY = 0;
+        auto window = Engine::Get().GetWindow();
+
+        if (Input::IsMouseButtonPressed(MouseButton::Right))
+        {
+            preMousePosX = window->GetMousePosX();
+            preMousePosY = window->GetMousePosY();
+        }
+
         if (Input::IsMouseButtonDown(MouseButton::Right))
         {
-            static int32 preMousePosX = 0;
-            static int32 preMousePosY = 0;
-
-            auto window = Engine::Get().GetWindow();
             int32 mousePosX = window->GetMousePosX();
             int32 mousePosY = window->GetMousePosY();
 
             int32 x_delta = mousePosX - preMousePosX;
             int32 y_delta = mousePosY - preMousePosY;
 
-            static float speed = 3.f;
-            _camera.AddRotation(y_delta * -(speed * _deltaTime), x_delta * -(speed * _deltaTime), 0.f);
+            static float speed = 0.5f;
+            _camera.AddRotation(y_delta * speed * _deltaTime, x_delta * speed * _deltaTime, 0.f);
 
             preMousePosX = mousePosX;
             preMousePosY = mousePosY;
