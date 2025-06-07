@@ -17,11 +17,10 @@ namespace tb
         XMVECTOR upDir = XMVector3TransformCoord(upVector, rotMtx);
         _viewMtx = XMMatrixLookAtLH(_posVector, target, upDir);
 
-        XMMATRIX vecRotationMtx = XMMatrixRotationRollPitchYaw(0.f, _rot.y, 0.f);
-        _forward = XMVector3TransformCoord(forwardVector, vecRotationMtx);
-        _backward = XMVector3TransformCoord(backwardVector, vecRotationMtx);
-        _left = XMVector3TransformCoord(leftVector, vecRotationMtx);
-        _right = XMVector3TransformCoord(rightVector, vecRotationMtx);
+        _forward = XMVector3TransformCoord(forwardVector, rotMtx);
+        _backward = XMVector3TransformCoord(backwardVector, rotMtx);
+        _left = XMVector3TransformCoord(leftVector, rotMtx);
+        _right = XMVector3TransformCoord(rightVector, rotMtx);
     }
 
     void Camera::SetProjection(float fov, float aspectRatio, float nearZ, float farZ)
@@ -79,7 +78,7 @@ namespace tb
     void Camera::SetRotation(const Vector& rot)
     {
         _rot = rot;
-        _forward = XMLoadFloat3(&_rot);
+        _rotVector = XMLoadFloat3(&_rot);
         UpdateViewMatrix();
     }
 

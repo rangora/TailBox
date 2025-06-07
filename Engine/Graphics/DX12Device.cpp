@@ -578,6 +578,26 @@ namespace tb
             preMousePosX = mousePosX;
             preMousePosY = mousePosY;
         }
+
+        if (Input::IsKeyButtonDown(KeyButton::W) || Input::IsKeyButtonDown(KeyButton::S))
+        {
+            const float sign = Input::IsKeyButtonDown(KeyButton::W) ? 1.f : -1.f;
+
+            static float speed = 1.f;
+            XMFLOAT3 additive = {};
+            XMStoreFloat3(&additive, XMVector3Normalize(_camera._forward) * speed * _deltaTime);
+            _camera.AddPosition(additive.x * sign, additive.y * sign, additive.z * sign);
+        }
+
+        if (Input::IsKeyButtonDown(KeyButton::D) || Input::IsKeyButtonDown(KeyButton::A))
+        {
+            const float sign = Input::IsKeyButtonDown(KeyButton::D) ? 1.f : -1.f;
+
+            static float speed = 1.f;
+            XMFLOAT3 additive = {};
+            XMStoreFloat3(&additive, XMVector3Normalize(_camera._right) * speed * _deltaTime);
+            _camera.AddPosition(additive.x * sign, additive.y * sign, additive.z * sign);
+        }
     }
 
     void DX12Device::PostRenderEnd()

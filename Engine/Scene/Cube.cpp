@@ -60,10 +60,6 @@ namespace tb
             Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
 
-        //// cbv push �� �ϰ�
-        //// IASetPrimitiveTopology
-        //// IASetVertexBuffers
-        //// IASetIndexBuffer
         Engine::GetDX12Device()->GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         Engine::GetDX12Device()->GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
         Engine::GetDX12Device()->GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);

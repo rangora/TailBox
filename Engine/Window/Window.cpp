@@ -266,20 +266,74 @@ namespace tb
                 {
                     if (!Input::IsMouseButtonDown(MouseButton::Right))
                     {
-                        Input::UpdateButtonState(MouseButton::Right, KeyState::Pressed);
-                        spdlog::info("button pressed");
+                        Input::UpdateMouseButtonState(MouseButton::Right, KeyState::Pressed);
                     }
                 }
                 else if (Input::IsMouseButtonDown(MouseButton::Right))
                 {
-                    Input::UpdateButtonState(MouseButton::Right, KeyState::Released);
+                    Input::UpdateMouseButtonState(MouseButton::Right, KeyState::Released);
                 }
             }
-        }
 
-        if (Input::IsMouseButtonHeld(MouseButton::Right))
-        {
-            spdlog::info("button held");
+            if (key == ImGuiKey_W)
+            {
+                if (ImGui::IsKeyDown(key))
+                {
+                    if (!Input::IsKeyButtonDown(KeyButton::W))
+                    {
+                        Input::UpdateKeyButtonState(KeyButton::W, KeyState::Pressed);
+                    }
+                }
+                else if (Input::IsKeyButtonDown(KeyButton::W))
+                {
+                    Input::UpdateKeyButtonState(KeyButton::W, KeyState::Released);
+                }
+            }
+
+            if (key == ImGuiKey_S)
+            {
+                if (ImGui::IsKeyDown(key))
+                {
+                    if (!Input::IsKeyButtonDown(KeyButton::S))
+                    {
+                        Input::UpdateKeyButtonState(KeyButton::S, KeyState::Pressed);
+                    }
+                }
+                else if (Input::IsKeyButtonDown(KeyButton::S))
+                {
+                    Input::UpdateKeyButtonState(KeyButton::S, KeyState::Released);
+                }
+            }
+
+            if (key == ImGuiKey_A)
+            {
+                if (ImGui::IsKeyDown(key))
+                {
+                    if (!Input::IsKeyButtonDown(KeyButton::A))
+                    {
+                        Input::UpdateKeyButtonState(KeyButton::A, KeyState::Pressed);
+                    }
+                }
+                else if (Input::IsKeyButtonDown(KeyButton::A))
+                {
+                    Input::UpdateKeyButtonState(KeyButton::A, KeyState::Released);
+                }
+            }
+
+            if (key == ImGuiKey_D)
+            {
+                if (ImGui::IsKeyDown(key))
+                {
+                    if (!Input::IsKeyButtonDown(KeyButton::D))
+                    {
+                        Input::UpdateKeyButtonState(KeyButton::D, KeyState::Pressed);
+                    }
+                }
+                else if (Input::IsKeyButtonDown(KeyButton::D))
+                {
+                    Input::UpdateKeyButtonState(KeyButton::D, KeyState::Released);
+                }
+            }
         }
     }
 } // namespace tb
