@@ -30,6 +30,7 @@ namespace tb
 
         // Render
         void Render(XMMATRIX& vpMtx);
+        void OnRenderBegin();
 
     private:
         SceneManager() = default;

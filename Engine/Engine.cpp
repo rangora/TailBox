@@ -41,7 +41,9 @@ namespace tb
         _DX12device->PostDeviceCreated();
         _window->Initialize();
 
-        TEMP_Initial();
+        // Init scene.
+        SceneManager* sceneMgr = SceneManager::Get();
+        sceneMgr->SetLayer(SceneType::World, "World");
 
         while (!_bQuit)
         {
@@ -84,15 +86,5 @@ namespace tb
         _DX12device->Update();
 
         //_window->PostRenderEnd(); // hardcode
-    }
-
-    void Engine::TEMP_Initial()
-    {
-        // Scene
-        SceneManager* sceneMgr = SceneManager::Get();
-        sceneMgr->SetLayer(SceneType::World, "World");
-
-        _mesh = new Mesh();
-        _cube = new Cube();
     }
 } // namespace tb

@@ -358,8 +358,8 @@ namespace tb
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
 
         _commandList->SetGraphicsRootSignature(_rootSignature.Get());
-        Engine::Get()._mesh->Clear();
-        Engine::Get()._cube->Clear();
+
+        SceneManager::Get()->OnRenderBegin();
         _rootDescriptorHeap->Clear();
 
         ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();

@@ -14,6 +14,9 @@ namespace tb
         }
 
         _activeIndex = index;
+
+        Scene* newScene = _scenes[_activeIndex];
+        newScene->Initialize();
     }
 
     void SceneManager::RegisterMesh(Mesh* mesh)
@@ -29,8 +32,13 @@ namespace tb
     }
 
     void SceneManager::Render(XMMATRIX& vpMtx)
-{
+    {
         Scene* scene = _scenes[_activeIndex];
         scene->Render(vpMtx);
+    }
+
+    void SceneManager::OnRenderBegin()
+    {
+        _scenes[_activeIndex]->Clear();
     }
 } // namespace tb

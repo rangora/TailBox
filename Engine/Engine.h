@@ -4,9 +4,6 @@
 
 namespace tb
 {
-    class Mesh;
-    class Cube;
-
     class Engine
     {
     public:
@@ -24,13 +21,7 @@ namespace tb
 
         class Window* GetWindow() { return _window; }
 
-        Mesh* _mesh = nullptr;
-        Cube* _cube = nullptr;
-
     private:
-
-        void TEMP_Initial();
-
         inline static Engine* _instance = nullptr;
         static class DX12Device* _DX12device;
         class Window* _window = nullptr;

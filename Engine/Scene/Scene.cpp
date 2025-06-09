@@ -4,12 +4,24 @@
 
 namespace tb
 {
+    Scene::Scene() {}
+
+    Scene::~Scene()
+    {
+    }
+
+    void Scene::Initialize()
+    {
+        _mesh = new Mesh();
+        _cube = new Cube();
+    }
+
     void Scene::Update()
     {
     }
 
     void Scene::Render(const XMMATRIX& vpMtx)
-{
+    {
         for (const auto mesh : _meshes)
         {
             mesh->Render(vpMtx);
@@ -19,6 +31,12 @@ namespace tb
         {
             cube->Render(vpMtx);
         }
+    }
+
+    void Scene::Clear()
+    {
+        _cube->Clear();
+        _mesh->Clear();
     }
 
     void Scene::AddProxy(SceneProxy* proxy)
