@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include "UploadBuffer.h"
 #include "Engine.h"
+#include "Scene/SceneManager.h"
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_dx12.h"
 
 namespace tb
 {
@@ -183,4 +186,131 @@ namespace tb
             _shaders.emplace("Cube", std::move(newShader));
         }
     }
-}; // namespace tb
+
+    void Renderer::RenderFrame()
+    {
+        RenderBegin();
+        Render();
+        RenderEnd();
+    }
+
+    ID3D12GraphicsCommandList* Renderer::GetCommandList()
+    {
+        return Engine::GetDX12Device()->GetCommmandList();
+    }
+
+    DescriptorHeap* Renderer::GetRootDescriptorHeap()
+    {
+        return Engine::GetDX12Device()->GetRootDescriptorHeap();
+    }
+
+    void Renderer::StageBuffer(UploadBuffer* uploadBuffer)
+    {
+        Engine::GetDX12Device()->StageBuffer(uploadBuffer);
+    }
+
+    void Renderer::RenderBegin()
+    {
+        auto device = Engine::GetDX12Device();
+
+        _nextFrameCtx = device->WaitForNextFrameResources();
+        _backBufferIndex = device->GetSwapChain()->GetCurrentBackBufferIndex();
+        _nextFrameCtx->_commandAllocator->Reset();
+
+        D3D12_RESOURCE_BARRIER barrier = {};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = device->GetMainRtvResource(_backBufferIndex);
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+        auto commandList = device->GetCommmandList();
+        commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
+
+        commandList->SetGraphicsRootSignature(device->GetRootSignature());
+
+        SceneManager::Get()->OnRenderBegin();
+        device->GetRootDescriptorHeap()->Clear();
+
+        ID3D12DescriptorHeap* mainHeap = device->GetRootDescriptorHeap()->GetDescriptorHeap();
+        commandList->SetDescriptorHeaps(1, &mainHeap);
+
+        commandList->ResourceBarrier(1, &barrier);
+
+        const float clearColors[4] = {0.45f, 0.55f, 0.6f, 1.f};
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(device->GetDSDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
+
+        ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+        D3D12_VIEWPORT viewport = {};
+        D3D12_RECT rect = {};
+        if (platform_io.Viewports.Data)
+        {
+            viewport.Height = platform_io.Viewports[0]->DrawData->DisplaySize.y;
+            viewport.Width = platform_io.Viewports[0]->DrawData->DisplaySize.x;
+            rect.bottom = platform_io.Viewports[0]->DrawData->DisplaySize.y;
+            rect.right = platform_io.Viewports[0]->DrawData->DisplaySize.x;
+        }
+
+        commandList->RSSetViewports(1, &viewport);
+        commandList->RSSetScissorRects(1, &rect);
+
+        commandList->ClearRenderTargetView(device->GetMainRtvCpuHandle(_backBufferIndex), clearColors, 0, nullptr);
+        commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+    }
+
+    void Renderer::Render()
+    {
+        auto device = Engine::GetDX12Device();
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(device->GetDSDescriptorHeap()->GetCPUDescriptorHandleForHeapStart());
+        device->GetCommmandList()->OMSetRenderTargets(1, &device->GetMainRtvCpuHandle(_backBufferIndex), FALSE, &dsvHandle);
+
+        XMMATRIX vpMtx = device->_camera._viewMtx * device->_camera._projMtx;
+        SceneManager::Get()->Render(vpMtx);
+
+        RenderImGui();
+    }
+
+    void Renderer::RenderEnd()
+    {
+        auto device = Engine::GetDX12Device();
+
+        D3D12_RESOURCE_BARRIER barrier = {};
+        barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+        barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+        barrier.Transition.pResource = device->GetMainRtvResource(_backBufferIndex);
+        barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+        barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+        barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+        device->GetCommmandList()->ResourceBarrier(1, &barrier);
+        device->GetCommmandList()->Close();
+
+        ID3D12CommandList* ppCommandLists[] = {device->GetCommmandList()};
+        device->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        HRESULT hr = device->GetSwapChain()->Present(1, 0);
+        device->_bSwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
+
+        uint64 fenceValue = device->_fenceLastSignalValue + 1;
+        device->GetCommandQueue()->Signal(device->_fence.Get(), fenceValue);
+        device->_fenceLastSignalValue = fenceValue;
+        _nextFrameCtx->_fenceValue = fenceValue;
+    }
+
+    void Renderer::RenderImGui()
+    {
+        auto device = Engine::GetDX12Device();
+        ID3D12DescriptorHeap* descHeaps[] = {device->GetImGuiDescHeap()};
+        device->GetCommmandList()->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
+        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), device->GetCommmandList());
+    }
+} // namespace tb

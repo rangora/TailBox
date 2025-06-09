@@ -83,7 +83,7 @@ namespace tb
             Engine::GetDX12Device()->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
 
             // staged
-            Engine::GetDX12Device()->StageBuffer(buffer);
+            Renderer::Get()->StageBuffer(buffer);
         }
     }
 } // namespace tb

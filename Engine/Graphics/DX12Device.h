@@ -37,7 +37,13 @@ namespace tb
         void RenderBegin();
         void Render();
         void RenderEnd();
-        void RenderImGui(); // ¾Ö¸Å..
+        ID3D12DescriptorHeap* GetDSDescriptorHeap() const { return _dsHeap.Get(); }
+        D3D12_CPU_DESCRIPTOR_HANDLE GetMainRtvCpuHandle(uint32 index) const { return _mainRtvCpuHandle[index]; }
+        ID3D12Resource* GetMainRtvResource(uint32 index) const { return _mainRtvResources[index]; }
+        ID3D12Fence* GetFence() const { return _fence.Get(); }
+        uint64& GetFenceLastSignalValue() { return _fenceLastSignalValue; }
+        bool& GetSwapChainOccluded() { return _bSwapChainOccluded; }
+        void RenderImGui(); // ì• ë§¤..
         bool IsScreenLocked();
 
         void StageBuffer(UploadBuffer* uploadBuffer);
@@ -56,7 +62,7 @@ namespace tb
         FrameContext* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
 
-        // ¾Ö¸ÅÇÑ ÇÔ¼öµé..
+        // ì• ë§¤í•œ í•¨ìˆ˜ë“¤..
         void Flush();
         void Signal();
 
@@ -72,7 +78,7 @@ namespace tb
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
         ComPtr<ID3D12Debug> _debugController = nullptr;
-        ComPtr<ID3D12CommandQueue> _commandQueue = nullptr; // ¿ì¼± imgui¿¡ ³Ñ°Üº¸ÀÚ.
+        ComPtr<ID3D12CommandQueue> _commandQueue = nullptr; // ìš°ì„  imguiì— ë„˜ê²¨ë³´ì.
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
         ComPtr<IDXGISwapChain3> _swapChain = nullptr;
 

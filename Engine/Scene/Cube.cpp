@@ -31,7 +31,7 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Cube");
 
-        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
+        Renderer::Get()->GetCommandList()->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
 
         // b0
         {
@@ -56,15 +56,15 @@ namespace tb
             _cBuffer->_currentIdx++;
 
             D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
-                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
-            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+                Renderer::Get()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            Renderer::Get()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
 
-        Engine::GetDX12Device()->GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        Engine::GetDX12Device()->GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
-        Engine::GetDX12Device()->GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);
-        Engine::GetDX12Device()->GetRootDescriptorHeap()->CommitTable(0); // CommitTable
-        Engine::GetDX12Device()->GetCommmandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
+        Renderer::Get()->GetCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        Renderer::Get()->GetCommandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
+        Renderer::Get()->GetCommandList()->IASetIndexBuffer(&info->_indexBufferView);
+        Renderer::Get()->GetRootDescriptorHeap()->CommitTable(0); // CommitTable
+        Renderer::Get()->GetCommandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
     }
 
     void Cube::Clear()
