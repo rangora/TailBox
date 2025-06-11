@@ -25,6 +25,9 @@ using uint64 = unsigned __int64;
 // Core
 #include "Core/Transform.h"
 
+constexpr int32 VIEWPORT_WIDTH = 960;
+constexpr int32 VIEWPORT_HEIGHT = 540;
+
 using namespace DirectX;
 using namespace Microsoft::WRL;
 
@@ -35,7 +38,6 @@ using Matrix   = XMMATRIX;
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_NULL ((D3D12_GPU_VIRTUAL_ADDRESS)0)
 
-// ¾Ö¸Å..
 struct Vertex
 {
     Vector _pos;

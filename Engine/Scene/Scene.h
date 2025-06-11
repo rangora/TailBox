@@ -2,7 +2,6 @@
 
 #include "Core.h"
 
-
 namespace tb
 {
     class SceneProxy;
@@ -17,7 +16,7 @@ namespace tb
 
         void Initialize();
 
-        void Update();
+        void Update(float deltaTime);
         void Render(const XMMATRIX& vpMtx);
         void Clear();
 

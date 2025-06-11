@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core.h"
-#include "Scene/Camera.h"
 
 namespace tb
 {
@@ -50,6 +49,7 @@ namespace tb
         ID3D12GraphicsCommandList* GetCommmandList() const { return _commandList.Get(); }
         ID3D12RootSignature* GetRootSignature() const { return _rootSignature.Get(); }
         DescriptorHeap* GetRootDescriptorHeap() const { return _rootDescriptorHeap.get(); }
+        void GetRenderTargetViewSize(float& width, float& height) { width = _rw; height = _rh; }
 
         void CreateRenderTarget();
         void CleanupRenderTarget();
@@ -59,9 +59,6 @@ namespace tb
         // 애매한 함수들..
         void Flush();
         void Signal();
-
-        // Camera TEMP
-        Camera _camera;
 
     private:
         void PreRenderBegin();
@@ -91,6 +88,8 @@ namespace tb
 
         D3D12_VIEWPORT _viewport = {};
         D3D12_RECT _rect = {};
+        uint32 _rw = 0;
+        uint32 _rh = 0;
 
         ComPtr<ID3D12Fence> _fence = nullptr;
         HANDLE _fenceEvent = INVALID_HANDLE_VALUE;

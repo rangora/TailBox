@@ -1,10 +1,16 @@
 #include "Scene.h"
+#include "Core/Input.h"
+#include "Engine.h"
+#include "Graphics/DX12Device.h"
 #include "Graphics/Mesh.h"
 #include "Scene/Cube.h"
+#include "Window/Window.h"
 
 namespace tb
 {
-    Scene::Scene() {}
+    Scene::Scene()
+    {
+    }
 
     Scene::~Scene()
     {
@@ -16,12 +22,12 @@ namespace tb
         _cube = new Cube();
     }
 
-    void Scene::Update()
+    void Scene::Update(float deltaTime)
     {
     }
 
     void Scene::Render(const XMMATRIX& vpMtx)
-    {
+{
         for (const auto mesh : _meshes)
         {
             mesh->Render(vpMtx);

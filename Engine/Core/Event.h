@@ -8,7 +8,8 @@ namespace tb
     enum class EventType
     {
         RenderInfoDisplay,
-        CameraInfoDisplay
+        CameraInfoDisplay,
+        PassDeltaTime
     };
 
     #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::type; } \
@@ -72,5 +73,17 @@ namespace tb
     private:
         XMFLOAT3 _pos;
         XMFLOAT3 _rot;
+    };
+
+    struct PassDeltaTimeEvent : public Event
+    {
+        PassDeltaTimeEvent(float deltaTime) : _deltaTime(deltaTime) {}
+
+        float GetDeltaTime() { return _deltaTime; }
+
+        EVENT_TYPE(PassDeltaTime)
+
+    private:
+        float _deltaTime = 0.f;
     };
 } // namespace tb

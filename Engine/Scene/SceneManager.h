@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "Camera.h"
 
 namespace tb
 {
@@ -28,12 +29,15 @@ namespace tb
         void RegisterMesh(Mesh* mesh);
         void RegisterMesh(Cube* cube);
 
+        void Update(float deltaTime);
+        void OnEndFrame();
+
         // Render
-        void Render(XMMATRIX& vpMtx);
+        void Render();
         void OnRenderBegin();
 
     private:
-        SceneManager() = default;
+        SceneManager();
         ~SceneManager() = default;
 
         enum
@@ -45,5 +49,7 @@ namespace tb
         std::array<Scene*, MAX_LAYER> _scenes;
 
         uint32 _activeIndex = -1;
+
+        Camera _camera;
     };
 } // namespace tb

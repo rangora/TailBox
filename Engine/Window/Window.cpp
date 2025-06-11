@@ -61,9 +61,14 @@ namespace tb
                nullptr,     nullptr,    nullptr, nullptr, L"TailBox_menu", nullptr};
         ::RegisterClassExW(&_wc);
 
-        _hWnd =
-            ::CreateWindowW(_wc.lpszClassName, titleWidStr.c_str(), WS_OVERLAPPEDWINDOW, 100, 100,
-                            _windowContext._width, _windowContext._height, nullptr, nullptr, _wc.hInstance, nullptr);
+
+        DWORD fixedStyle = WS_OVERLAPPED // 기본 윈도우
+                           | WS_CAPTION  // 제목 표시줄
+                           | WS_SYSMENU  // 시스템 메뉴 (닫기 버튼 등)
+                           | WS_MINIMIZEBOX;
+
+        _hWnd = ::CreateWindowW(_wc.lpszClassName, titleWidStr.c_str(), fixedStyle, 100, 100, _windowContext._width,
+                                _windowContext._height, nullptr, nullptr, _wc.hInstance, nullptr);
 
     }
 

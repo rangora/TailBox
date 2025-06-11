@@ -9,7 +9,6 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 #include "Core/Event.h"
-#include "Core/Input.h"
 #include "Window/Window.h"
 
 // Windows
@@ -33,7 +32,6 @@ namespace tb
         _lastTime = timeGetTime();
 
 #ifdef _DEBUG
-        // device���� �˷���� �ؼ� ���� ȣ��.
         ::D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController));
         _debugController->EnableDebugLayer();
 #endif
@@ -85,7 +83,7 @@ namespace tb
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
             desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            desc.NumDescriptors = 64; // 64�� �䱸��
+            desc.NumDescriptors = 64;
             if (_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) != S_OK)
             {
                 spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
@@ -223,11 +221,11 @@ namespace tb
 
             const uint32 backBufferIndex = _swapChain->GetCurrentBackBufferIndex();
             const D3D12_RESOURCE_DESC rtvDesc = _mainRtvResources[backBufferIndex]->GetDesc();
-            const uint32 rw = rtvDesc.Width;
-            const uint32 rh = rtvDesc.Height;
+            _rw = rtvDesc.Width;
+            _rh = rtvDesc.Height;
 
             D3D12_HEAP_PROPERTIES defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-            CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, rw, rh, 1, 0, 1, 0,
+            CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, _rw, _rh, 1, 0, 1, 0,
                                                                               D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
             _device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc,
                                              D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&_dsBuffer));
@@ -244,10 +242,6 @@ namespace tb
         const D3D12_RESOURCE_DESC rtvDesc = _mainRtvResources[backBufferIndex]->GetDesc();
         const uint32 rw = rtvDesc.Width;
         const uint32 rh = rtvDesc.Height;
-
-        _camera.SetPosition(0.f, 0.f, -4.f);
-        _camera.SetRotation(0.f, 0.f, 0.f);
-        _camera.SetProjection(90.f, (float)rw / (float)rh, 0.1f, 1000.f);
     }
 
     void DX12Device::PostDeviceCreated()
@@ -333,13 +327,13 @@ namespace tb
 
     void DX12Device::Update()
     {
-        UpdateTimer();
-
         PreRenderBegin();
         RenderBegin();
         Render();
         RenderEnd();
         PostRenderEnd();
+
+        UpdateTimer();
     }
 
     void DX12Device::RenderBegin()
@@ -355,8 +349,12 @@ namespace tb
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-        _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
 
+        D3D12_RESOURCE_DESC rtvDesc = _mainRtvResources[_backBufferIndex]->GetDesc();
+        _rw = rtvDesc.Width;
+        _rh = rtvDesc.Height;
+
+        _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
         _commandList->SetGraphicsRootSignature(_rootSignature.Get());
 
         SceneManager::Get()->OnRenderBegin();
@@ -394,9 +392,8 @@ namespace tb
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
         // Render from sceneManager
-        XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         SceneManager* sceneMgr = SceneManager::Get();
-        sceneMgr->Render(vpMtx);
+        sceneMgr->Render();
 
         // imgui
         RenderImGui();
@@ -438,7 +435,6 @@ namespace tb
     {
         ID3D12DescriptorHeap* descHeaps[] = {_imguiDescHeap.Get()};
         _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
-        //// TODO : �Ʒ� �� ���� ��
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
 
@@ -553,51 +549,6 @@ namespace tb
             _commandList->Close();
             _staged.clear();
         }
-
-        static int32 preMousePosX = 0;
-        static int32 preMousePosY = 0;
-        auto window = Engine::Get().GetWindow();
-
-        if (Input::IsMouseButtonPressed(MouseButton::Right))
-        {
-            preMousePosX = window->GetMousePosX();
-            preMousePosY = window->GetMousePosY();
-        }
-
-        if (Input::IsMouseButtonDown(MouseButton::Right))
-        {
-            int32 mousePosX = window->GetMousePosX();
-            int32 mousePosY = window->GetMousePosY();
-
-            int32 x_delta = mousePosX - preMousePosX;
-            int32 y_delta = mousePosY - preMousePosY;
-
-            static float speed = 0.5f;
-            _camera.AddRotation(y_delta * speed * _deltaTime, x_delta * speed * _deltaTime, 0.f);
-
-            preMousePosX = mousePosX;
-            preMousePosY = mousePosY;
-        }
-
-        if (Input::IsKeyButtonDown(KeyButton::W) || Input::IsKeyButtonDown(KeyButton::S))
-        {
-            const float sign = Input::IsKeyButtonDown(KeyButton::W) ? 1.f : -1.f;
-
-            static float speed = 1.f;
-            XMFLOAT3 additive = {};
-            XMStoreFloat3(&additive, XMVector3Normalize(_camera._forward) * speed * _deltaTime);
-            _camera.AddPosition(additive.x * sign, additive.y * sign, additive.z * sign);
-        }
-
-        if (Input::IsKeyButtonDown(KeyButton::D) || Input::IsKeyButtonDown(KeyButton::A))
-        {
-            const float sign = Input::IsKeyButtonDown(KeyButton::D) ? 1.f : -1.f;
-
-            static float speed = 1.f;
-            XMFLOAT3 additive = {};
-            XMStoreFloat3(&additive, XMVector3Normalize(_camera._right) * speed * _deltaTime);
-            _camera.AddPosition(additive.x * sign, additive.y * sign, additive.z * sign);
-        }
     }
 
     void DX12Device::PostRenderEnd()
@@ -611,17 +562,6 @@ namespace tb
                 [](RenderInfoDisplayEvent& e)
                 {
                     Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
-                    return true;
-                });
-        }
-        // CameraInfo event
-        {
-            CameraInfoDisplayEvent event(_camera._pos, _camera._rot);
-            EventDispatcher dispatcher(event);
-
-            dispatcher.Dispatch<CameraInfoDisplayEvent>([](CameraInfoDisplayEvent& e)
-                {
-                    Engine::Get().GetWindow()->OnUpdateCameraInfo(e.GetPos(), e.GetRot());
                     return true;
                 });
         }
@@ -641,5 +581,13 @@ namespace tb
             _frameCount = 0;
             _fpsTimer -= 1.f;
         }
+
+        PassDeltaTimeEvent event(_deltaTime);
+        EventDispatcher disaptcher(event);
+        disaptcher.Dispatch<PassDeltaTimeEvent>([](PassDeltaTimeEvent& e)
+            {
+                Engine::Get().OnUpdateRenderTick(e.GetDeltaTime());
+                return true;
+            });
     }
 } // namespace tb

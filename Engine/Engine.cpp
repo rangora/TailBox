@@ -35,7 +35,7 @@ namespace tb
     void Engine::Launch()
     {
         _DX12device = new DX12Device;
-        _window = new Window({"TailBox", 1000, 600});
+        _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
         _DX12device->CreateSwapChain(_window->GetWndRef());
         _DX12device->PostSwapChainCreated();
         _DX12device->PostDeviceCreated();
@@ -47,7 +47,7 @@ namespace tb
 
         while (!_bQuit)
         {
-            Tick(0.f);
+            EngineTick(_renderTick);
         }
 
         // Sutting down
@@ -57,7 +57,7 @@ namespace tb
         _window->ShutdownWindow();
     }
 
-    void Engine::Tick(const float tick)
+    void Engine::EngineTick(const float tick)
     {
         MSG msg;
         while (::PeekMessage(&msg, nullptr, 0u, 0u, PM_REMOVE))
@@ -83,8 +83,10 @@ namespace tb
         }
 
         _window->Update();
+        SceneManager::Get()->Update(tick);
         _DX12device->Update();
 
-        //_window->PostRenderEnd(); // hardcode
+        // OnEndFrame
+        SceneManager::Get()->OnEndFrame();
     }
 } // namespace tb
