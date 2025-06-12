@@ -18,7 +18,7 @@ namespace tb
 
     void Scene::Initialize()
     {
-        _mesh = new Mesh(this);
+        //_mesh = new Mesh(this);
         _cube = new Cube(this);
     }
 
@@ -41,8 +41,14 @@ namespace tb
 
     void Scene::Clear()
     {
-        _cube->Clear();
-        _mesh->Clear();
+        if (_cube)
+        {
+            _cube->Clear();
+        }
+        if (_mesh)
+        {
+            _mesh->Clear();
+        }
     }
 
     void Scene::AddProxy(SceneProxy* proxy)

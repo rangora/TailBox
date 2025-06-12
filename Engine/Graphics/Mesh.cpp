@@ -78,7 +78,7 @@ namespace tb
             Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
 
-        // cbv push ´Ù ÇÏ°í
+        // cbv push ë‹¤ í•˜ê³ 
         // IASetPrimitiveTopology
         // IASetVertexBuffers
         // IASetIndexBuffer
