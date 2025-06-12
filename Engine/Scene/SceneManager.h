@@ -17,17 +17,10 @@ namespace tb
     class SceneManager
     {
     public:
-        static SceneManager* Get()
-        {
-            static SceneManager instance;
-            return &instance;
-        }
+        SceneManager();
+        ~SceneManager() = default;
 
         void SetLayer(uint32 index, const std::string& name);
-
-        // Scene
-        void RegisterMesh(Mesh* mesh);
-        void RegisterMesh(Cube* cube);
 
         void Update(float deltaTime);
         void OnEndFrame();
@@ -37,9 +30,6 @@ namespace tb
         void OnRenderBegin();
 
     private:
-        SceneManager();
-        ~SceneManager() = default;
-
         enum
         {
             MAX_LAYER = 32

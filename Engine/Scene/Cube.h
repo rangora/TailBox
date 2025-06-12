@@ -8,11 +8,12 @@
 namespace tb
 {
     class GpuBuffer;
+    class Scene;
 
     class Cube
     {
     public:
-        Cube();
+        Cube(Scene* scene);
         ~Cube();
 
         void Render(const XMMATRIX& vpMtx);
@@ -21,5 +22,8 @@ namespace tb
         GpuBuffer* _cBuffer = nullptr; // CB
 
         Matrix _matrix = {};
+
+    private:
+        Scene* _scene = nullptr;
     };
 } // namespace tb

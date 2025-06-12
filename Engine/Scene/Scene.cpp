@@ -18,8 +18,8 @@ namespace tb
 
     void Scene::Initialize()
     {
-        _mesh = new Mesh();
-        _cube = new Cube();
+        _mesh = new Mesh(this);
+        _cube = new Cube(this);
     }
 
     void Scene::Update(float deltaTime)

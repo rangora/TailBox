@@ -34,18 +34,6 @@ namespace tb
         newScene->Initialize();
     }
 
-    void SceneManager::RegisterMesh(Mesh* mesh)
-    {
-        auto scene = _scenes[_activeIndex];
-        scene->AddMesh(mesh);
-    }
-
-    void SceneManager::RegisterMesh(Cube* cube)
-    {
-        auto scene = _scenes[_activeIndex];
-        scene->AddCube(cube);
-    }
-
     void SceneManager::Update(float deltaTime)
     {
         static int32 preMousePosX = 0;

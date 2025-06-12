@@ -4,6 +4,10 @@
 
 namespace tb
 {
+    class SceneManager;
+    class DX12Device;
+    class Window;
+
     class Engine
     {
     public:
@@ -13,8 +17,9 @@ namespace tb
         ~Engine();
 
         static Engine& Get() { return *_instance; }
-        static class DX12Device* GetDX12Device();
-        static class ID3D12Device* GetDevice();
+        static DX12Device* GetDX12Device();
+        static ID3D12Device* GetDevice();
+        static SceneManager* GetSceneManager();
 
         void Launch();
         void EngineTick(const float tick);
@@ -25,8 +30,9 @@ namespace tb
 
     private:
         inline static Engine* _instance = nullptr;
-        static class DX12Device* _DX12device;
-        class Window* _window = nullptr;
+        Window* _window = nullptr;
+        static DX12Device* _DX12device;
+        static SceneManager* _sceneManager;
 
         float _renderTick = 0.f;
 

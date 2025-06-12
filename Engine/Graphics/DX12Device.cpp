@@ -357,7 +357,6 @@ namespace tb
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
         _commandList->SetGraphicsRootSignature(_rootSignature.Get());
 
-        SceneManager::Get()->OnRenderBegin();
         _rootDescriptorHeap->Clear();
 
         ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();
@@ -392,8 +391,7 @@ namespace tb
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
         // Render from sceneManager
-        SceneManager* sceneMgr = SceneManager::Get();
-        sceneMgr->Render();
+        Engine::Get().GetSceneManager()->Render();
 
         // imgui
         RenderImGui();

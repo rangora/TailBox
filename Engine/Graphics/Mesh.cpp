@@ -4,11 +4,11 @@
 #include "GpuBuffer.h"
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/Renderer.h"
-#include "Scene/SceneManager.h"
+#include "Scene/Scene.h"
 
 namespace tb
 {
-    Mesh::Mesh()
+    Mesh::Mesh(Scene* scene)
     {
         _gBuffer = new GpuBuffer;
         _gBuffer->CreateConstantBuffer(sizeof(Transform_2), 256);
@@ -17,9 +17,7 @@ namespace tb
         _transformBuffer = new GpuBuffer;
         _transformBuffer->CreateConstantBuffer(sizeof(Transform), 256);
 
-        auto sceneMgr = SceneManager::Get();
-        sceneMgr->RegisterMesh(this);
-
+        scene->AddMesh(this);
 
         _transform_old._offset = Vector4D(-0.4f, 0.f, 0.f, 0.f);
         _transform._pos = Vector4D(0.4f, 0.f, 0.f, 0.f);

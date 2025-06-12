@@ -12,6 +12,7 @@
 namespace tb
 {
     DX12Device* Engine::_DX12device = nullptr;
+    SceneManager* Engine::_sceneManager = nullptr;
 
     Engine::Engine()
     {
@@ -32,6 +33,11 @@ namespace tb
         return _DX12device->GetDevice();
     }
 
+    SceneManager* Engine::GetSceneManager()
+    {
+        return _sceneManager;
+    }
+
     void Engine::Launch()
     {
         _DX12device = new DX12Device;
@@ -42,8 +48,8 @@ namespace tb
         _window->Initialize();
 
         // Init scene.
-        SceneManager* sceneMgr = SceneManager::Get();
-        sceneMgr->SetLayer(SceneType::World, "World");
+        _sceneManager = new SceneManager;
+        _sceneManager->SetLayer(SceneType::World, "World");
 
         while (!_bQuit)
         {
@@ -82,11 +88,12 @@ namespace tb
             return;
         }
 
-        _window->Update();
-        SceneManager::Get()->Update(tick);
-        _DX12device->Update();
+        _window->Update(); // key
+        _sceneManager->Update(tick); // logic
+        _sceneManager->OnRenderBegin();
+        _DX12device->Update(); // render
 
         // OnEndFrame
-        SceneManager::Get()->OnEndFrame();
+        _sceneManager->OnEndFrame();
     }
 } // namespace tb

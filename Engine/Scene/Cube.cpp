@@ -4,18 +4,17 @@
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/GpuBuffer.h"
 #include "Graphics/Renderer.h"
-#include "Scene/SceneManager.h"
+#include "Scene/Scene.h"
 
 namespace tb
 {
-    Cube::Cube()
+    Cube::Cube(Scene* scene)
     {
         // trnasformBuffer
         _cBuffer = new GpuBuffer;
         _cBuffer->CreateConstantBuffer(sizeof(Matrix), 256);
 
-        auto sceneMgr = SceneManager::Get();
-        sceneMgr->RegisterMesh(this);
+        scene->AddCube(this);
     }
 
     Cube::~Cube()

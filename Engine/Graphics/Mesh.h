@@ -7,10 +7,12 @@
 
 namespace tb
 {
+    class Scene;
+
     class Mesh
     {
     public:
-        Mesh();
+        Mesh(Scene* scene);
         ~Mesh();
 
         void SetTransform(Transform_2& transform) { _transform_old = transform; }
@@ -24,5 +26,8 @@ namespace tb
 
         Transform_2 _transform_old = {};
         Transform _transform = {};
+
+    private:
+        Scene* _scene = nullptr;
     };
 } // namespace tb
