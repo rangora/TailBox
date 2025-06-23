@@ -171,15 +171,21 @@ namespace tb
 
         for (const auto name : baseShaderNames)
         {
-            auto newShader = std::make_unique<Shader>(L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli",
-                                                      L"E:\\workspace\\TailBox\\Engine\\Resources\\default.hlsli");
+            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/default.hlsli",
+                                                      tb::core::projectPath + "/Resources/default.hlsli");
 
             _shaders.emplace(name, std::move(newShader));
         }
 
         {
-            auto newShader = std::make_unique<Shader>(L"E:\\workspace\\TailBox\\Engine\\Resources\\cube.hlsli",
-                                                      L"E:\\workspace\\TailBox\\Engine\\Resources\\cube.hlsli");
+            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/cube.hlsli",
+                                                      tb::core::projectPath + "/Resources/cube.hlsli");
+            _shaders.emplace("Cube", std::move(newShader));
+        }
+
+        {
+            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/cube.hlsli",
+                                                      tb::core::projectPath + "/Resources/cube.hlsli");
             _shaders.emplace("Cube", std::move(newShader));
         }
     }

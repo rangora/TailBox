@@ -19,6 +19,9 @@ file(GLOB_RECURSE HEADERS RELATIVE
 
 add_library(Engine SHARED ${SOURCES} ${HEADERS})
 
+# Definition
+target_compile_definitions(${PROJECT_NAME} PUBLIC PROJECT_PATH="${PROJECT_SOURCE_DIR}")
+
 target_precompile_headers(Engine PRIVATE Enginepch.h)
 target_include_directories(Engine PUBLIC "../external/include")
 target_link_directories(Engine PUBLIC "../external/lib")

@@ -48,3 +48,11 @@ struct Transform_2
 {
     Vector4D _offset;
 };
+
+namespace tb
+{
+    namespace core
+    {
+        const std::string projectPath = PROJECT_PATH;
+    }
+}

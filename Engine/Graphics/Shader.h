@@ -9,7 +9,7 @@ namespace tb
     public:
         Shader();
         ~Shader();
-        Shader(const std::wstring& vp, const std::wstring& pp);
+        Shader(const std::string& vp, const std::string& pp);
 
         ComPtr<ID3D12PipelineState> _pipelineState = nullptr;
 

@@ -12,16 +12,18 @@ namespace tb
     {
     }
 
-    Shader::Shader(const std::wstring& vp, const std::wstring& pp)
+    Shader::Shader(const std::string& vp, const std::string& pp)
     {
 #ifdef _DEBUG
             uint32 compileFlag = 0;
             compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-         // Vertex shader
+        // Vertex shader
         {
-            if (FAILED(::D3DCompileFromFile(vp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_Main", "vs_5_0",
-                                            compileFlag, 0, &_vsBlob, &_errBlob)))
+            std::wstring wvp(vp.size(), L'\0');
+            std::mbstowcs(&wvp[0], vp.c_str(), vp.size());
+            if (FAILED(::D3DCompileFromFile(wvp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "VS_Main",
+                                            "vs_5_0", compileFlag, 0, &_vsBlob, &_errBlob)))
             {
                 const char* errMsg = reinterpret_cast<const char*>(_errBlob->GetBufferPointer());
                 spdlog::error("Shader Compile {}", errMsg);
@@ -29,13 +31,15 @@ namespace tb
                 _errBlob = nullptr;
                 return;
             }
-
-            _pipelineDesc.VS = {_vsBlob->GetBufferPointer(), _vsBlob->GetBufferSize()};
         }
+
+        _pipelineDesc.VS = {_vsBlob->GetBufferPointer(), _vsBlob->GetBufferSize()};
 
         // Pixel shader
         {
-            if (FAILED(::D3DCompileFromFile(vp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_Main", "ps_5_0",
+            std::wstring wpp(pp.size(), L'\0');
+            std::mbstowcs(&wpp[0], pp.c_str(), pp.size());
+            if (FAILED(::D3DCompileFromFile(wpp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PS_Main", "ps_5_0",
                                             compileFlag, 0, &_psBlob, &_errBlob)))
             {
                 const char* errMsg = reinterpret_cast<const char*>(_errBlob->GetBufferPointer());
