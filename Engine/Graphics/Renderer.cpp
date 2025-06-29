@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "PipelineStateHandler.h"
 #include "UploadBuffer.h"
+#include "ShaderCompiler.h"
 
 namespace tb
 {
@@ -181,27 +182,16 @@ namespace tb
     void Renderer::InitShaders()
     {
         std::vector<ShaderCompileDesc> shaderCompileDescs;
-        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/default.hlsli", "Cube_VS"});
-        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/default.hlsli", "Cube_PS"});
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/cube.hlsli", "Cube_VS"});
+        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/cube.hlsli", "Cube_PS"});
 
-       /* for (const auto& shaderCompileDesc : shaderCompileDescs)
+        for (const auto& shaderCompileDesc : shaderCompileDescs)
         {
-            std::make_unique<Shader>(shaderCompileDesc);
-        }*/
-
-        static std::array<std::string, 1> baseShaderNames = {"Box"};
-        for (const auto name : baseShaderNames)
-        {
-            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/default.hlsli",
-                                                      tb::core::projectPath + "/Resources/default.hlsli");
-
-            _shaders.emplace(name, std::move(newShader));
-        }
-
-        {
-            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/cube.hlsli",
-                                                      tb::core::projectPath + "/Resources/cube.hlsli");
-            _shaders.emplace("Cube", std::move(newShader));
+            Shader* newShader = ShaderCompiler::CompileShader(shaderCompileDesc);
+            if (newShader != nullptr)
+            {
+                _shaders.emplace(newShader->_identifier, newShader);
+            }
         }
 
         GraphicsPipelineStateDesc pipelineStateDesc;
@@ -210,11 +200,12 @@ namespace tb
         pipelineStateDesc._inputElements.push_back({"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0});
 
         // blobs
-        auto it = _shaders.find("Cube");
-        pipelineStateDesc._desc.PS = {it->second.get()->_psBlob->GetBufferPointer(),
-                                      it->second.get()->_psBlob->GetBufferSize()};
-        pipelineStateDesc._desc.VS = {it->second.get()->_vsBlob->GetBufferPointer(),
-                                      it->second.get()->_vsBlob->GetBufferSize()};
+        auto VS = _shaders.find("Cube_VS");
+        auto PS = _shaders.find("Cube_PS");
+        pipelineStateDesc._desc.PS = {PS->second.get()->_bytecode->GetBufferPointer(),
+                                      PS->second.get()->_bytecode->GetBufferSize()};
+        pipelineStateDesc._desc.VS = {VS->second.get()->_bytecode->GetBufferPointer(),
+                                      VS->second.get()->_bytecode->GetBufferSize()};
 
         pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputElements.data(),
                                                static_cast<UINT>(pipelineStateDesc._inputElements.size())};

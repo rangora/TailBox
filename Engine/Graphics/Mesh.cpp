@@ -41,7 +41,7 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Box");
 
-        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetShader("Box")->_pipelineState.Get());
+        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
 
         // b1
         {
