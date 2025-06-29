@@ -1,9 +1,10 @@
 #include "Renderer.h"
 #include "DX12Device.h"
 #include "Engine.h"
+#include "InputLayout.h"
 #include "PipelineStateHandler.h"
-#include "UploadBuffer.h"
 #include "ShaderCompiler.h"
+#include "UploadBuffer.h"
 
 namespace tb
 {
@@ -196,8 +197,7 @@ namespace tb
 
         GraphicsPipelineStateDesc pipelineStateDesc;
         pipelineStateDesc._identifier = "Cube";
-        pipelineStateDesc._inputElements.push_back({"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0});
-        pipelineStateDesc._inputElements.push_back({"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0});
+        pipelineStateDesc._inputLayout = InputLayoutPreset::BaseInputLayout();
 
         // blobs
         auto VS = _shaders.find("Cube_VS");
@@ -207,8 +207,8 @@ namespace tb
         pipelineStateDesc._desc.VS = {VS->second.get()->_bytecode->GetBufferPointer(),
                                       VS->second.get()->_bytecode->GetBufferSize()};
 
-        pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputElements.data(),
-                                               static_cast<UINT>(pipelineStateDesc._inputElements.size())};
+        pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputLayout.GetPointer(),
+                                               static_cast<UINT>(pipelineStateDesc._inputLayout.GetSize())};
         pipelineStateDesc._desc.pRootSignature = Engine::GetDX12Device()->GetRootSignature();
         pipelineStateDesc._desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         pipelineStateDesc._desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);

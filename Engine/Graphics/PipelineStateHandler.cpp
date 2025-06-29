@@ -5,7 +5,6 @@
 
 namespace tb
 {
-
     PipelineStateHandler::PipelineStateHandler()
     {
     }

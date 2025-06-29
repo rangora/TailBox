@@ -2,13 +2,14 @@
 
 #include <vector>
 #include "Core.h"
+#include "InputLayout.h"
 
 namespace tb
 {
     struct GraphicsPipelineStateDesc
     {
         D3D12_GRAPHICS_PIPELINE_STATE_DESC _desc = {};
-        std::vector<D3D12_INPUT_ELEMENT_DESC> _inputElements;
+        InputLayout _inputLayout;
         std::string _identifier;
 
         ComPtr<ID3DBlob> _vsBlob = nullptr;
