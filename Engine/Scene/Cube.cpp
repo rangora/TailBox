@@ -4,6 +4,7 @@
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/GpuBuffer.h"
 #include "Graphics/Renderer.h"
+#include "Graphics/PipelineStateHandler.h"
 #include "Scene/Scene.h"
 
 namespace tb
@@ -30,7 +31,7 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Cube");
 
-        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetShader("Cube")->_pipelineState.Get());
+        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
 
         // b0
         {

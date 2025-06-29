@@ -1,16 +1,29 @@
 #include "Renderer.h"
-#include "UploadBuffer.h"
+#include "DX12Device.h"
 #include "Engine.h"
+#include "PipelineStateHandler.h"
+#include "UploadBuffer.h"
 
 namespace tb
 {
+    Renderer::Renderer() = default;
+    Renderer::~Renderer() = default;
+
     void Renderer::Initialize()
     {
+        _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
+
         _geoemtryBuffers.reserve(100);
         _shaders.reserve(100);
 
         InitBuffers();
         InitShaders();
+
+    }
+
+    ComPtr<ID3D12PipelineState> Renderer::GetPipelineState(const std::string& identifier)
+    {
+        return _pipelineStateHandler->GetPipelineState(identifier);
     }
 
     void Renderer::InitBuffers()
@@ -167,8 +180,16 @@ namespace tb
 
     void Renderer::InitShaders()
     {
-        static std::array<std::string, 1> baseShaderNames = {"Box"};
+        std::vector<ShaderCompileDesc> shaderCompileDescs;
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/default.hlsli", "Cube_VS"});
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/default.hlsli", "Cube_PS"});
 
+       /* for (const auto& shaderCompileDesc : shaderCompileDescs)
+        {
+            std::make_unique<Shader>(shaderCompileDesc);
+        }*/
+
+        static std::array<std::string, 1> baseShaderNames = {"Box"};
         for (const auto name : baseShaderNames)
         {
             auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/default.hlsli",
@@ -183,10 +204,31 @@ namespace tb
             _shaders.emplace("Cube", std::move(newShader));
         }
 
-        {
-            auto newShader = std::make_unique<Shader>(tb::core::projectPath + "/Resources/cube.hlsli",
-                                                      tb::core::projectPath + "/Resources/cube.hlsli");
-            _shaders.emplace("Cube", std::move(newShader));
-        }
+        GraphicsPipelineStateDesc pipelineStateDesc;
+        pipelineStateDesc._identifier = "Cube";
+        pipelineStateDesc._inputElements.push_back({"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0});
+        pipelineStateDesc._inputElements.push_back({"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0});
+
+        // blobs
+        auto it = _shaders.find("Cube");
+        pipelineStateDesc._desc.PS = {it->second.get()->_psBlob->GetBufferPointer(),
+                                      it->second.get()->_psBlob->GetBufferSize()};
+        pipelineStateDesc._desc.VS = {it->second.get()->_vsBlob->GetBufferPointer(),
+                                      it->second.get()->_vsBlob->GetBufferSize()};
+
+        pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputElements.data(),
+                                               static_cast<UINT>(pipelineStateDesc._inputElements.size())};
+        pipelineStateDesc._desc.pRootSignature = Engine::GetDX12Device()->GetRootSignature();
+        pipelineStateDesc._desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.SampleMask = UINT_MAX;
+        pipelineStateDesc._desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        pipelineStateDesc._desc.NumRenderTargets = 1;
+        pipelineStateDesc._desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        pipelineStateDesc._desc.SampleDesc.Count = 1;
+        pipelineStateDesc._desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+        _pipelineStateHandler->CreatePipelineState(pipelineStateDesc);
     }
 }; // namespace tb

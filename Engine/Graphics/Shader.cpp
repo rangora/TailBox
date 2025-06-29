@@ -8,6 +8,14 @@ namespace tb
     {
     }
 
+    Shader::Shader(ShaderCompileDesc desc)
+    {
+#ifdef _DEBUG
+        uint32 compileFlag = 0;
+        compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+    }
+
     Shader::~Shader()
     {
     }
