@@ -1,34 +1,27 @@
 #include "ShaderCompiler.h"
 #include "Shader.h"
 #include "spdlog/spdlog.h"
+#include "CommonStatics.h"
 
 namespace tb
 {
-    std::string GetEntryPoint(ShaderType type)
+    struct D3DShaderCompileInfo
     {
-        switch (type)
-        {
-            case ShaderType::Vertex:
-                return "VS_Main";
-            case ShaderType::Pixel:
-                return "PS_Main";
-            case ShaderType::None:
-            default:
-                return "None";
-        }
-    }
+        std::string _entryPoint;
+        std::string _target;
+    };
 
-    std::string GetTarget(ShaderType type)
+    D3DShaderCompileInfo GetShaderInfo(ShaderType type)
     {
         switch (type)
         {
             case ShaderType::Vertex:
-                return "vs_5_0";
+                return {._entryPoint = "main", ._target = "vs_5_0"};
             case ShaderType::Pixel:
-                return "ps_5_0";
+                return {._entryPoint = "main", ._target = "ps_5_0"};
             case ShaderType::None:
             default:
-                return "None";
+                return {._entryPoint = "None", ._target = "None"};
         }
     }
 
@@ -42,17 +35,15 @@ namespace tb
         compileFlag = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-        std::wstring wp(desc._path.size(), L'\0');
-        std::mbstowcs(&wp[0], desc._path.c_str(), desc._path.size());
-
+        std::wstring wp = StringToWString(desc._path);
 
         ComPtr<ID3DBlob> bytecode = nullptr;
         ComPtr<ID3DBlob> err = nullptr;
-        std::string entryPoint = GetEntryPoint(desc._shaderType);
-        std::string target = GetTarget(desc._shaderType);
+        auto compileInfo = GetShaderInfo(desc._shaderType);
 
-        if (FAILED(::D3DCompileFromFile(wp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entryPoint.c_str(),
-                                        target.c_str(), compileFlag, 0, &bytecode, &err)))
+        if (FAILED(::D3DCompileFromFile(wp.c_str(), nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                                        compileInfo._entryPoint.c_str(), compileInfo._target.c_str(), compileFlag, 0,
+                                        &bytecode, &err)))
         {
             const char* errMsg = reinterpret_cast<const char*>(err->GetBufferPointer());
             spdlog::error("Shader Compile failed.. {}", errMsg);

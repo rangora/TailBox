@@ -183,8 +183,8 @@ namespace tb
     void Renderer::InitShaders()
     {
         std::vector<ShaderCompileDesc> shaderCompileDescs;
-        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/cube.hlsli", "Cube_VS"});
-        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/cube.hlsli", "Cube_PS"});
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/BaseVS.hlsl", "Cube_VS"});
+        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/BasePS.hlsl", "Cube_PS"});
 
         for (const auto& shaderCompileDesc : shaderCompileDescs)
         {
