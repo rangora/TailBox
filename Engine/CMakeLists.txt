@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 project(Engine LANGUAGES CXX)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS False)
 set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB_RECURSE SOURCES RELATIVE
@@ -25,7 +25,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC PROJECT_PATH="${PROJECT_SOURCE
 target_precompile_headers(Engine PRIVATE Enginepch.h)
 target_include_directories(Engine PUBLIC "../external/include")
 target_link_directories(Engine PUBLIC "../external/lib")
-target_link_libraries(Engine PUBLIC spdlog)
+target_link_libraries(Engine PUBLIC spdlog DirectXTex)
 target_link_libraries(Engine PUBLIC d3d12 dxgi)
 
 target_compile_definitions(Engine PRIVATE ENGINE_EXPORTS)

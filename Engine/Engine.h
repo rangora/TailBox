@@ -2,13 +2,23 @@
 
 #include "Core.h"
 
+#ifdef _WIN32
+#ifdef ENGINE_EXPORTS
+#define ENGINE_API __declspec(dllexport)
+#else
+#define ENGINE_API __declspec(dllimport)
+#endif
+#else
+#define ENGINE_API
+#endif
+
 namespace tb
 {
     class SceneManager;
     class DX12Device;
     class Window;
 
-    class Engine
+    class ENGINE_API Engine
     {
     public:
         Engine();
