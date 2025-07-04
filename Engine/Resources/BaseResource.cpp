@@ -10,39 +10,48 @@ namespace tb
     {
         std::unique_ptr<GeometryBuffer> CreateCubeBuffer()
         {
-            std::vector<Vertex> vertexVec = {// front face
-                                             {{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-                                             // right face
-                                             {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-                                             // left face
-                                             {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-                                             // back face
-                                             {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-                                             // top face
-                                             {{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}},
-                                             // bottom face
-                                             {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f, 1.0f}},
-                                             {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f, 1.0f}}};
+            std::vector<Vertex> vertexVec = {
+                // Front face
+                {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f}},  // top-left
+                {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}},  // bottom-right
+                {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}}, // bottom-left
+                {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f}},   // top-right
+
+                // Right face
+                {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}}, // bottom-left
+                {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},   // top-right
+                {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},  // bottom-right
+                {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f}},  // top-left
+
+                // Left face
+                {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},   // top-left
+                {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}}, // bottom-right
+                {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}},  // bottom-left
+                {{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f}},  // top-right
+
+                // Back face
+                {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},   // top-left
+                {{-0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}}, // bottom-right
+                {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}},  // bottom-left
+                {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},  // top-right
+
+                // Top face
+                {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f}}, // top-left
+                {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   // bottom-right
+                {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},  // bottom-left
+                {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f}},  // top-right
+
+                // Bottom face
+                {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},  // top-left
+                {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f}},  // bottom-right
+                {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f}}, // bottom-left
+                {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}}    // top-right
+            };
 
             std::vector<uint32> indexVec = {0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
-                                            12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 24, 21};
+                                            12, 13, 14, 12, 15, 13, 16, 18, 17, 16, 17, 19, 20, 22, 21, 20, 21, 23
+            };
+
 
             std::unique_ptr<GeometryBuffer> geometryBuffer = std::make_unique<GeometryBuffer>();
 
@@ -87,18 +96,13 @@ namespace tb
 
             return geometryBuffer;
         }
-
         std::unique_ptr<GeometryBuffer> CreateBoxBuffer()
         {
             std::vector<Vertex> Vertexvec(4);
             Vertexvec[0]._pos = Vector(-0.5f, 0.5f, 0.5f);
-            Vertexvec[0]._color = Vector4D(1.f, 0.f, 0.f, 1.f);
             Vertexvec[1]._pos = Vector(0.5f, 0.5f, 0.5f);
-            Vertexvec[1]._color = Vector4D(0.f, 1.f, 0.f, 1.f);
             Vertexvec[2]._pos = Vector(0.5f, -0.5f, 0.5f);
-            Vertexvec[2]._color = Vector4D(0.f, 0.f, 1.f, 1.f);
             Vertexvec[3]._pos = Vector(-0.5f, -0.5f, 0.5f);
-            Vertexvec[3]._color = Vector4D(0.f, 1.f, 0.f, 1.f);
 
             std::vector<uint32> indexVec;
             {
@@ -156,5 +160,13 @@ namespace tb
 
             return geometryBuffer;
         } // namespace br
+
+
+       /* std::unique_ptr<tb::Texture> CreateNikoTexture()
+        {
+            std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+            texture->CreateTexture("");
+        }*/
+
     } // namespace br
 } // namespace tb

@@ -3,8 +3,9 @@
 #include "Graphics/DX12Device.h"
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/GpuBuffer.h"
-#include "Graphics/Renderer.h"
 #include "Graphics/PipelineStateHandler.h"
+#include "Graphics/Renderer.h"
+#include "Resources/Texture.h"
 #include "Scene/Scene.h"
 
 namespace tb
@@ -57,7 +58,17 @@ namespace tb
 
             D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
                 Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+
             Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+
+            /*
+            * srv start는 5(t0)
+            * handle, 5
+            */
+            D3D12_CPU_DESCRIPTOR_HANDLE srvDestCPUHandle =
+                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(5);
+            auto sampler = Renderer::Get()->GetTexture("Niko");
+            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
         }
 
         Engine::GetDX12Device()->GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

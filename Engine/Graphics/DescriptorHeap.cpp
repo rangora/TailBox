@@ -45,6 +45,14 @@ namespace tb
                                              D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
+    void DescriptorHeap::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, D3D12_CPU_DESCRIPTOR_HANDLE destHandle)
+    {
+        uint32 destRange = 1;
+        uint32 srcRange = 1;
+        Engine::GetDevice()->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange,
+                                             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
     void DescriptorHeap::Clear()
     {
         _currentGroupIndex = 0;

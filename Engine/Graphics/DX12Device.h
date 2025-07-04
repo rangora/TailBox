@@ -36,7 +36,7 @@ namespace tb
         void RenderBegin();
         void Render();
         void RenderEnd();
-        void RenderImGui(); // ¾Ö¸Å..
+        void RenderImGui(); // ì• ë§¤..
         bool IsScreenLocked();
 
         void StageBuffer(UploadBuffer* uploadBuffer);
@@ -56,7 +56,7 @@ namespace tb
         FrameContext* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
 
-        // ¾Ö¸ÅÇÑ ÇÔ¼öµé..
+        // ì• ë§¤í•œ í•¨ìˆ˜ë“¤..
         void Flush();
         void Signal();
 
@@ -69,10 +69,11 @@ namespace tb
         ComPtr<ID3D12Device> _device = nullptr;
         ComPtr<IDXGIFactory4> _dxgi = nullptr;
         ComPtr<ID3D12Debug> _debugController = nullptr;
-        ComPtr<ID3D12CommandQueue> _commandQueue = nullptr; // ¿ì¼± imgui¿¡ ³Ñ°Üº¸ÀÚ.
+        ComPtr<ID3D12CommandQueue> _commandQueue = nullptr; // ìš°ì„  imguiì— ë„˜ê²¨ë³´ì.
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
         ComPtr<IDXGISwapChain3> _swapChain = nullptr;
 
+        D3D12_STATIC_SAMPLER_DESC _sampler; // TEMP
         ComPtr<ID3D12RootSignature> _rootSignature = nullptr;
 
         std::unique_ptr<DescriptorHeap> _rootDescriptorHeap = nullptr;
