@@ -18,6 +18,7 @@ namespace tb
         D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle(uint32 reg);
 
         void SetCBV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, D3D12_CPU_DESCRIPTOR_HANDLE destHandle);
+        void SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, D3D12_CPU_DESCRIPTOR_HANDLE destHandle);
         ID3D12DescriptorHeap* GetDescriptorHeap() const { return _descHeap.Get(); }
 
         void Clear(); // ?

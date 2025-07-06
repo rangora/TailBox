@@ -41,7 +41,7 @@ using Matrix   = XMMATRIX;
 struct Vertex
 {
     Vector _pos;
-    Vector4D _color;
+    Vector2D _uv;
 };
 
 struct Transform_2

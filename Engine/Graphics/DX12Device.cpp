@@ -94,11 +94,16 @@ namespace tb
         // Create rootSignature
         {
             // D3D12_DESCRIPTOR_RANGE
-            CD3DX12_DESCRIPTOR_RANGE ranges[] = {CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0)};
+            CD3DX12_DESCRIPTOR_RANGE ranges[] =
+            {
+                CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0),
+                CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0)
+            };
             CD3DX12_ROOT_PARAMETER param[1] = {};
             param[0].InitAsDescriptorTable(_countof(ranges), ranges);
 
-            D3D12_ROOT_SIGNATURE_DESC sigdc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param);
+            _sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
+            D3D12_ROOT_SIGNATURE_DESC sigdc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param, 1, &_sampler);
             sigdc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
             ComPtr<ID3DBlob> blobSignature;

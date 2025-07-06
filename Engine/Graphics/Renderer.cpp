@@ -5,6 +5,7 @@
 #include "PipelineStateHandler.h"
 #include "Resources/BaseResource.h"
 #include "ShaderCompiler.h"
+#include "TextureResource.h"
 #include "UploadBuffer.h"
 
 namespace tb
@@ -22,6 +23,10 @@ namespace tb
         InitBuffers();
         InitShaders();
 
+        // Init textures
+        std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
+        texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
+        _textures.emplace("Niko", std::move(texture));
     }
 
     ComPtr<ID3D12PipelineState> Renderer::GetPipelineState(const std::string& identifier)
