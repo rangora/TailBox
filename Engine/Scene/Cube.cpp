@@ -5,7 +5,7 @@
 #include "Graphics/GpuBuffer.h"
 #include "Graphics/PipelineStateHandler.h"
 #include "Graphics/Renderer.h"
-#include "Resources/Texture.h"
+#include "Graphics/TextureResource.h"
 #include "Scene/Scene.h"
 
 namespace tb

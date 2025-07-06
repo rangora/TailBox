@@ -4,8 +4,8 @@
 #include "InputLayout.h"
 #include "PipelineStateHandler.h"
 #include "Resources/BaseResource.h"
-#include "Resources/Texture.h"
 #include "ShaderCompiler.h"
+#include "TextureResource.h"
 #include "UploadBuffer.h"
 
 namespace tb
@@ -24,7 +24,7 @@ namespace tb
         InitShaders();
 
         // Init textures
-        std::unique_ptr<Texture> texture = std::make_unique<Texture>();
+        std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
         texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
         _textures.emplace("Niko", std::move(texture));
     }
