@@ -33,6 +33,7 @@ target_compile_definitions(Engine INTERFACE ENGINE_IMPORTS)
 
 target_compile_options(Engine PRIVATE /GR-)
 
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4819")
 set_target_properties(Engine PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"

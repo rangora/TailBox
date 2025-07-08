@@ -7,11 +7,20 @@
 #include "ShaderCompiler.h"
 #include "TextureResource.h"
 #include "UploadBuffer.h"
+#include "RootSignature.h"
 
 namespace tb
 {
     Renderer::Renderer() = default;
     Renderer::~Renderer() = default;
+
+    void Renderer::InitRootSignature()
+    {
+        std::unique_ptr<RootSignature> rootSignature = std::make_unique<RootSignature>();
+        rootSignature->CreateRootSignature();
+
+        _rootSignatures.emplace("Default", std::move(rootSignature));
+    }
 
     void Renderer::Initialize()
     {
@@ -19,7 +28,9 @@ namespace tb
 
         _geoemtryBuffers.reserve(100);
         _shaders.reserve(100);
+        _rootSignatures.reserve(100);
 
+        InitRootSignature();
         InitBuffers();
         InitShaders();
 
@@ -69,7 +80,7 @@ namespace tb
 
         pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputLayout.GetPointer(),
                                                static_cast<UINT>(pipelineStateDesc._inputLayout.GetSize())};
-        pipelineStateDesc._desc.pRootSignature = Engine::GetDX12Device()->GetRootSignature();
+        pipelineStateDesc._desc.pRootSignature = _rootSignatures.find("Default")->second->_rootSignature.Get();
         pipelineStateDesc._desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         pipelineStateDesc._desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         pipelineStateDesc._desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);

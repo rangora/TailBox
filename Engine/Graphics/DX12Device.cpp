@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "Graphics/Shader.h"
+#include "Graphics/RootSignature.h"
 #include "Scene/SceneManager.h"
 #include "Scene/Cube.h"
 #include "imgui/imgui.h"
@@ -89,28 +90,6 @@ namespace tb
                 spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
                 return;
             }
-        }
-
-        // Create rootSignature
-        {
-            // D3D12_DESCRIPTOR_RANGE
-            CD3DX12_DESCRIPTOR_RANGE ranges[] =
-            {
-                CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0),
-                CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0)
-            };
-            CD3DX12_ROOT_PARAMETER param[1] = {};
-            param[0].InitAsDescriptorTable(_countof(ranges), ranges);
-
-            _sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
-            D3D12_ROOT_SIGNATURE_DESC sigdc = CD3DX12_ROOT_SIGNATURE_DESC(_countof(param), param, 1, &_sampler);
-            sigdc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-            ComPtr<ID3DBlob> blobSignature;
-            ComPtr<ID3DBlob> blobError;
-            ::D3D12SerializeRootSignature(&sigdc, D3D_ROOT_SIGNATURE_VERSION_1, &blobSignature, &blobError);
-            _device->CreateRootSignature(0, blobSignature->GetBufferPointer(), blobSignature->GetBufferSize(),
-                                         IID_PPV_ARGS(_rootSignature.GetAddressOf()));
         }
 
         // Create rootDescriptorHeap
@@ -359,8 +338,10 @@ namespace tb
         _rw = rtvDesc.Width;
         _rh = rtvDesc.Height;
 
+        _curRootSignature = Renderer::Get()->GetRootSignature("Default")->_rootSignature;
+
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
-        _commandList->SetGraphicsRootSignature(_rootSignature.Get());
+        _commandList->SetGraphicsRootSignature(_curRootSignature.Get()); // renderer에서 set해주자
 
         _rootDescriptorHeap->Clear();
 
