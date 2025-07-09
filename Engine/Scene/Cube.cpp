@@ -2,7 +2,6 @@
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/GpuBuffer.h"
 #include "Graphics/PipelineStateHandler.h"
-#include "Graphics/Renderer.h"
 #include "Graphics/TextureResource.h"
 #include "Graphics/GraphicsCore.h"
 #include "Scene/Scene.h"
@@ -28,10 +27,9 @@ namespace tb
 
     void Cube::Render(const XMMATRIX& vpMtx)
 {
-        auto renderer = Renderer::Get();
-        auto info = renderer->GetGeometryBuffer("Cube");
+        auto info = g_renderer.GetGeometryBuffer("Cube");
 
-        g_dx12Device.GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
+        g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Cube").Get());
 
         // b0
         {
@@ -65,7 +63,7 @@ namespace tb
              * handle, 5
              */
             D3D12_CPU_DESCRIPTOR_HANDLE srvDestCPUHandle = g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(5);
-            auto sampler = Renderer::Get()->GetTexture("Niko");
+            auto sampler = g_renderer.GetTexture("Niko");
             g_dx12Device.GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
         }
 

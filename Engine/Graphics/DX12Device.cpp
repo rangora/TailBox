@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Graphics/Shader.h"
 #include "Graphics/RootSignature.h"
+#include "Graphics/GraphicsCore.h"
 #include "Scene/SceneManager.h"
 #include "Scene/Cube.h"
 #include "imgui/imgui.h"
@@ -229,7 +230,7 @@ namespace tb
 
     void DX12Device::PostDeviceCreated()
     {
-        Renderer::Get()->Initialize();
+        g_renderer.Initialize();
     }
 
     void DX12Device::ReleaseDevice()
@@ -337,10 +338,10 @@ namespace tb
         _rw = rtvDesc.Width;
         _rh = rtvDesc.Height;
 
-        _curRootSignature = Renderer::Get()->GetRootSignature("Default")->_rootSignature;
+        _curRootSignature = g_renderer.GetRootSignature("Default")->_rootSignature;
 
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
-        _commandList->SetGraphicsRootSignature(_curRootSignature.Get()); // renderer에서 set해주자
+        //_commandList->SetGraphicsRootSignature(_curRootSignature.Get());
 
         _rootDescriptorHeap->Clear();
 
@@ -374,6 +375,8 @@ namespace tb
     {
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
+
+        _commandList->SetGraphicsRootSignature(_curRootSignature.Get());
 
         // Render from sceneManager
         Engine::Get().GetSceneManager()->Render();

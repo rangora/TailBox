@@ -13,11 +13,8 @@ namespace tb
     class Renderer
     {
     public:
-        static Renderer* Get()
-        {
-            static Renderer instance;
-            return &instance;
-        }
+        Renderer();
+        ~Renderer();
 
         void Initialize();
         GeometryBuffer* GetGeometryBuffer(const std::string& name) { return _geoemtryBuffers.find(name)->second.get(); }
@@ -27,9 +24,6 @@ namespace tb
         ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& identifier);
 
     private:
-        Renderer();
-        ~Renderer();
-
         void InitRootSignature();
         void InitBuffers();
         void InitShaders();

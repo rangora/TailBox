@@ -1,7 +1,6 @@
 #include "Mesh.h"
 #include "GpuBuffer.h"
 #include "Graphics/DescriptorHeap.h"
-#include "Graphics/Renderer.h"
 #include "Graphics/GraphicsCore.h"
 #include "Scene/Scene.h"
 
@@ -37,10 +36,9 @@ namespace tb
 
     void Mesh::Render(const XMMATRIX& vpMtx)
 {
-        auto renderer = Renderer::Get();
-        auto info = renderer->GetGeometryBuffer("Box");
+        auto info = g_renderer.GetGeometryBuffer("Box");
 
-        g_dx12Device.GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
+        g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Cube").Get());
 
         // b1
         {
