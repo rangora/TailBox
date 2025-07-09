@@ -1,11 +1,10 @@
 #include "Cube.h"
-#include "Engine.h"
-#include "Graphics/DX12Device.h"
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/GpuBuffer.h"
 #include "Graphics/PipelineStateHandler.h"
 #include "Graphics/Renderer.h"
 #include "Graphics/TextureResource.h"
+#include "Graphics/GraphicsCore.h"
 #include "Scene/Scene.h"
 
 namespace tb
@@ -32,7 +31,7 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Cube");
 
-        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
+        g_dx12Device.GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
 
         // b0
         {
@@ -57,25 +56,24 @@ namespace tb
             _cBuffer->_currentIdx++;
 
             D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
-                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
 
-            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
 
             /*
-            * srv start는 5(t0)
-            * handle, 5
-            */
-            D3D12_CPU_DESCRIPTOR_HANDLE srvDestCPUHandle =
-                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(5);
+             * srv start는 5(t0)
+             * handle, 5
+             */
+            D3D12_CPU_DESCRIPTOR_HANDLE srvDestCPUHandle = g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(5);
             auto sampler = Renderer::Get()->GetTexture("Niko");
-            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
+            g_dx12Device.GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
         }
 
-        Engine::GetDX12Device()->GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        Engine::GetDX12Device()->GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
-        Engine::GetDX12Device()->GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);
-        Engine::GetDX12Device()->GetRootDescriptorHeap()->CommitTable(0); // CommitTable
-        Engine::GetDX12Device()->GetCommmandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
+        g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
+        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);
+        g_dx12Device.GetRootDescriptorHeap()->CommitTable(0); // CommitTable
+        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
     }
 
     void Cube::Clear()

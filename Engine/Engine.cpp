@@ -2,6 +2,7 @@
 #include "Graphics/DX12Device.h"
 #include "Graphics/Mesh.h"
 #include "Graphics/Shader.h"
+#include "Graphics/GraphicsCore.h"
 #include "Window/Window.h"
 #include "Scene/SceneManager.h"
 #include <vector>
@@ -11,7 +12,6 @@
 
 namespace tb
 {
-    DX12Device* Engine::_DX12device = nullptr;
     SceneManager* Engine::_sceneManager = nullptr;
 
     Engine::Engine()
@@ -23,16 +23,6 @@ namespace tb
     {
     }
 
-    DX12Device* Engine::GetDX12Device()
-    {
-        return _DX12device;
-    }
-
-    ID3D12Device* Engine::GetDevice()
-    {
-        return _DX12device->GetDevice();
-    }
-
     SceneManager* Engine::GetSceneManager()
     {
         return _sceneManager;
@@ -40,11 +30,11 @@ namespace tb
 
     void Engine::Launch()
     {
-        _DX12device = new DX12Device;
         _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
-        _DX12device->CreateSwapChain(_window->GetWndRef());
-        _DX12device->PostSwapChainCreated();
-        _DX12device->PostDeviceCreated();
+        g_dx12Device.Initialize();
+        g_dx12Device.CreateSwapChain(_window->GetWndRef());
+        g_dx12Device.PostSwapChainCreated();
+        g_dx12Device.PostDeviceCreated();
         _window->Initialize();
 
         // Init scene.
@@ -57,9 +47,9 @@ namespace tb
         }
 
         // Sutting down
-        _DX12device->WaitForLastSubmittedFrame();
+        g_dx12Device.WaitForLastSubmittedFrame();
         _window->ShutdownImGuiContext();
-        _DX12device->ReleaseDevice();
+        g_dx12Device.ReleaseDevice();
         _window->ShutdownWindow();
     }
 
@@ -82,7 +72,7 @@ namespace tb
             return;
         }
 
-        if (_DX12device->IsScreenLocked())
+        if (g_dx12Device.IsScreenLocked())
         {
             ::Sleep(10);
             return;
@@ -91,7 +81,7 @@ namespace tb
         _window->Update(); // key
         _sceneManager->Update(tick); // logic
         _sceneManager->OnRenderBegin();
-        _DX12device->Update(); // render
+        g_dx12Device.Update(); // render
 
         // OnEndFrame
         _sceneManager->OnEndFrame();

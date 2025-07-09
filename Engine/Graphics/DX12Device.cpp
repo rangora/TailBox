@@ -27,7 +27,10 @@
 
 namespace tb
 {
-    DX12Device::DX12Device()
+    DX12Device::DX12Device() = default;
+    DX12Device::~DX12Device() = default;
+
+    void DX12Device::Initialize()
     {
         timeBeginPeriod(1);
         _lastTime = timeGetTime();
@@ -111,10 +114,6 @@ namespace tb
             spdlog::error("[FATAL] Failed to create fenceEvent.");
             return;
         }
-    }
-
-    DX12Device::~DX12Device()
-    {
     }
 
     void DX12Device::CreateSwapChain(const HWND& hWnd)

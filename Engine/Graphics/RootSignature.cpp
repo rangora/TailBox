@@ -1,6 +1,5 @@
 #include "RootSignature.h"
-#include "Engine.h"
-#include "DX12Device.h"
+#include "GraphicsCore.h"
 
 namespace tb
 {
@@ -18,7 +17,7 @@ namespace tb
         ComPtr<ID3DBlob> blobSignature;
         ComPtr<ID3DBlob> blobError;
         ::D3D12SerializeRootSignature(&sigdc, D3D_ROOT_SIGNATURE_VERSION_1, &blobSignature, &blobError);
-        Engine::Get().GetDevice()->CreateRootSignature(0, blobSignature->GetBufferPointer(), blobSignature->GetBufferSize(),
+        g_dx12Device.GetDevice()->CreateRootSignature(0, blobSignature->GetBufferPointer(), blobSignature->GetBufferSize(),
                                      IID_PPV_ARGS(_rootSignature.GetAddressOf()));
     }
 } // namespace tb

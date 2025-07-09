@@ -1,5 +1,4 @@
 #include "SceneProxy.h"
-#include "Engine.h"
 
 namespace tb
 {

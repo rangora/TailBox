@@ -1,6 +1,4 @@
 #include "Shader.h"
-#include "Engine.h"
-#include "DX12Device.h"
 
 namespace tb
 {

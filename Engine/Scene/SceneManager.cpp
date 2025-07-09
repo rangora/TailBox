@@ -1,10 +1,10 @@
 #include "SceneManager.h"
 #include "Core/Event.h"
 #include "Core/Input.h"
-#include "Engine.h"
-#include "Graphics/DX12Device.h"
+#include "Graphics/GraphicsCore.h"
 #include "Graphics/Mesh.h"
 #include "Scene.h"
+#include "Engine.h"
 #include "Window/Window.h"
 
 namespace tb
@@ -12,7 +12,7 @@ namespace tb
     SceneManager::SceneManager()
     {
         float rw = 0.0, rh = 0.f;
-        Engine::GetDX12Device()->GetRenderTargetViewSize(rw, rh);
+        g_dx12Device.GetRenderTargetViewSize(rw, rh);
 
         _camera.SetPosition(0.f, 0.f, -4.f);
         _camera.SetRotation(0.f, 0.f, 0.f);

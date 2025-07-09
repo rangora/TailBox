@@ -27,6 +27,7 @@ namespace tb
         DX12Device();
          ~DX12Device();
 
+        void Initialize();
         void CreateSwapChain(const HWND& hWnd);
         void PostSwapChainCreated();
         void PostDeviceCreated();

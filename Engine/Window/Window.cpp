@@ -1,6 +1,5 @@
 #include "Window.h"
-#include "Engine.h"
-#include "Graphics/DX12Device.h"
+#include "Graphics/GraphicsCore.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 #include "imgui/imgui_impl_win32.h"
@@ -21,16 +20,15 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_SIZE:
         {
-            if (tb::Engine::GetDevice() != nullptr && wParam != SIZE_MINIMIZED)
+            if (tb::g_dx12Device.GetDevice() != nullptr && wParam != SIZE_MINIMIZED)
             {
-                auto dx12Device = tb::Engine::GetDX12Device();
-                dx12Device->WaitForLastSubmittedFrame();
-                dx12Device->CleanupRenderTarget();
-                HRESULT result = tb::Engine::GetDX12Device()->GetSwapChain()->ResizeBuffers(
+                tb::g_dx12Device.WaitForLastSubmittedFrame();
+                tb::g_dx12Device.CleanupRenderTarget();
+                HRESULT result = tb::g_dx12Device.GetSwapChain()->ResizeBuffers(
                     0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN,
                     DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
                 assert(SUCCEEDED(result) && "Failed to resize swapchain.");
-                dx12Device->CreateRenderTarget();
+                tb::g_dx12Device.CreateRenderTarget();
             }
             return 0;
         }
@@ -62,9 +60,9 @@ namespace tb
         ::RegisterClassExW(&_wc);
 
 
-        DWORD fixedStyle = WS_OVERLAPPED // ±âº» À©µµ¿ì
-                           | WS_CAPTION  // Á¦¸ñ Ç¥½ÃÁÙ
-                           | WS_SYSMENU  // ½Ã½ºÅÛ ¸Þ´º (´Ý±â ¹öÆ° µî)
+        DWORD fixedStyle = WS_OVERLAPPED // ê¸°ë³¸ ìœˆë„ìš°
+                           | WS_CAPTION  // ì œëª© í‘œì‹œì¤„
+                           | WS_SYSMENU  // ì‹œìŠ¤í…œ ë©”ë‰´ (ë‹«ê¸° ë²„íŠ¼ ë“±)
                            | WS_MINIMIZEBOX;
 
         _hWnd = ::CreateWindowW(_wc.lpszClassName, titleWidStr.c_str(), fixedStyle, 100, 100, _windowContext._width,
@@ -78,7 +76,7 @@ namespace tb
 
     void Window::Initialize()
     {
-        _heapAlloc.Create(Engine::GetDevice(), Engine::GetDX12Device()->GetImGuiDescHeap());
+        _heapAlloc.Create(g_dx12Device.GetDevice(), g_dx12Device.GetImGuiDescHeap());
 
         // Seteup Imgui
         IMGUI_CHECKVERSION();
@@ -104,9 +102,9 @@ namespace tb
         ImGui_ImplWin32_Init(_hWnd);
 
         ImGui_ImplDX12_InitInfo initInfo = {};
-        initInfo.Device = Engine::GetDevice();
-        initInfo.CommandQueue = Engine::GetDX12Device()->GetCommandQueue();
-        initInfo.SrvDescriptorHeap = Engine::GetDX12Device()->GetImGuiDescHeap();
+        initInfo.Device = g_dx12Device.GetDevice();
+        initInfo.CommandQueue = g_dx12Device.GetCommandQueue();
+        initInfo.SrvDescriptorHeap = g_dx12Device.GetImGuiDescHeap();
         initInfo.NumFramesInFlight = BUFFERCOUNT;
         initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         initInfo.DSVFormat = DXGI_FORMAT_UNKNOWN;

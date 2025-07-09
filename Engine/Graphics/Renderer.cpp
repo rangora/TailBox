@@ -1,6 +1,4 @@
 #include "Renderer.h"
-#include "DX12Device.h"
-#include "Engine.h"
 #include "InputLayout.h"
 #include "PipelineStateHandler.h"
 #include "Resources/BaseResource.h"

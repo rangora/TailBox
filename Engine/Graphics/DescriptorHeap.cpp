@@ -1,6 +1,5 @@
 #include "DescriptorHeap.h"
-#include "Engine.h"
-#include "Graphics/DX12Device.h"
+#include "GraphicsCore.h"
 
 namespace tb
 {
@@ -41,15 +40,15 @@ namespace tb
     {
         uint32 destRange = 1;
         uint32 srcRange = 1;
-        Engine::GetDevice()->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange,
-                                             D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        g_dx12Device.GetDevice()->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange,
+                                    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
     void DescriptorHeap::SetSRV(D3D12_CPU_DESCRIPTOR_HANDLE srcHandle, D3D12_CPU_DESCRIPTOR_HANDLE destHandle)
     {
         uint32 destRange = 1;
         uint32 srcRange = 1;
-        Engine::GetDevice()->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange,
+        g_dx12Device.GetDevice()->CopyDescriptors(1, &destHandle, &destRange, 1, &srcHandle, &srcRange,
                                              D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
@@ -63,7 +62,7 @@ namespace tb
         D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle = _descHeap->GetGPUDescriptorHandleForHeapStart();
         GPUHandle.ptr += _currentGroupIndex * _groupSize;
 
-        Engine::GetDX12Device()->GetCommmandList()->SetGraphicsRootDescriptorTable(rootIndex, GPUHandle);
+        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(rootIndex, GPUHandle);
         _currentGroupIndex++;
     }
 } // namespace tb

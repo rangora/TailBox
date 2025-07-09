@@ -1,9 +1,8 @@
 #include "Mesh.h"
-#include "Engine.h"
-#include "DX12Device.h"
 #include "GpuBuffer.h"
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/Renderer.h"
+#include "Graphics/GraphicsCore.h"
 #include "Scene/Scene.h"
 
 namespace tb
@@ -41,7 +40,7 @@ namespace tb
         auto renderer = Renderer::Get();
         auto info = renderer->GetGeometryBuffer("Box");
 
-        Engine::GetDX12Device()->GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
+        g_dx12Device.GetCommmandList()->SetPipelineState(Renderer::Get()->GetPipelineState("Cube").Get());
 
         // b1
         {
@@ -56,8 +55,8 @@ namespace tb
             _gBuffer->_currentIdx++;
 
             D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
-                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
-            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
         // b2
         {
@@ -74,19 +73,19 @@ namespace tb
             _transformBuffer->_currentIdx++;
 
             D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
-                Engine::GetDX12Device()->GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
-            Engine::GetDX12Device()->GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
         }
 
         // cbv push 다 하고
         // IASetPrimitiveTopology
         // IASetVertexBuffers
         // IASetIndexBuffer
-        Engine::GetDX12Device()->GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        Engine::GetDX12Device()->GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
-        Engine::GetDX12Device()->GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);
-        Engine::GetDX12Device()->GetRootDescriptorHeap()->CommitTable(0);  // CommitTable
-        Engine::GetDX12Device()->GetCommmandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
+        g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &info->_vertexBufferView);
+        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&info->_indexBufferView);
+        g_dx12Device.GetRootDescriptorHeap()->CommitTable(0);  // CommitTable
+        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(info->_indexCount, 1, 0, 0, 0);
     }
 
     void Mesh::Clear()

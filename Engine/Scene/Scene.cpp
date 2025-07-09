@@ -1,7 +1,5 @@
 #include "Scene.h"
 #include "Core/Input.h"
-#include "Engine.h"
-#include "Graphics/DX12Device.h"
 #include "Graphics/Mesh.h"
 #include "Scene/Cube.h"
 #include "Window/Window.h"
