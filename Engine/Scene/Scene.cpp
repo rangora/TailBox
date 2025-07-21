@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "Core/Input.h"
 #include "Graphics/Mesh.h"
-#include "Scene/Cube.h"
+#include "Scene/Actor.h"
 #include "Window/Window.h"
 
 namespace tb
@@ -16,8 +16,9 @@ namespace tb
 
     void Scene::Initialize()
     {
-        //_mesh = new Mesh(this);
-        _cube = new Cube(this);
+        // spawnActor로 wrapping 필
+        // 호출 위치도 바뀌어야 한다.
+        new Actor(this);
     }
 
     void Scene::Update(float deltaTime)
@@ -31,7 +32,7 @@ namespace tb
             mesh->Render(vpMtx);
         }
 
-        for (const auto cube : _cubes)
+        for (const auto cube : _actors)
         {
             cube->Render(vpMtx);
         }
@@ -39,18 +40,10 @@ namespace tb
 
     void Scene::Clear()
     {
-        if (_cube)
+        for (auto it : _actors)
         {
-            _cube->Clear();
+            it->Clear();
         }
-        if (_mesh)
-        {
-            _mesh->Clear();
-        }
-    }
-
-    void Scene::AddProxy(SceneProxy* proxy)
-    {
     }
 
     void Scene::AddMesh(Mesh* mesh)
@@ -58,8 +51,8 @@ namespace tb
         _meshes.emplace_back(mesh);
     }
 
-    void Scene::AddCube(Cube* cube)
+    void Scene::RegisterActor(Actor* actor)
     {
-        _cubes.emplace_back(cube);
+        _actors.emplace_back(actor);
     }
 } // namespace tb

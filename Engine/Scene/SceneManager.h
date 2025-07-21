@@ -7,7 +7,7 @@ namespace tb
 {
     class Scene;
     class Mesh;
-    class Cube;
+    class Actor;
 
     enum SceneType
     {

@@ -6,7 +6,7 @@ namespace tb
 {
     class SceneProxy;
     class Mesh;
-    class Cube;
+    class Actor;
 
     class Scene
     {
@@ -20,16 +20,12 @@ namespace tb
         void Render(const XMMATRIX& vpMtx);
         void Clear();
 
-        void AddProxy(SceneProxy* proxy);
-        void AddMesh(Mesh* mesh);
-        void AddCube(Cube* cube);
+        void AddMesh(Mesh* mesh); // will be deprecated
+        void RegisterActor(Actor* actor);
 
     private:
-        std::vector<SceneProxy*> _sceneProxies;
-        std::vector<Mesh*> _meshes;
-        std::vector<Cube*> _cubes;
-
-        Mesh* _mesh = nullptr;
-        Cube* _cube = nullptr;
+        std::vector<SceneProxy*> _sceneProxies; // proxy는 다음에..
+        std::vector<Mesh*> _meshes; // will be deprecated
+        std::vector<Actor*> _actors;
     };
 }; // namespace tb

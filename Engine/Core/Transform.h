@@ -8,9 +8,9 @@ namespace tb
 {
     struct alignas(256) Transform
     {
-        DirectX::XMFLOAT4 _pos   = {};
-        DirectX::XMFLOAT4 _rot   = {};
-        DirectX::XMFLOAT4 _scale = {};
+        DirectX::XMFLOAT3 _pos   = {};
+        DirectX::XMFLOAT3 _rot   = {};
+        DirectX::XMFLOAT3 _scale = {};
     };
 
     struct alignas(256) Matrix

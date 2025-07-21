@@ -7,9 +7,6 @@
 #include "Scene/SceneManager.h"
 #include <vector>
 
-// TEMP
-#include "Scene/Cube.h"
-
 namespace tb
 {
     SceneManager* Engine::_sceneManager = nullptr;

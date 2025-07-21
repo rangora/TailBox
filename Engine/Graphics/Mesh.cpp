@@ -18,7 +18,7 @@ namespace tb
         scene->AddMesh(this);
 
         _transform_old._offset = Vector4D(-0.4f, 0.f, 0.f, 0.f);
-        _transform._pos = Vector4D(0.4f, 0.f, 0.f, 0.f);
+        _transform._pos = Vector(0.4f, 0.f, 0.f);
     }
 
     Mesh::~Mesh()
