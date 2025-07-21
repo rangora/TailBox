@@ -9,6 +9,7 @@ namespace tb
     class Renderer;
     class DescriptorHeap;
     class UploadBuffer;
+    class CommandContext;
 
     struct FrameContext
     {
@@ -23,6 +24,7 @@ namespace tb
 
     class DX12Device
     {
+        friend CommandContext;
     public:
         DX12Device();
          ~DX12Device();
@@ -60,8 +62,6 @@ namespace tb
         void Flush();
         void Signal();
 
-         ComPtr<ID3D12RootSignature> _curRootSignature = nullptr; // TEMP
-
     private:
         void PreRenderBegin();
         void PostRenderEnd();
@@ -83,6 +83,8 @@ namespace tb
 
         ID3D12Resource* _mainRtvResources[BUFFERCOUNT] = {};
         ComPtr<ID3D12Resource> _dsBuffer = nullptr;
+
+        ComPtr<ID3D12RootSignature> _curRootSignature = nullptr;
 
         D3D12_CPU_DESCRIPTOR_HANDLE _mainRtvCpuHandle[BUFFERCOUNT] = {};
 

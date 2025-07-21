@@ -1,15 +1,18 @@
 #pragma once
 
 #include "Core.h"
-#include "DX12Device.h"
+#include <vector>
 
 namespace tb
 {
     class CommandContext
     {
     public:
-        friend DX12Device;
+        CommandContext();
+        ~CommandContext();
 
-        void SetRootSignature();
+        void SetRootSignature(const std::string& name);
+
+        std::vector<std::string> _reservedRootSignature;
     };
 } // namespace tb

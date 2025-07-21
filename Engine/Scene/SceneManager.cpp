@@ -104,6 +104,11 @@ namespace tb
     {
         XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         Scene* scene = _scenes[_activeIndex];
+
+        /* sceneManager가 Renderer에게 전달하고
+        * Renderer가 CommandContext를 호출하는 방식??
+        */
+        g_commandContext.SetRootSignature("Default");
         scene->Render(vpMtx);
     }
 
