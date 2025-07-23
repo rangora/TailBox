@@ -1,21 +1,12 @@
 #include "Actor.h"
-#include "Graphics/DescriptorHeap.h"
-#include "Graphics/GpuBuffer.h"
-#include "Graphics/PipelineStateHandler.h"
-#include "Graphics/TextureResource.h"
-#include "Graphics/GraphicsCore.h"
+#include "SceneComponent.h"
 #include "Scene/Scene.h"
-#include "Scene/StaticMeshComponent.h"
 
 namespace tb
 {
-    Actor::Actor(Scene* scene)
+    Actor::Actor(Scene* scene) : _scene(scene)
     {
-        StaticMeshComponent* staticMeshComp = new StaticMeshComponent(this);
-        staticMeshComp->SetStaticMesh("Cube");
-        _registeredCompoent.push_back(staticMeshComp);
-
-        scene->RegisterActor(this);
+        _scene->RegisterActor(this);
     }
 
     Actor::~Actor()

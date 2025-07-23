@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Core.h"
-#include "Graphics/GpuBuffer.h"
-#include "Graphics/UploadBuffer.h"
 
 namespace tb
 {
@@ -23,9 +21,8 @@ namespace tb
 
         Transform GetTrnasform() const { return _transform; }
 
-    private:
+    protected:
         Scene* _scene = nullptr;
-
         Transform _transform;
         std::vector<SceneComponent*> _registeredCompoent;
     };

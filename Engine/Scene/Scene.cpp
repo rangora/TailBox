@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "Core/Input.h"
 #include "Graphics/Mesh.h"
-#include "Scene/Actor.h"
+#include "Scene/CubeActor.h"
 #include "Window/Window.h"
 
 namespace tb
@@ -18,7 +18,7 @@ namespace tb
     {
         // spawnActor로 wrapping 필
         // 호출 위치도 바뀌어야 한다.
-        new Actor(this);
+        new CubeActor(this);
     }
 
     void Scene::Update(float deltaTime)

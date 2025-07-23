@@ -7,7 +7,6 @@
 #include "Graphics/RootSignature.h"
 #include "Graphics/GraphicsCore.h"
 #include "Scene/SceneManager.h"
-#include "Scene/Actor.h"
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_dx12.h"
 #include "Core/Event.h"
