@@ -29,6 +29,7 @@ constexpr int32 VIEWPORT_WIDTH = 960;
 constexpr int32 VIEWPORT_HEIGHT = 540;
 
 using namespace DirectX;
+using namespace DirectX::SimpleMath;
 using namespace Microsoft::WRL;
 
 using Vector2D = XMFLOAT2;

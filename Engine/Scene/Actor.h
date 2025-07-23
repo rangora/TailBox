@@ -8,6 +8,7 @@ namespace tb
 {
     class GpuBuffer;
     class Scene;
+    class SceneComponent;
 
     class Actor
     {
@@ -20,13 +21,12 @@ namespace tb
         void Render(const XMMATRIX& vpMtx);
         void Clear();
 
-    private:
-        Transform _transform;
-        Matrix _matrix = {};
+        Transform GetTrnasform() const { return _transform; }
 
+    private:
         Scene* _scene = nullptr;
 
-        // sceneProxy
-        GpuBuffer* _cBuffer = nullptr; // CB
+        Transform _transform;
+        std::vector<SceneComponent*> _registeredCompoent;
     };
 } // namespace tb
