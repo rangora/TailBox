@@ -28,6 +28,8 @@ namespace tb
         void InitBuffers();
         void InitShaders();
 
+        void CreateMaterialPipelineState();
+
         std::unordered_map<std::string, std::unique_ptr<GeometryBuffer>> _geoemtryBuffers;
         std::unordered_map<std::string, std::unique_ptr<Shader>> _shaders;
         std::unordered_map<std::string, std::unique_ptr<TextureResource>> _textures;

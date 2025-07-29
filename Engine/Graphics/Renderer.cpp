@@ -14,10 +14,15 @@ namespace tb
 
     void Renderer::InitRootSignature()
     {
-        std::unique_ptr<RootSignature> rootSignature = std::make_unique<RootSignature>();
-        rootSignature->CreateRootSignature();
+        // Base
+        std::unique_ptr<RootSignature> basePS = std::make_unique<RootSignature>();
+        basePS->CreateRootSignature();
+        _rootSignatures.emplace("Default", std::move(basePS));
 
-        _rootSignatures.emplace("Default", std::move(rootSignature));
+        // Material
+        std::unique_ptr<RootSignature> materialRS = std::make_unique<RootSignature>();
+        materialRS->CreateMaterialRootSignature();
+        _rootSignatures.emplace("Material", std::move(materialRS));
     }
 
     void Renderer::Initialize()
@@ -54,6 +59,8 @@ namespace tb
         std::vector<ShaderCompileDesc> shaderCompileDescs;
         shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/Shader/BaseVS.hlsl", "Cube_VS"});
         shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/Shader/BasePS.hlsl", "Cube_PS"});
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/Shader/MaterialVS.hlsl", "Material_VS"});
+        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/Shader/MaterialPS.hlsl", "Material_PS"});
 
         for (const auto& shaderCompileDesc : shaderCompileDescs)
         {
@@ -90,5 +97,39 @@ namespace tb
         pipelineStateDesc._desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
         _pipelineStateHandler->CreatePipelineState(pipelineStateDesc);
+
+        CreateMaterialPipelineState();
     }
+
+    void Renderer::CreateMaterialPipelineState()
+    {
+        GraphicsPipelineStateDesc pipelineStateDesc;
+        pipelineStateDesc._identifier = "Material";
+        pipelineStateDesc._inputLayout = InputLayoutPreset::MaterialInputLayout();
+
+        auto VS = _shaders.find("Material_VS");
+        auto PS = _shaders.find("Material_PS");
+
+        pipelineStateDesc._desc.PS = {PS->second.get()->_bytecode->GetBufferPointer(),
+                                      PS->second.get()->_bytecode->GetBufferSize()};
+        pipelineStateDesc._desc.VS = {VS->second.get()->_bytecode->GetBufferPointer(),
+                                      VS->second.get()->_bytecode->GetBufferSize()};
+
+        // Inputlayout..
+        pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputLayout.GetPointer(),
+                                               static_cast<UINT>(pipelineStateDesc._inputLayout.GetSize())};
+        pipelineStateDesc._desc.pRootSignature = _rootSignatures.find("Material")->second->_rootSignature.Get();
+        pipelineStateDesc._desc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        pipelineStateDesc._desc.SampleMask = UINT_MAX;
+        pipelineStateDesc._desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        pipelineStateDesc._desc.NumRenderTargets = 1;
+        pipelineStateDesc._desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        pipelineStateDesc._desc.SampleDesc.Count = 1;
+        pipelineStateDesc._desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+
+        _pipelineStateHandler->CreatePipelineState(pipelineStateDesc);
+    }
+
 }; // namespace tb

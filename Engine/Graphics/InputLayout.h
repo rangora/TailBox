@@ -21,5 +21,6 @@ namespace tb
     struct InputLayoutPreset
     {
         static InputLayout BaseInputLayout();
+        static InputLayout MaterialInputLayout();
     };
 }

@@ -7,6 +7,7 @@ namespace tb
     class Actor;
     class GpuBuffer;
     class GeometryBuffer;
+    class Material;
 
     class StaticMeshComponent : public SceneComponent
     {
@@ -27,5 +28,6 @@ namespace tb
         // proxy data
         GpuBuffer* _baseBuffer = nullptr;
         GeometryBuffer* _geoemtryBuffer = nullptr;
+        Material* _material = nullptr;
     };
 } // namespace tb

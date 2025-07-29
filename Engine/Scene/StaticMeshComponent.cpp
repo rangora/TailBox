@@ -2,12 +2,15 @@
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/TextureResource.h"
+#include "Graphics/Material.h"
 #include "Actor.h"
 
 namespace tb
 {
     StaticMeshComponent::StaticMeshComponent(Actor* ownerActor) : SceneComponent(ownerActor)
     {
+        _material = new Material;
+        _material->InitializeDefaultProperties();
     }
 
     StaticMeshComponent::~StaticMeshComponent()
@@ -77,6 +80,12 @@ namespace tb
             auto sampler = g_renderer.GetTexture("Niko");
             g_dx12Device.GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
         }
+
+        // TEMP
+        /*    if (_material)
+            {
+                _material->UpdateConstantBuffers();
+            }*/
 
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_geoemtryBuffer->_vertexBufferView);

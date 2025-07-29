@@ -40,4 +40,15 @@ namespace tb
         return layout;
     }
 
+    InputLayout InputLayoutPreset::MaterialInputLayout()
+    {
+        InputLayout layout;
+        layout.AddElement("POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0);
+        layout.AddElement("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 12, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0);
+        layout.AddElement("NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 20, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0);
+        layout.AddElement("TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 32, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0);
+        layout.AddElement("BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 44, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0);
+        return layout;
+    }
+
 } // namespace tb
