@@ -41,6 +41,8 @@ namespace tb
 
     void Engine::Launch()
     {
+        LoadModules();
+
         _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
         g_dx12Device.Initialize();
         g_dx12Device.CreateSwapChain(_window->GetWndRef());
@@ -96,5 +98,15 @@ namespace tb
 
         // OnEndFrame
         _sceneManager->OnEndFrame();
+    }
+
+    void Engine::LoadModules()
+    {
+        std::string pix = "C:/Program Files/Microsoft PIX/2405.15.002-OneBranch_release/WinPixGpuCapturer.dll";
+        HMODULE hPixModule = LoadLibraryA(pix.c_str());
+        if (hPixModule)
+        {
+            spdlog::info("pix module load success.");
+        }
     }
 } // namespace tb

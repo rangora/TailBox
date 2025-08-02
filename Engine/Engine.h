@@ -39,6 +39,8 @@ namespace tb
         void OnUpdateRenderTick(float deltaTime) { _renderTick = deltaTime; }
 
     private:
+        void LoadModules();
+
         inline static Engine* _instance = nullptr;
         Window* _window = nullptr;
         static SceneManager* _sceneManager;
