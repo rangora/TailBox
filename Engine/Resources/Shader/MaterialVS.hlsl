@@ -1,17 +1,15 @@
-cbuffer MaterialConstants : register(b2)
+cbuffer MeshConstants : register(b0)
 {
-    float4 Diffuse;
-    float4 Specular;
-    float4 Ambient;
-    float4 Emissive;
+    matrix WorldMatrix;
 };
 
-Texture2D DiffuseTexture : register(t0);
-Texture2D SpecularTexture : register(t1);
-Texture2D AmbientTexture : register(t2);
-Texture2D EmissiveTexture : register(t3);
-
-SamplerState MaterialSampler : register(s0);
+cbuffer GlobalConstants : register(b1)
+{
+    // float4x4
+    matrix ViewProjMatrix;
+    float3 CameraPosition;
+    float Time;
+};
 
 struct VSInput
 {
@@ -32,18 +30,6 @@ struct VSOutput
     float3 bitangent : BITANGENT;
 };
 
-// 기존 상수 버퍼들 (World, ViewProj)
-cbuffer MeshConstants : register(b0)
-{
-    matrix WorldMatrix;
-};
-
-cbuffer GlobalConstants : register(b1)
-{
-    float4x4 ViewProjMatrix;
-    float3 CameraPosition;
-    float Time;
-};
 
 VSOutput main(VSInput input)
 {

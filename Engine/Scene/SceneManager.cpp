@@ -108,7 +108,7 @@ namespace tb
         /* sceneManager가 Renderer에게 전달하고
         * Renderer가 CommandContext를 호출하는 방식??
         */
-        g_commandContext.SetRootSignature("Default");
+        g_commandContext.SetRootSignature("Material");
         scene->Render(vpMtx);
     }
 
@@ -116,4 +116,20 @@ namespace tb
     {
         _scenes[_activeIndex]->Clear();
     }
+
+    XMMATRIX SceneManager::GetProjectionMatrix()
+    {
+        return _camera._projMtx;
+    }
+
+    XMMATRIX SceneManager::GetViewMatrix()
+    {
+        return _camera._viewMtx;
+    }
+
+    Vector3 SceneManager::GetCameraPosition()
+    {
+        return _camera._pos;
+    }
+
 } // namespace tb

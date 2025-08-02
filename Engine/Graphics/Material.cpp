@@ -23,20 +23,12 @@ namespace tb
     {
     }
 
-    void Material::UpdateConstantBuffers()
+    void Material::UpdateMaterialConstantBuffer(MaterialConstants& cBuffer)
     {
-        if (_constantBuffer->_mappedBuffer)
-        {
-            g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
-
-            // Render..?
-            memcpy(_constantBuffer->_mappedBuffer, &_properties, sizeof(MaterialProperties));
-
-            D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
-                _constantBuffer->_cpuHandleBegin, _constantBuffer->_currentIdx * _constantBuffer->_handleIncrementSize);
-
-            D3D12_CPU_DESCRIPTOR_HANDLE destHandle = g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(2);
-            g_dx12Device.GetRootDescriptorHeap()->SetCBV(cpuHandle, destHandle);
-        }
+        cBuffer._ambient = _properties._ambient;
+        cBuffer._diffuse = _properties._diffuse;
+        cBuffer._emissive = _properties._emissive;
+        cBuffer._specular = _properties._specular;
     }
+
 } // namespace tb

@@ -29,6 +29,10 @@ namespace tb
         void Render();
         void OnRenderBegin();
 
+        XMMATRIX GetProjectionMatrix();
+        XMMATRIX GetViewMatrix();
+        Vector3 GetCameraPosition();
+
     private:
         enum
         {

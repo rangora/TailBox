@@ -1,3 +1,10 @@
+cbuffer GlobalConstants : register(b1)
+{
+    float4x4 ViewProjMatrix;
+    float3 CameraPosition;
+    float Time;
+};
+
 cbuffer MaterialConstants : register(b2)
 {
     float4 Diffuse;
@@ -6,19 +13,13 @@ cbuffer MaterialConstants : register(b2)
     float4 Emissive;
 };
 
-Texture2D DiffuseTexture : register(t0);
-Texture2D SpecularTexture : register(t1);
-Texture2D AmbientTexture : register(t2);
-Texture2D EmissiveTexture : register(t3);
+Texture2D BaseTexture : register(t0);
+Texture2D DiffuseTexture : register(t1);
+Texture2D SpecularTexture : register(t2);
+Texture2D AmbientTexture : register(t3);
+Texture2D EmissiveTexture : register(t4);
 
 SamplerState MaterialSampler : register(s0);
-
-cbuffer GlobalConstants : register(b1)
-{
-    float4x4 ViewProjMatrix;
-    float3 CameraPosition;
-    float Time;
-};
 
 struct VSOutput
 {
@@ -77,11 +78,11 @@ float4 main(VSOutput input) : SV_TARGET
     float3 litColor = CalculateBlinnPhong(input.worldPos, normal, viewDir, lightDir, lightColor);
 
     // 발광 색상 추가
-    litColor += finalEmissive.rgb;
+    // litColor += finalEmissive.rgb;
+
 
     // 최종 색상 출력
-    float Opacity = 1.0f;
+    float Opacity = 0.5f;
     float4 finalColor = float4(litColor, finalDiffuse.a * Opacity);
-
-    return finalColor;
+    return BaseTexture.Sample(MaterialSampler, input.uv) * finalColor;
 }

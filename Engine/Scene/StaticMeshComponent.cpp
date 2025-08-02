@@ -3,7 +3,9 @@
 #include "Graphics/DescriptorHeap.h"
 #include "Graphics/TextureResource.h"
 #include "Graphics/Material.h"
+#include "Graphics/ShaderResource.h"
 #include "Actor.h"
+#include "Engine.h"
 
 namespace tb
 {
@@ -30,9 +32,9 @@ namespace tb
             return;
         }
 
-        // create buffer
+        // new BaseBuffer
         _baseBuffer = new GpuBuffer;
-        _baseBuffer->CreateConstantBuffer(sizeof(Matrix), 256);
+        _baseBuffer->CreateConstantBuffer(sizeof(BaseConstants), 256);
 
         _meshName = meshName;
     }
@@ -41,51 +43,76 @@ namespace tb
     {
         SceneComponent::Render(vpMtx);
 
-         g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Cube").Get());
+        g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
+
+        Transform parentTransform = _ownerActor->GetTrnasform();
+        Vector3 calcPos = parentTransform._pos + _transform._pos;
+
+        FXMVECTOR posVec = DirectX::XMLoadFloat3(&calcPos);
+
+        XMMATRIX rotMtx = XMMatrixRotationRollPitchYaw(_transform._rot.x, _transform._rot.y, _transform._rot.z);
+        XMMATRIX translateMtx = XMMatrixTranslationFromVector(posVec);
+        XMMATRIX worldMtx = rotMtx * translateMtx;
+
+        BaseConstants constantBuffers;
+        XMStoreFloat4x4(&constantBuffers._mesh._worldMtx, worldMtx);
+
+        auto projMtx = Engine::GetActiveProjectionMatrix();
+        auto viewMtx = Engine::GetActiveViewMatrix();
+        XMMATRIX viewProjMtx = viewMtx * projMtx;
+        XMStoreFloat4x4(&constantBuffers._global._viewProj, XMMatrixTranspose(viewMtx * projMtx));
+        constantBuffers._global._cameraPosition = Engine::GetActiveCameraPosition();
+        constantBuffers._global._time = 0.f;
+        _material->UpdateMaterialConstantBuffer(constantBuffers._material);
 
         // b0
+        int32 rootParamIndex = 0;
         {
-            Transform parentTransform = _ownerActor->GetTrnasform();
-            SimpleMath::Vector3 result = parentTransform._pos + _transform._pos;
+            memcpy(&_baseBuffer->_mappedBuffer[_baseBuffer->_currentIdx * _baseBuffer->_elementSize],
+                   &constantBuffers._mesh, sizeof(constantBuffers._mesh));
 
-            FXMVECTOR posVec = DirectX::XMLoadFloat3(&result); // 확인 필!
-
-            XMMATRIX rotMtx = XMMatrixRotationRollPitchYaw(_transform._rot.x, _transform._rot.y, _transform._rot.z);
-            XMMATRIX translateMtx = XMMatrixTranslationFromVector(posVec);
-            XMMATRIX worldMtx = rotMtx * translateMtx;
-            XMMATRIX transposed = XMMatrixTranspose(worldMtx * vpMtx);
-            XMStoreFloat4x4(&_matrix._wvpMat, transposed);
-
-            int32 rootParamIndex = 0;
-
-            void* buffer = &_matrix;
-            uint32 size = sizeof(_matrix);
-
-            // Get CB handler (PushData)
-            ::memcpy(&_baseBuffer->_mappedBuffer[_baseBuffer->_currentIdx * _baseBuffer->_elementSize], buffer, size);
-            D3D12_CPU_DESCRIPTOR_HANDLE sourceCPUHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+            D3D12_CPU_DESCRIPTOR_HANDLE sourceCpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
                 _baseBuffer->_cpuHandleBegin, _baseBuffer->_currentIdx * _baseBuffer->_handleIncrementSize);
-            _baseBuffer->_currentIdx++;
 
-            D3D12_CPU_DESCRIPTOR_HANDLE destCPUHandle =
+            D3D12_CPU_DESCRIPTOR_HANDLE destCpuHandle =
                 g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCpuHandle, destCpuHandle);
+            _baseBuffer->_currentIdx++;
+        }
+        // b1
+        {
+            rootParamIndex = 1;
+            memcpy(&_baseBuffer->_mappedBuffer[_baseBuffer->_currentIdx * _baseBuffer->_elementSize],
+                   &constantBuffers._global, sizeof(constantBuffers._global));
+            D3D12_CPU_DESCRIPTOR_HANDLE sourceCpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+                _baseBuffer->_cpuHandleBegin, _baseBuffer->_currentIdx * _baseBuffer->_handleIncrementSize);
 
-            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCPUHandle, destCPUHandle);
+            D3D12_CPU_DESCRIPTOR_HANDLE destCpuHandle =
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCpuHandle, destCpuHandle);
+            _baseBuffer->_currentIdx++;
+        }
+        // b2
+        {
+            rootParamIndex = 2;
+            memcpy(&_baseBuffer->_mappedBuffer[_baseBuffer->_currentIdx * _baseBuffer->_elementSize],
+                   &constantBuffers._material, sizeof(constantBuffers._material));
+            D3D12_CPU_DESCRIPTOR_HANDLE sourceCpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(
+                _baseBuffer->_cpuHandleBegin, _baseBuffer->_currentIdx * _baseBuffer->_handleIncrementSize);
 
-            /*
-             * srv start는 5(t0)
-             * handle, 5
-             */
-            D3D12_CPU_DESCRIPTOR_HANDLE srvDestCPUHandle = g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(5);
-            auto sampler = g_renderer.GetTexture("Niko");
-            g_dx12Device.GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCPUHandle);
+            D3D12_CPU_DESCRIPTOR_HANDLE destCpuHandle =
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(rootParamIndex);
+            g_dx12Device.GetRootDescriptorHeap()->SetCBV(sourceCpuHandle, destCpuHandle);
+            _baseBuffer->_currentIdx++;
         }
 
-        // TEMP
-        /*    if (_material)
-            {
-                _material->UpdateConstantBuffers();
-            }*/
+        // t0
+        {
+            D3D12_CPU_DESCRIPTOR_HANDLE srvDestCpuHandle =
+                g_dx12Device.GetRootDescriptorHeap()->GetCPUHandle(3);
+            auto sampler = g_renderer.GetTexture("Niko");
+            g_dx12Device.GetRootDescriptorHeap()->SetSRV(sampler->_srvHandle, srvDestCpuHandle);
+        }
 
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_geoemtryBuffer->_vertexBufferView);

@@ -29,7 +29,7 @@ namespace tb
         _projMtx = XMMatrixPerspectiveFovLH(fovRadians, aspectRatio, nearZ, farZ);
     }
 
-    void Camera::SetDirection(Vector direction)
+    void Camera::SetDirection(Vector3 direction)
     {
         if (_pos.x == direction.x && _pos.y == direction.y && _pos.z == direction.z)
         {
@@ -61,7 +61,7 @@ namespace tb
         SetRotation(pitch, yaw, 0.f);
     }
 
-    void Camera::SetPosition(const Vector& pos)
+    void Camera::SetPosition(const Vector3& pos)
     {
         _pos = pos;
         _posVector = XMLoadFloat3(&pos);
@@ -75,7 +75,7 @@ namespace tb
         UpdateViewMatrix();
     }
 
-    void Camera::SetRotation(const Vector& rot)
+    void Camera::SetRotation(const Vector3& rot)
     {
         _rot = rot;
         _rotVector = XMLoadFloat3(&_rot);
@@ -91,7 +91,7 @@ namespace tb
         UpdateViewMatrix();
     }
 
-    void Camera::AddPosition(const Vector& delta)
+    void Camera::AddPosition(const Vector3& delta)
     {
         _pos.x += delta.x;
         _pos.y += delta.y;
@@ -109,7 +109,7 @@ namespace tb
         UpdateViewMatrix();
     }
 
-    void Camera::AddRotation(const Vector& delta)
+    void Camera::AddRotation(const Vector3& delta)
     {
         _rot.x += delta.x;
         _rot.y += delta.y;

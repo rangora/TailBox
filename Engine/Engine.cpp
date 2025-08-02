@@ -25,6 +25,21 @@ namespace tb
         return _sceneManager;
     }
 
+    XMMATRIX Engine::GetActiveProjectionMatrix()
+    {
+        return GetSceneManager()->GetProjectionMatrix();
+    }
+
+    XMMATRIX Engine::GetActiveViewMatrix()
+    {
+        return GetSceneManager()->GetViewMatrix();
+    }
+
+    Vector3 Engine::GetActiveCameraPosition()
+    {
+        return GetSceneManager()->GetCameraPosition();
+    }
+
     void Engine::Launch()
     {
         _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});

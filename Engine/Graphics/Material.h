@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "TextureResource.h"
+#include "ShaderResource.h"
 #include "GpuBuffer.h"
 
 namespace tb
@@ -34,7 +35,7 @@ namespace tb
         void InitializeDefaultProperties();
 
         void BindTextures();
-        void UpdateConstantBuffers();
+        void UpdateMaterialConstantBuffer(MaterialConstants& cBuffer);
 
     private:
         std::string _name;

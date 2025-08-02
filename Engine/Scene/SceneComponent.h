@@ -23,7 +23,7 @@ namespace tb
     protected:
         Actor* _ownerActor;
         Transform _transform;
-        Matrix _matrix;
+        Matrix _worldMatrix;
 
     private:
     };

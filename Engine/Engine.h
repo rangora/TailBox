@@ -27,6 +27,9 @@ namespace tb
 
         static Engine& Get() { return *_instance; }
         static SceneManager* GetSceneManager();
+        static XMMATRIX GetActiveProjectionMatrix();
+        static XMMATRIX GetActiveViewMatrix();
+        static Vector3 GetActiveCameraPosition();
 
         void Launch();
         void EngineTick(const float tick);
