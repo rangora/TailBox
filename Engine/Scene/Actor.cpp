@@ -17,7 +17,7 @@ namespace tb
         }
     }
 
-    void Actor::SetLocation(const Vector& location)
+    void Actor::SetLocation(const Vector3& location)
     {
         _transform._pos = location;
     }

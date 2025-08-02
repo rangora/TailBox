@@ -2,7 +2,6 @@
 #include "Core/Event.h"
 #include "Core/Input.h"
 #include "Graphics/GraphicsCore.h"
-#include "Graphics/Mesh.h"
 #include "Scene.h"
 #include "Engine.h"
 #include "Window/Window.h"

@@ -12,9 +12,4 @@ namespace tb
         SimpleMath::Vector3 _rot = {};
         SimpleMath::Vector3 _scale = {};
     };
-
-    struct alignas(256) Matrix
-    {
-        XMFLOAT4X4 _wvpMat;
-    };
 }; // namespace tb

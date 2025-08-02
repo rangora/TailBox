@@ -32,22 +32,13 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 using namespace Microsoft::WRL;
 
-using Vector2D = XMFLOAT2;
-using Vector   = XMFLOAT3;
-using Vector4D = XMFLOAT4;
-using Matrix   = XMMATRIX;
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_NULL ((D3D12_GPU_VIRTUAL_ADDRESS)0)
 
 struct Vertex
 {
-    Vector _pos;
-    Vector2D _uv;
-};
-
-struct Transform_2
-{
-    Vector4D _offset;
+    Vector3 _pos;
+    Vector2 _uv;
 };
 
 namespace tb

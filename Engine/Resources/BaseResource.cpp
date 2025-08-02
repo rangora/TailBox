@@ -99,10 +99,10 @@ namespace tb
         std::unique_ptr<GeometryBuffer> CreateBoxBuffer()
         {
             std::vector<Vertex> Vertexvec(4);
-            Vertexvec[0]._pos = Vector(-0.5f, 0.5f, 0.5f);
-            Vertexvec[1]._pos = Vector(0.5f, 0.5f, 0.5f);
-            Vertexvec[2]._pos = Vector(0.5f, -0.5f, 0.5f);
-            Vertexvec[3]._pos = Vector(-0.5f, -0.5f, 0.5f);
+            Vertexvec[0]._pos = Vector3(-0.5f, 0.5f, 0.5f);
+            Vertexvec[1]._pos = Vector3(0.5f, 0.5f, 0.5f);
+            Vertexvec[2]._pos = Vector3(0.5f, -0.5f, 0.5f);
+            Vertexvec[3]._pos = Vector3(-0.5f, -0.5f, 0.5f);
 
             std::vector<uint32> indexVec;
             {

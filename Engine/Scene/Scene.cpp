@@ -1,6 +1,5 @@
 #include "Scene.h"
 #include "Core/Input.h"
-#include "Graphics/Mesh.h"
 #include "Scene/CubeActor.h"
 #include "Window/Window.h"
 
@@ -27,11 +26,6 @@ namespace tb
 
     void Scene::Render(const XMMATRIX& vpMtx)
 {
-        for (const auto mesh : _meshes)
-        {
-            mesh->Render(vpMtx);
-        }
-
         for (const auto cube : _actors)
         {
             cube->Render(vpMtx);
@@ -44,11 +38,6 @@ namespace tb
         {
             it->Clear();
         }
-    }
-
-    void Scene::AddMesh(Mesh* mesh)
-    {
-        _meshes.emplace_back(mesh);
     }
 
     void Scene::RegisterActor(Actor* actor)

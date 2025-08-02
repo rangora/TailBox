@@ -1,6 +1,5 @@
 #include "Engine.h"
 #include "Graphics/DX12Device.h"
-#include "Graphics/Mesh.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
 #include "Window/Window.h"

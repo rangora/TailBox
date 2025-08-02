@@ -14,7 +14,7 @@ namespace tb
         Actor(Scene* scene);
         ~Actor();
 
-        void SetLocation(const Vector& location);
+        void SetLocation(const Vector3& location);
 
         void Render(const XMMATRIX& vpMtx);
         void Clear();
