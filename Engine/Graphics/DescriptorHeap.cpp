@@ -26,6 +26,10 @@ namespace tb
 
     DescriptorHeap::~DescriptorHeap()
     {
+        if (_descHeap)
+        {
+            _descHeap.Reset();
+        }
     }
 
     D3D12_CPU_DESCRIPTOR_HANDLE DescriptorHeap::GetCPUHandle(uint32 reg)

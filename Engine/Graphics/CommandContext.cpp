@@ -1,15 +1,35 @@
 #include "CommandContext.h"
 #include "GraphicsCore.h"
 #include "RootSignature.h"
+#include "MemoryAllocator.h"
+#include "ShaderResource.h"
 
 namespace tb
 {
-    CommandContext::CommandContext()
+    CommandContext::CommandContext() {}
+    CommandContext::~CommandContext()
     {
+        _descriptorPool.release();
+        _constantBufferPool.release();
+    }
+
+    void CommandContext::Initialize()
+    {
+        _descriptorPool = std::make_unique<DescriptorPool>();
+        _descriptorPool->Initialize(256);
+
+        _constantBufferPool = std::make_unique<class ConstantBufferPool>();
+        _constantBufferPool->Initialize(sizeof(BaseConstants), 256);
+
+
         _reservedRootSignature.push_back("Default"); // TEMP
     }
 
-    CommandContext::~CommandContext() = default;
+    void CommandContext::Reset()
+    {
+        _constantBufferPool->Reset();
+        _descriptorPool->Reset();
+    }
 
     void CommandContext::SetRootSignature(const std::string& name)
     {

@@ -321,6 +321,8 @@ namespace tb
 
     void DX12Device::RenderBegin()
     {
+        g_commandContext.Reset();
+
         _nextFrameCtx = WaitForNextFrameResources();
         _backBufferIndex = _swapChain->GetCurrentBackBufferIndex();
         _nextFrameCtx->_commandAllocator->Reset();

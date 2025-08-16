@@ -48,6 +48,7 @@ namespace tb
         g_dx12Device.CreateSwapChain(_window->GetWndRef());
         g_dx12Device.PostSwapChainCreated();
         g_dx12Device.PostDeviceCreated();
+        g_commandContext.Initialize();
         _window->Initialize();
 
         // Init scene.
