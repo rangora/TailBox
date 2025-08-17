@@ -11,8 +11,6 @@ namespace tb
 {
     StaticMeshComponent::StaticMeshComponent(Actor* ownerActor) : SceneComponent(ownerActor)
     {
-        _material = new Material;
-        _material->InitializeDefaultProperties();
     }
 
     StaticMeshComponent::~StaticMeshComponent()
@@ -20,10 +18,19 @@ namespace tb
         SceneComponent::~SceneComponent();
     }
 
+    bool StaticMeshComponent::CheckResourceValidation() const
+    {
+        if (!_renderResource.GetGeometryBuffer())
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     void StaticMeshComponent::SetStaticMesh(const std::string& meshName)
     {
-        _geoemtryBuffer = g_renderer.GetGeometryBuffer(meshName);
-        if (_geoemtryBuffer == nullptr)
+        if (_renderResource.LinkGeometryResources(meshName))
         {
             return;
         }
@@ -33,6 +40,13 @@ namespace tb
 
     void StaticMeshComponent::Render(const XMMATRIX& vpMtx)
     {
+        if (!CheckResourceValidation())
+        {
+            return;
+        }
+
+        auto geometryBuffer = _renderResource.GetGeometryBuffer();
+
         SceneComponent::Render(vpMtx);
 
         g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
@@ -56,9 +70,13 @@ namespace tb
         XMStoreFloat4x4(&constantBuffers._global._viewProj, XMMatrixTranspose(viewProjMtx));
         constantBuffers._global._cameraPosition = Engine::GetActiveCameraPosition();
         constantBuffers._global._time = 0.f;
-        _material->UpdateMaterialConstantBuffer(constantBuffers._material);
 
-        // NEW
+        auto material = _renderResource.GetMaterial();
+        if (material)
+        {
+            material->UpdateMaterialConstantBuffer(constantBuffers._material);
+        }
+
         CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 
@@ -93,12 +111,12 @@ namespace tb
 
         g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, cbvDest, cbBlock->_handle,
                                                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
 
+        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_geoemtryBuffer->_vertexBufferView);
-        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&_geoemtryBuffer->_indexBufferView);
-        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(_geoemtryBuffer->_indexCount, 1, 0, 0, 0);
+        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
+        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&geometryBuffer->_indexBufferView);
+        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);
     }
 
     void StaticMeshComponent::Clear()

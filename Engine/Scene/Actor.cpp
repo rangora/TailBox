@@ -37,4 +37,10 @@ namespace tb
             it->Clear();
         }
     }
+
+    void Actor::RegisterComponent(SceneComponent* component)
+    {
+        _registeredCompoent.push_back(component);
+    }
+
 } // namespace tb

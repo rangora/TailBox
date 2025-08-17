@@ -81,8 +81,6 @@ namespace tb
         ID3D12Resource* _mainRtvResources[BUFFERCOUNT] = {};
         ComPtr<ID3D12Resource> _dsBuffer = nullptr;
 
-        ComPtr<ID3D12RootSignature> _curRootSignature = nullptr;
-
         D3D12_CPU_DESCRIPTOR_HANDLE _mainRtvCpuHandle[BUFFERCOUNT] = {};
 
         D3D12_VIEWPORT _viewport = {};

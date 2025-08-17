@@ -23,10 +23,13 @@ namespace tb
         RootSignature* GetRootSignature(const std::string& name) { return _rootSignatures.find(name)->second.get(); }
         ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& identifier);
 
+        void Release();
+
     private:
         void InitRootSignature();
         void InitBuffers();
         void InitShaders();
+        void InitTextures();
 
         void CreateMaterialPipelineState();
 

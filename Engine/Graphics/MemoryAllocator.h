@@ -40,7 +40,6 @@ namespace tb
 
     class ConstantBufferPool
     {
-
     public:
         ConstantBufferPool();
         ~ConstantBufferPool();

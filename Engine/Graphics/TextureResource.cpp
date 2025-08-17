@@ -29,6 +29,16 @@ namespace tb
         return true;
     }
 
+    TextureResource::TextureResource() = default;
+
+    TextureResource::~TextureResource()
+    {
+        if (_srvHeap)
+        {
+            _srvHeap.Reset();
+        }
+    }
+
     void TextureResource::Destroy()
     {
     }

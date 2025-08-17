@@ -7,6 +7,9 @@ namespace tb
     class RootSignature
     {
     public:
+        RootSignature();
+        ~RootSignature();
+
         void CreateRootSignature();
         void CreateMaterialRootSignature();
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SceneComponent.h"
+#include "Graphics/RenderResource/StaticMeshRenderResource.h"
 
 namespace tb
 {
@@ -15,6 +16,8 @@ namespace tb
         StaticMeshComponent(Actor* ownerActor);
         ~StaticMeshComponent();
 
+        virtual bool CheckResourceValidation() const final;
+
         void SetStaticMesh(const std::string& meshName);
 
         // proxy functions
@@ -24,8 +27,6 @@ namespace tb
     private:
         std::string _meshName;
 
-        // proxy data
-        GeometryBuffer* _geoemtryBuffer = nullptr;
-        Material* _material = nullptr;
+        StaticMeshRenderResource _renderResource;
     };
 } // namespace tb

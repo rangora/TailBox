@@ -12,6 +12,51 @@ namespace tb
     Renderer::Renderer() = default;
     Renderer::~Renderer() = default;
 
+    void Renderer::Initialize()
+    {
+        _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
+
+        _geoemtryBuffers.reserve(100);
+        _shaders.reserve(100);
+        _rootSignatures.reserve(100);
+        _textures.reserve(100);
+
+        InitRootSignature();
+        InitBuffers();
+        InitShaders();
+        InitTextures();
+    }
+
+    ComPtr<ID3D12PipelineState> Renderer::GetPipelineState(const std::string& identifier)
+    {
+        return _pipelineStateHandler->GetPipelineState(identifier);
+    }
+
+    void Renderer::Release()
+    {
+        for (auto& [_, resource] : _geoemtryBuffers)
+        {
+            resource.reset();
+        }
+        for (auto& [_, resource] : _shaders)
+        {
+            resource.reset();
+        }
+        for (auto& [_, resource] : _textures)
+        {
+            resource.reset();
+        }
+        for (auto& [_, resource] : _rootSignatures)
+        {
+            resource.reset();
+        }
+
+        if (_pipelineStateHandler)
+        {
+            _pipelineStateHandler.reset();
+        }
+    }
+
     void Renderer::InitRootSignature()
     {
         // Base
@@ -23,29 +68,6 @@ namespace tb
         std::unique_ptr<RootSignature> materialRS = std::make_unique<RootSignature>();
         materialRS->CreateMaterialRootSignature();
         _rootSignatures.emplace("Material", std::move(materialRS));
-    }
-
-    void Renderer::Initialize()
-    {
-        _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
-
-        _geoemtryBuffers.reserve(100);
-        _shaders.reserve(100);
-        _rootSignatures.reserve(100);
-
-        InitRootSignature();
-        InitBuffers();
-        InitShaders();
-
-        // Init textures
-        std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
-        texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
-        _textures.emplace("Niko", std::move(texture));
-    }
-
-    ComPtr<ID3D12PipelineState> Renderer::GetPipelineState(const std::string& identifier)
-    {
-        return _pipelineStateHandler->GetPipelineState(identifier);
     }
 
     void Renderer::InitBuffers()
@@ -99,6 +121,13 @@ namespace tb
         _pipelineStateHandler->CreatePipelineState(pipelineStateDesc);
 
         CreateMaterialPipelineState();
+    }
+
+    void Renderer::InitTextures()
+    {
+        std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
+        texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
+        _textures.emplace("Niko", std::move(texture));
     }
 
     void Renderer::CreateMaterialPipelineState()

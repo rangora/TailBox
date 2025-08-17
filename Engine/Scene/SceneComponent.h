@@ -17,6 +17,7 @@ namespace tb
         void SetLocation(const Vector3& location);
 
         // proxy functions
+        virtual bool CheckResourceValidation() const { return true; }
         virtual void Render(const XMMATRIX& vpMtx);
         virtual void Clear();
 

@@ -31,6 +31,19 @@ namespace tb
         _descriptorPool->Reset();
     }
 
+    void CommandContext::Release()
+    {
+        if (_descriptorPool)
+        {
+            _descriptorPool.reset();
+        }
+
+        if (_constantBufferPool)
+        {
+            _constantBufferPool.reset();
+        }
+    }
+
     void CommandContext::SetRootSignature(const std::string& name)
     {
         if (RootSignature* rs = g_renderer.GetRootSignature(name))

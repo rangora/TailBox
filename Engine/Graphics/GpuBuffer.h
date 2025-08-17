@@ -18,10 +18,10 @@ namespace tb
         uint32 _elementSize = 0;
         uint32 _currentIdx = 0;
 
-        // ¿©±â°¡ ÀûÀıÇÑÁö ÆÇ´Ü ÇÊ¿ä
+        // ì—¬ê¸°ê°€ ì ì ˆí•œì§€ íŒë‹¨ í•„ìš”
         ComPtr<ID3D12DescriptorHeap> _bufferHeap = nullptr;
 
-        // ÇÊ¿äÇÑÁö ÆÇ´Ü ÇÊ¿ä
+        // í•„ìš”í•œì§€ íŒë‹¨ í•„ìš”
         int _reg = 0; // temp
         D3D12_CPU_DESCRIPTOR_HANDLE _cpuHandleBegin = {};
         uint32 _handleIncrementSize = 0;
@@ -31,7 +31,7 @@ namespace tb
     {
     public:
         GeometryBuffer() = default;
-        virtual ~GeometryBuffer() = default;
+        virtual ~GeometryBuffer();
 
         void Create(const std::wstring& name, int32 size, class UploadBuffer* buffer, std::vector<Vertex>& vertexArray);
 

@@ -3,6 +3,16 @@
 
 namespace tb
 {
+    RootSignature::RootSignature() = default;
+
+    RootSignature::~RootSignature()
+    {
+        if (_rootSignature)
+        {
+            _rootSignature.Reset();
+        }
+    }
+
     void RootSignature::CreateRootSignature()
     {
         CD3DX12_DESCRIPTOR_RANGE ranges[] = {CD3DX12_DESCRIPTOR_RANGE(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 5, 0),

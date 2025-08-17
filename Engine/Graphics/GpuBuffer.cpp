@@ -6,6 +6,10 @@ namespace tb
 {
     GpuBuffer::~GpuBuffer()
     {
+        if (_bufferHeap)
+        {
+            _bufferHeap.Reset();
+        }
     }
 
     void GpuBuffer::CreateConstantBuffer(uint32 _size, uint32 _count)
@@ -43,6 +47,19 @@ namespace tb
                 bufferDesc.SizeInBytes = _elementSize;
                 g_dx12Device.GetDevice()->CreateConstantBufferView(&bufferDesc, bufferHandle);
             }
+        }
+    }
+
+    GeometryBuffer::~GeometryBuffer()
+    {
+        if (_vertexBuffer)
+        {
+            _vertexBuffer.Reset();
+        }
+
+        if (_indexBuffer)
+        {
+            _indexBuffer.Reset();
         }
     }
 

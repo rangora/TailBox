@@ -9,6 +9,9 @@ namespace tb
     class TextureResource : public GpuResource
     {
     public:
+        TextureResource();
+        ~TextureResource();
+
         void Destroy() final;
         void CreateTexture(const std::string& path);
 

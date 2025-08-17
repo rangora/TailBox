@@ -10,6 +10,10 @@ namespace tb
 
     PipelineStateHandler::~PipelineStateHandler()
     {
+        for (auto& [_, resource] : _pipelineStates)
+        {
+            resource.Reset();
+        }
     }
 
     bool PipelineStateHandler::CreatePipelineState(GraphicsPipelineStateDesc& desc)

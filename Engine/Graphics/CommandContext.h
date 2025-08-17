@@ -13,6 +13,7 @@ namespace tb
 
         void Initialize();
         void Reset();
+        void Release();
 
         void SetRootSignature(const std::string& name);
 

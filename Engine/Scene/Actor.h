@@ -19,6 +19,8 @@ namespace tb
         void Render(const XMMATRIX& vpMtx);
         void Clear();
 
+        void RegisterComponent(SceneComponent* component);
+
         Transform GetTrnasform() const { return _transform; }
 
     protected:
