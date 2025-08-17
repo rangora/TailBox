@@ -343,8 +343,8 @@ namespace tb
 
         _rootDescriptorHeap->Clear();
 
-        ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();
-        _commandList->SetDescriptorHeaps(1, &mainHeap);
+       /* ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();
+         _commandList->SetDescriptorHeaps(1, &mainHeap);*/
 
         _commandList->ResourceBarrier(1, &barrier);
 

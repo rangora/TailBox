@@ -24,6 +24,20 @@ namespace tb
         Vector4 _emissive;
     };
 
+    struct alignas(256) TempConstants
+    {
+        XMFLOAT4X4 _worldMtx;
+
+        XMFLOAT4X4 _viewProj;
+        Vector3 _cameraPosition;
+        float _time;
+
+        Vector4 _diffuse;
+        Vector4 _specular;
+        Vector4 _ambient;
+        Vector4 _emissive;
+    };
+
     struct alignas(256) BaseConstants
     {
         MeshConstants _mesh;

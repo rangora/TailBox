@@ -1,14 +1,36 @@
-cbuffer MeshConstants : register(b0)
+//cbuffer MeshConstants : register(b4)
+//{
+//    matrix WorldMatrix;
+//};
+
+//cbuffer GlobalConstants : register(b1)
+//{
+//    // float4x4
+//    matrix ViewProjMatrix;
+//    float3 CameraPosition;
+//    float Time;
+//};
+
+//cbuffer MaterialConstants : register(b2)
+//{
+//    float4 Diffuse;
+//    float4 Specular;
+//    float4 Ambient;
+//    float4 Emissive;
+//};
+
+cbuffer TempConstants : register(b0)
 {
     matrix WorldMatrix;
-};
 
-cbuffer GlobalConstants : register(b1)
-{
-    // float4x4
     matrix ViewProjMatrix;
     float3 CameraPosition;
     float Time;
+
+    float4 Diffuse;
+    float4 Specular;
+    float4 Ambient;
+    float4 Emissive;
 };
 
 struct VSInput
@@ -39,11 +61,11 @@ VSOutput main(VSInput input)
     float4 worldPos = mul(input.position, WorldMatrix);
     output.worldPos = worldPos.xyz;
 
-    // 최종 위치 (ViewProj 변환)
-    output.position = mul(worldPos, ViewProjMatrix);
-
     // UV 좌표
     output.uv = input.uv;
+
+    //// 최종 위치 (ViewProj 변환)
+    output.position = mul(worldPos, ViewProjMatrix);
 
     // 노말, 탄젠트, 바이탄젠트를 월드 공간으로 변환
     output.normal = normalize(mul(input.normal, (float3x3) WorldMatrix));

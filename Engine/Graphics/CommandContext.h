@@ -18,7 +18,8 @@ namespace tb
 
         std::vector<std::string> _reservedRootSignature;
 
-    private:
         std::unique_ptr<class DescriptorPool> _descriptorPool = nullptr;
-        std::unique_ptr<class ConstantBufferPool> _constantBufferPool = nullptr;    };
+        std::unique_ptr<class ConstantBufferPool> _constantBufferPool = nullptr;
+    private:
+    };
 } // namespace tb

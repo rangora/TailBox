@@ -128,7 +128,7 @@ namespace tb
         ImGui::NewFrame();
 
         Overlay();
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
 
         ImGui::Render();
     }

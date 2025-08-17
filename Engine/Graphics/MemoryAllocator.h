@@ -35,7 +35,7 @@ namespace tb
     {
         D3D12_CPU_DESCRIPTOR_HANDLE _handle;
         D3D12_GPU_VIRTUAL_ADDRESS _gpuMemAddr = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
-        int32* _cpuMemAddr = nullptr;
+        UINT8* _cpuMemAddr = nullptr;
     };
 
     class ConstantBufferPool
@@ -50,12 +50,12 @@ namespace tb
 
         CBBlock* Allocate();
 
+        ComPtr<ID3D12DescriptorHeap> _descriptorHeap = nullptr;
     private:
         void Clean();
 
-        ComPtr<ID3D12DescriptorHeap> _descriptorHeap = nullptr;
         ComPtr<ID3D12Resource> _resource = nullptr;
-        int32* _cpuMemAddr = nullptr;
+        UINT8* _cpuMemAddr = nullptr;
         int32 _blockSize = 0;
         int32 _maxSize = 0;
         int32 _allocatedBlocks = 0;

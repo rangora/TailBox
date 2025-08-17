@@ -19,7 +19,7 @@ namespace tb
         _descriptorPool->Initialize(256);
 
         _constantBufferPool = std::make_unique<class ConstantBufferPool>();
-        _constantBufferPool->Initialize(sizeof(BaseConstants), 256);
+        _constantBufferPool->Initialize(sizeof(TempConstants), 256);
 
 
         _reservedRootSignature.push_back("Default"); // TEMP

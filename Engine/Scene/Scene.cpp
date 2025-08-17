@@ -17,7 +17,11 @@ namespace tb
     {
         // spawnActor로 wrapping 필
         // 호출 위치도 바뀌어야 한다.
-        new CubeActor(this);
+        auto Cube1 = new CubeActor(this);
+        Cube1->SetLocation({0.f, 0.f, 0.f});
+
+        auto Cube2 = new CubeActor(this);
+        Cube2->SetLocation({3.f, 0.f, 0.f});
     }
 
     void Scene::Update(float deltaTime)

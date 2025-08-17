@@ -88,12 +88,15 @@ namespace tb
             return;
         }
 
+        CD3DX12_RANGE readRange(0, 0);
+        _resource->Map(0, &readRange, reinterpret_cast<void**>(&_cpuMemAddr));
+
         _cbBlocks = new CBBlock[_maxSize];
 
         D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
         cbvDesc.BufferLocation = _resource->GetGPUVirtualAddress();
         cbvDesc.SizeInBytes = _blockSize;
-        int32* cpuMemPointer = _cpuMemAddr;
+        UINT8* cpuMemPointer = _cpuMemAddr;
         CD3DX12_CPU_DESCRIPTOR_HANDLE handle(_descriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
         int32 descriptorSize =
@@ -135,7 +138,8 @@ namespace tb
             return nullptr;
         }
 
-        CBBlock* block = _cbBlocks + _allocatedBlocks++;
+        CBBlock* block = _cbBlocks + _allocatedBlocks;
+        _allocatedBlocks++;
         return block;
     }
 
