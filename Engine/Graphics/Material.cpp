@@ -1,5 +1,4 @@
 #include "Material.h"
-#include "Graphics/DescriptorHeap.h"
 #include "Graphics/GraphicsCore.h"
 
 namespace tb

@@ -5,7 +5,6 @@
 namespace tb
 {
     class Actor;
-    class GpuBuffer;
     class GeometryBuffer;
     class Material;
 
@@ -26,7 +25,6 @@ namespace tb
         std::string _meshName;
 
         // proxy data
-        GpuBuffer* _baseBuffer = nullptr;
         GeometryBuffer* _geoemtryBuffer = nullptr;
         Material* _material = nullptr;
     };

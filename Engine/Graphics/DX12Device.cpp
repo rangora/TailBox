@@ -1,5 +1,4 @@
 #include "DX12Device.h"
-#include "DescriptorHeap.h"
 #include "Engine.h"
 #include "Renderer.h"
 #include "Graphics/Shader.h"
@@ -82,7 +81,6 @@ namespace tb
             _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frameContexts[0]._commandAllocator,
                                        nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
             _commandList->Close();
-            // _rootDescriptorHeap = std::make_unique<DescriptorHeap>(256);
 
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -93,11 +91,6 @@ namespace tb
                 spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
                 return;
             }
-        }
-
-        // Create rootDescriptorHeap
-        {
-            _rootDescriptorHeap = std::make_unique<DescriptorHeap>(_device.Get(), 256);
         }
 
         // Create fence
@@ -340,12 +333,6 @@ namespace tb
         _rh = rtvDesc.Height;
 
         _commandList->Reset(_nextFrameCtx->_commandAllocator, nullptr);
-
-        _rootDescriptorHeap->Clear();
-
-       /* ID3D12DescriptorHeap* mainHeap = _rootDescriptorHeap->GetDescriptorHeap();
-         _commandList->SetDescriptorHeaps(1, &mainHeap);*/
-
         _commandList->ResourceBarrier(1, &barrier);
 
         const float clearColors[4] = {0.45f, 0.55f, 0.6f, 1.f}; // TEMP

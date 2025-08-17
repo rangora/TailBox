@@ -7,7 +7,6 @@ namespace tb
     static constexpr int BUFFERCOUNT = 2;
 
     class Renderer;
-    class DescriptorHeap;
     class UploadBuffer;
     class CommandContext;
 
@@ -50,7 +49,6 @@ namespace tb
         ID3D12DescriptorHeap* GetImGuiDescHeap() const { return _imguiDescHeap.Get(); }
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
         ID3D12GraphicsCommandList* GetCommmandList() const { return _commandList.Get(); }
-        DescriptorHeap* GetRootDescriptorHeap() const { return _rootDescriptorHeap.get(); }
         void GetRenderTargetViewSize(float& width, float& height) { width = _rw; height = _rh; }
 
         void CreateRenderTarget();
@@ -75,7 +73,6 @@ namespace tb
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
         ComPtr<IDXGISwapChain3> _swapChain = nullptr;
 
-        std::unique_ptr<DescriptorHeap> _rootDescriptorHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _imguiDescHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _dsHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _srvHeap = nullptr;
