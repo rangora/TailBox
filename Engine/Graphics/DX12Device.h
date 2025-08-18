@@ -61,6 +61,8 @@ namespace tb
         void Signal();
 
     private:
+        bool CreateD3D12evice_internal();
+
         void PreRenderBegin();
         void PostRenderEnd();
 

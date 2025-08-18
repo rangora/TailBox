@@ -37,10 +37,22 @@ namespace tb
 #ifdef _DEBUG
         ::D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController));
         _debugController->EnableDebugLayer();
+        ID3D12Debug5* debugController5 = nullptr;
+        if (S_OK == _debugController->QueryInterface(IID_PPV_ARGS(&debugController5)))
+        {
+            debugController5->SetEnableGPUBasedValidation(TRUE);
+            debugController5->SetEnableAutoName(TRUE);
+            debugController5->Release();
+        }
+        _debugController.Reset();
 #endif
 
-        ::CreateDXGIFactory1(IID_PPV_ARGS(&_dxgi));
-        ::D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&_device));
+        if (!CreateD3D12evice_internal())
+        {
+            spdlog::error("Failed to create d3d12device.");
+            assert(false);
+            return;
+        }
 
 #ifdef _DEBUG
         ID3D12InfoQueue* pInfoQueue = nullptr;
@@ -58,7 +70,6 @@ namespace tb
         filter.DenyList.pIDList = hide;
 
         pInfoQueue->AddStorageFilterEntries(&filter);
-        _debugController.Reset();
 #endif
         // Create commandQueue
         {
@@ -509,6 +520,35 @@ namespace tb
 
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
         WaitForSingleObject(_fenceEvent, INFINITE);
+    }
+
+    bool DX12Device::CreateD3D12evice_internal()
+    {
+        CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&_dxgi));
+        D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
+                                             D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0};
+
+        IDXGIAdapter1* adapter = nullptr;
+        DXGI_ADAPTER_DESC1 adapterDesc = {};
+        int32 levelCount = _countof(featureLevels);
+        for (int32 i = 0; i < levelCount; ++i)
+        {
+            int32 adapterIndex = 0;
+            while (DXGI_ERROR_NOT_FOUND != _dxgi->EnumAdapters1(adapterIndex, &adapter))
+            {
+                adapter->GetDesc1(&adapterDesc);
+                if (SUCCEEDED(D3D12CreateDevice(adapter, featureLevels[i], IID_PPV_ARGS(&_device))))
+                {
+                    adapter->Release();
+                    adapter = nullptr;
+                    return true;
+                }
+
+                adapterIndex++;
+            }
+        }
+
+        return false;
     }
 
     void DX12Device::PreRenderBegin()
