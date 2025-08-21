@@ -33,6 +33,9 @@ cbuffer TempConstants : register(b0)
     float4 Emissive;
 };
 
+//Texture2D BaseTexture : register(t0);
+//SamplerState MaterialSampler : register(s0);
+
 struct VSInput
 {
     float4 position : POSITION;

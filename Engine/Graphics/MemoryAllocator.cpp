@@ -147,4 +147,74 @@ namespace tb
     {
         _allocatedBlocks = 0;
     }
+
+    SolidDescriptorPool::SolidDescriptorPool()
+    {
+    }
+
+    SolidDescriptorPool::~SolidDescriptorPool()
+    {
+        if (_descriptorHeap)
+        {
+            _descriptorHeap.Reset();
+        }
+    }
+
+    void SolidDescriptorPool::Initialize(int32 maxCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+        heapDesc.NumDescriptors = maxCount;
+        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heapDesc.Flags = flags;
+
+        if (S_OK != g_dx12Device.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&_descriptorHeap)))
+        {
+            spdlog::error("Failed to create descriptorHeap during creating solidDescriptorPool.");
+            return;
+        }
+
+        _idxDispenser.Initialize(maxCount);
+        _descriptorSize =
+            g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+    }
+
+    bool SolidDescriptorPool::AllocDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE* outCpuHandle)
+    {
+        uint32 index = _idxDispenser.Allocate();
+        if (index == -1)
+        {
+            return false;
+        }
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(_descriptorHeap->GetCPUDescriptorHandleForHeapStart(), index, _descriptorSize);
+        *outCpuHandle = cpuHandle;
+        return true;
+    }
+
+    bool SolidDescriptorPool::FreeDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE base = _descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        if (cpuHandle.ptr < base.ptr)
+        {
+            assert(false);
+            return false;
+        }
+
+        uint32 index = (uint32)(cpuHandle.ptr - base.ptr) / _descriptorSize;
+        _idxDispenser.Free(index);
+        return true;
+    }
+
+    bool SolidDescriptorPool::Validate(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE base = _descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        if (cpuHandle.ptr < base.ptr)
+        {
+            assert(false);
+            return false;
+        }
+
+        return true;
+    }
 } // namespace tb

@@ -80,7 +80,7 @@ namespace tb
         CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 
-        if (!g_commandContext._descriptorPool->AllocDescriptor(&cpuHandle, &gpuHandle, 1))
+        if (!g_commandContext._descriptorPool->AllocDescriptor(&cpuHandle, &gpuHandle, 2))
         {
             return;
         }
@@ -111,6 +111,15 @@ namespace tb
 
         g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, cbvDest, cbBlock->_handle,
                                                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+        // tex
+        TextureResource* textureResource = g_renderer.GetTexture("Niko");
+        if (textureResource->_srvHandle.ptr)
+        {
+            CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
+            g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
+                                                            D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        }
 
         g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

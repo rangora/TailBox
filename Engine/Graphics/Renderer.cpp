@@ -6,6 +6,8 @@
 #include "TextureResource.h"
 #include "UploadBuffer.h"
 #include "RootSignature.h"
+#include "GraphicsCore.h"
+#include "MemoryAllocator.h"
 
 namespace tb
 {
@@ -126,7 +128,25 @@ namespace tb
     void Renderer::InitTextures()
     {
         std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
+
+        // 여기선 resource 만들고 있다.
         texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
+
+        // view 생성
+        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+        srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        srvDesc.Texture2D.MipLevels = 1;
+
+        D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = {};
+        if (g_commandContext._solidDescriptorPool->AllocDescriptor(&srvHandle))
+        {
+            g_dx12Device.GetDevice()->CreateShaderResourceView(texture->_resource.Get(), &srvDesc, srvHandle);
+
+            texture->_srvHandle = srvHandle;
+        }
+
         _textures.emplace("Niko", std::move(texture));
     }
 

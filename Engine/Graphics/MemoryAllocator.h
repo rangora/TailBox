@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Core.h"
+#include "Utility/IndexDispenser.h"
 
 namespace tb
 {
     class DescriptorPool
     {
     public:
-        DescriptorPool();
+        DescriptorPool(); // VolatileDescriptorPool
         ~DescriptorPool();
 
         void Initialize(int32 maxDescriptorCount);
@@ -29,6 +30,23 @@ namespace tb
         int32 _allocatedDescriptorCount = 0;
         int32 _maxDescriptorCount = 0;
         int32 _resourceDescriptorSize = 0;
+    };
+
+    class SolidDescriptorPool
+    {
+    public:
+        SolidDescriptorPool();
+        ~SolidDescriptorPool();
+
+        void Initialize(int32 maxCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+        bool AllocDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE* outCpuHandle);
+        bool FreeDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE outCpuHandle);
+        bool Validate(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle);
+
+    private:
+        ComPtr<ID3D12DescriptorHeap> _descriptorHeap = nullptr;
+        IndexDispenser _idxDispenser;
+        UINT _descriptorSize = 0;
     };
 
     struct CBBlock

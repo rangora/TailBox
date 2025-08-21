@@ -4,6 +4,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
+#include "MemoryAllocator.h" // TEMP
+
 namespace tb
 {
     bool ConvertStbToDirectXTex(ScratchImage& image, unsigned char* data, int width, int height, int channels)
@@ -90,7 +92,7 @@ namespace tb
         }
 
         g_dx12Device.Flush();
-        ::UpdateSubresources(g_dx12Device.GetCommmandList(), _resource.Get(), textureUploadHeap.Get(),
+        UpdateSubresources(g_dx12Device.GetCommmandList(), _resource.Get(), textureUploadHeap.Get(),
                              0, 0, static_cast<unsigned int>(subResources.size()), subResources.data());
 
         g_dx12Device.GetCommmandList()->Close();
@@ -99,22 +101,6 @@ namespace tb
 
         // 임시로 Singal 사용.. stage에 올리도록 해야함
         g_dx12Device.Signal();
-
-        // Create view
-        D3D12_DESCRIPTOR_HEAP_DESC srvDesc = {};
-        srvDesc.NumDescriptors = 1;
-        srvDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        srvDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        g_dx12Device.GetDevice()->CreateDescriptorHeap(&srvDesc, IID_PPV_ARGS(&_srvHeap));
-
-        _srvHandle = _srvHeap->GetCPUDescriptorHandleForHeapStart();
-
-        D3D12_SHADER_RESOURCE_VIEW_DESC viewDesc = {};
-        viewDesc.Format = image.GetMetadata().format;
-        viewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        viewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        viewDesc.Texture2D.MipLevels = 1;
-        g_dx12Device.GetDevice()->CreateShaderResourceView(_resource.Get(), &viewDesc, _srvHandle);
     }
 
 } // namespace tb

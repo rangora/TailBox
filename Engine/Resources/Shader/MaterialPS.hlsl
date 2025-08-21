@@ -13,27 +13,27 @@
 //    float4 Emissive;
 //};
 
-cbuffer TempConstants : register(b0)
-{
-    matrix WorldMatrix;
+//cbuffer TempConstants : register(b0)
+//{
+//    matrix WorldMatrix;
 
-    matrix ViewProjMatrix;
-    float3 CameraPosition;
-    float Time;
+//    matrix ViewProjMatrix;
+//    float3 CameraPosition;
+//    float Time;
 
-    float4 Diffuse;
-    float4 Specular;
-    float4 Ambient;
-    float4 Emissive;
-};
+//    float4 Diffuse;
+//    float4 Specular;
+//    float4 Ambient;
+//    float4 Emissive;
+//};
 
-//Texture2D BaseTexture : register(t0);
 //Texture2D DiffuseTexture : register(t1);
 //Texture2D SpecularTexture : register(t2);
 //Texture2D AmbientTexture : register(t3);
 //Texture2D EmissiveTexture : register(t4);
 
-//SamplerState MaterialSampler : register(s0);
+Texture2D BaseTexture : register(t0);
+SamplerState MaterialSampler : register(s0);
 
 struct VSOutput
 {
@@ -98,7 +98,7 @@ float4 main(VSOutput input) : SV_TARGET
     //// 최종 색상 출력
     //float Opacity = 0.5f;
     //float4 finalColor = float4(litColor, finalDiffuse.a * Opacity);
-    //return BaseTexture.Sample(MaterialSampler, input.uv) * finalColor;
+    return BaseTexture.Sample(MaterialSampler, input.uv);
 
-    return float4(1.f, 1.f, 1.f, 1.f);
+    //return float4(1.f, 1.f, 1.f, 1.f);
 }

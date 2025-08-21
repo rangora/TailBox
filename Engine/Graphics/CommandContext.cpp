@@ -18,9 +18,11 @@ namespace tb
         _descriptorPool = std::make_unique<DescriptorPool>();
         _descriptorPool->Initialize(256);
 
+        _solidDescriptorPool = std::make_unique<SolidDescriptorPool>();
+        _solidDescriptorPool->Initialize(256, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
         _constantBufferPool = std::make_unique<class ConstantBufferPool>();
         _constantBufferPool->Initialize(sizeof(TempConstants), 256);
-
 
         _reservedRootSignature.push_back("Default"); // TEMP
     }
@@ -37,10 +39,13 @@ namespace tb
         {
             _descriptorPool.reset();
         }
-
         if (_constantBufferPool)
         {
             _constantBufferPool.reset();
+        }
+        if (_solidDescriptorPool)
+        {
+            _solidDescriptorPool.reset();
         }
     }
 
