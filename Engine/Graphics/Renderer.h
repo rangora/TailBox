@@ -23,10 +23,10 @@ namespace tb
         void Release();
 
     private:
-        void InitRootSignature();
-        void InitShaders();
+        void InitializeRootSignature();
+        void InitializeShaders();
 
-        void CreateMaterialPipelineState();
+        void CreateDefaultlPipelineState();
 
         std::unordered_map<std::string, std::unique_ptr<RootSignature>> _rootSignatures;
         std::unique_ptr<PipelineStateHandler> _pipelineStateHandler = nullptr;

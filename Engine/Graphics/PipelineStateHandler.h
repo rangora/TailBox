@@ -11,9 +11,9 @@ namespace tb
         D3D12_GRAPHICS_PIPELINE_STATE_DESC _desc = {};
         InputLayout _inputLayout;
         std::string _identifier;
-
-        ComPtr<ID3DBlob> _vsBlob = nullptr;
-        ComPtr<ID3DBlob> _psBlob = nullptr;
+        std::string _rootSigantureId;
+        std::string _vsId;
+        std::string _psId;
     };
 
     class PipelineStateHandler

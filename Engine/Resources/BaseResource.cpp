@@ -200,5 +200,23 @@ namespace tb
             return ret;
         }
 
+        std::vector<GraphicsPipelineStateDesc> CreateDefaultPipelineState()
+        {
+            std::vector<GraphicsPipelineStateDesc> ret;
+
+            {
+                GraphicsPipelineStateDesc pipelineStateDesc;
+                pipelineStateDesc._identifier = "Material";
+                pipelineStateDesc._rootSigantureId = "Material";
+                pipelineStateDesc._vsId = "Material_VS";
+                pipelineStateDesc._psId = "Material_PS";
+                pipelineStateDesc._inputLayout = InputLayoutPreset::MaterialInputLayout();
+
+                ret.push_back(std::move(pipelineStateDesc));
+            }
+
+            return ret;
+        }
+
     } // namespace br
 } // namespace tb

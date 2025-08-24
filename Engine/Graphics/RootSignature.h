@@ -10,7 +10,6 @@ namespace tb
         RootSignature();
         ~RootSignature();
 
-        void CreateRootSignature();
         void CreateMaterialRootSignature();
 
         ComPtr<ID3D12RootSignature> _rootSignature = nullptr;
