@@ -238,9 +238,6 @@ namespace tb
 
     void DX12Device::ReleaseDevice()
     {
-        g_commandContext.Release();
-        g_renderer.Release();
-
         CleanupRenderTarget();
         if (_swapChain)
         {

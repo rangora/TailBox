@@ -9,7 +9,7 @@ namespace tb
 
     bool MeshRenderResource::LinkGeometryResources(const std::string& resourceKey)
     {
-        _geoemtryBuffer = g_renderer.GetGeometryBuffer(resourceKey);
+        _geoemtryBuffer = g_graphicsResources.GetGeometryBuffer(resourceKey);
         return _geoemtryBuffer ? true : false;
     }
 } // namespace tb

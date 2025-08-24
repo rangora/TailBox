@@ -47,8 +47,9 @@ namespace tb
         g_dx12Device.Initialize();
         g_dx12Device.CreateSwapChain(_window->GetWndRef());
         g_dx12Device.PostSwapChainCreated();
-        g_commandContext.Initialize();
         g_dx12Device.PostDeviceCreated();
+        g_commandContext.Initialize();
+        g_graphicsResources.Initialize();
         _window->Initialize();
 
         // Init scene.
@@ -63,6 +64,9 @@ namespace tb
         // Sutting down
         g_dx12Device.WaitForLastSubmittedFrame();
         _window->ShutdownImGuiContext();
+        g_commandContext.Release();
+        g_renderer.Release();
+        g_graphicsResources.Release();
         g_dx12Device.ReleaseDevice();
         _window->ShutdownWindow();
     }

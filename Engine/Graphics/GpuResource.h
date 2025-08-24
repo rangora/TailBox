@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core.h"
+#include "string"
 
 namespace tb
 {
@@ -29,5 +30,6 @@ namespace tb
 
         ComPtr<ID3D12Resource> _resource = nullptr;
         D3D12_GPU_VIRTUAL_ADDRESS _gpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
+        std::string _alias;
     };
 }

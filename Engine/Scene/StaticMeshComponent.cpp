@@ -113,7 +113,7 @@ namespace tb
                                                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         // tex
-        TextureResource* textureResource = g_renderer.GetTexture("Niko");
+        TextureResource* textureResource = g_graphicsResources.GetTexture("niko");
         if (textureResource->_srvHandle.ptr)
         {
             CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);

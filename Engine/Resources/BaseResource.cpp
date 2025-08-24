@@ -1,14 +1,18 @@
 #include "BaseResource.h"
+#include <filesystem>
 #include "Core.h"
 #include "Graphics/GpuBuffer.h"
+#include "Graphics/TextureResource.h"
 #include "Graphics/UploadBuffer.h"
 #include "Graphics/GraphicsCore.h"
+#include "Graphics/CommandContext.h"
+#include "Graphics/MemoryAllocator.h"
 
 namespace tb
 {
     namespace br
     {
-        std::unique_ptr<GeometryBuffer> CreateCubeBuffer()
+        GeometryBuffer* CreateCubeBuffer()
         {
             std::vector<Vertex> vertexVec = {
                 // Front face
@@ -53,7 +57,7 @@ namespace tb
             };
 
 
-            std::unique_ptr<GeometryBuffer> geometryBuffer = std::make_unique<GeometryBuffer>();
+            GeometryBuffer* geometryBuffer = new GeometryBuffer;
 
             // vertex buffer
             {
@@ -96,7 +100,7 @@ namespace tb
 
             return geometryBuffer;
         }
-        std::unique_ptr<GeometryBuffer> CreateBoxBuffer()
+        GeometryBuffer* CreateBoxBuffer()
         {
             std::vector<Vertex> Vertexvec(4);
             Vertexvec[0]._pos = Vector3(-0.5f, 0.5f, 0.5f);
@@ -116,7 +120,7 @@ namespace tb
                 indexVec.push_back(3);
             }
 
-            std::unique_ptr<GeometryBuffer> geometryBuffer = std::make_unique<GeometryBuffer>();
+            GeometryBuffer* geometryBuffer = new GeometryBuffer;
 
             // vertex buffer
             {
@@ -161,12 +165,40 @@ namespace tb
             return geometryBuffer;
         } // namespace br
 
-
-       /* std::unique_ptr<tb::Texture> CreateNikoTexture()
+        std::vector<TextureResource*> CreateDefaultTextureResource()
         {
-            std::unique_ptr<Texture> texture = std::make_unique<Texture>();
-            texture->CreateTexture("");
-        }*/
+            std::vector<std::string> paths = {tb::core::projectPath + "/Resources/Texture/niko.png"};
+            std::vector<TextureResource*> ret;
+
+            ret.reserve(paths.size());
+            for (int32 idx = 0; idx < paths.size(); ++idx)
+            {
+                TextureResource* texResource = new TextureResource;
+                texResource->CreateTexture(paths[idx]);
+
+                 D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+                srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+                srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+                srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+                srvDesc.Texture2D.MipLevels = 1;
+
+                D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = {};
+                if (g_commandContext._solidDescriptorPool->AllocDescriptor(&srvHandle))
+                {
+                    g_dx12Device.GetDevice()->CreateShaderResourceView(texResource->_resource.Get(), &srvDesc,
+                                                                       srvHandle);
+
+                    texResource->_srvHandle = srvHandle;
+                }
+
+                std::filesystem::path p(paths[idx]);
+                texResource->_alias = p.stem().string();
+
+                ret.push_back(texResource);
+            }
+
+            return ret;
+        }
 
     } // namespace br
 } // namespace tb

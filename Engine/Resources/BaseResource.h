@@ -1,14 +1,18 @@
 #pragma once
 
 #include <memory>
+#include "Graphics/PipelineStateHandler.h"
 
 namespace tb
 {
     class GeometryBuffer;
+    class TextureResource;
 
     namespace br
     {
-        std::unique_ptr<GeometryBuffer> CreateCubeBuffer();
-        std::unique_ptr<GeometryBuffer> CreateBoxBuffer();
+        GeometryBuffer* CreateCubeBuffer();
+        GeometryBuffer* CreateBoxBuffer();
+
+        std::vector<TextureResource*> CreateDefaultTextureResource();
     }
 } // namespace tb

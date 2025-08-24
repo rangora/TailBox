@@ -18,15 +18,10 @@ namespace tb
     {
         _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
 
-        _geoemtryBuffers.reserve(100);
-        _shaders.reserve(100);
         _rootSignatures.reserve(100);
-        _textures.reserve(100);
 
         InitRootSignature();
-        InitBuffers();
         InitShaders();
-        InitTextures();
     }
 
     ComPtr<ID3D12PipelineState> Renderer::GetPipelineState(const std::string& identifier)
@@ -36,18 +31,6 @@ namespace tb
 
     void Renderer::Release()
     {
-        for (auto& [_, resource] : _geoemtryBuffers)
-        {
-            resource.reset();
-        }
-        for (auto& [_, resource] : _shaders)
-        {
-            resource.reset();
-        }
-        for (auto& [_, resource] : _textures)
-        {
-            resource.reset();
-        }
         for (auto& [_, resource] : _rootSignatures)
         {
             resource.reset();
@@ -72,12 +55,6 @@ namespace tb
         _rootSignatures.emplace("Material", std::move(materialRS));
     }
 
-    void Renderer::InitBuffers()
-    {
-        _geoemtryBuffers.emplace("Box", std::move(br::CreateBoxBuffer()));
-        _geoemtryBuffers.emplace("Cube", std::move(br::CreateCubeBuffer()));
-    }
-
     void Renderer::InitShaders()
     {
         std::vector<ShaderCompileDesc> shaderCompileDescs;
@@ -91,7 +68,7 @@ namespace tb
             Shader* newShader = ShaderCompiler::CompileShader(shaderCompileDesc);
             if (newShader != nullptr)
             {
-                _shaders.emplace(newShader->_identifier, newShader);
+                g_graphicsResources.AddShader(newShader->_identifier, newShader);
             }
         }
 
@@ -100,12 +77,14 @@ namespace tb
         pipelineStateDesc._inputLayout = InputLayoutPreset::BaseInputLayout();
 
         // blobs
-        auto VS = _shaders.find("Cube_VS");
-        auto PS = _shaders.find("Cube_PS");
-        pipelineStateDesc._desc.PS = {PS->second.get()->_bytecode->GetBufferPointer(),
-                                      PS->second.get()->_bytecode->GetBufferSize()};
-        pipelineStateDesc._desc.VS = {VS->second.get()->_bytecode->GetBufferPointer(),
-                                      VS->second.get()->_bytecode->GetBufferSize()};
+        auto VS = g_graphicsResources.GetShader("Cube_VS");
+        auto PS = g_graphicsResources.GetShader("Cube_PS");
+
+
+        pipelineStateDesc._desc.PS = {PS->_bytecode->GetBufferPointer(),
+                                      PS->_bytecode->GetBufferSize()};
+        pipelineStateDesc._desc.VS = {VS->_bytecode->GetBufferPointer(),
+                                      VS->_bytecode->GetBufferSize()};
 
         pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputLayout.GetPointer(),
                                                static_cast<UINT>(pipelineStateDesc._inputLayout.GetSize())};
@@ -125,44 +104,19 @@ namespace tb
         CreateMaterialPipelineState();
     }
 
-    void Renderer::InitTextures()
-    {
-        std::unique_ptr<TextureResource> texture = std::make_unique<TextureResource>();
-
-        // 여기선 resource 만들고 있다.
-        texture->CreateTexture(tb::core::projectPath + "/Resources/Texture/niko.png");
-
-        // view 생성
-        D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-        srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        srvDesc.Texture2D.MipLevels = 1;
-
-        D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = {};
-        if (g_commandContext._solidDescriptorPool->AllocDescriptor(&srvHandle))
-        {
-            g_dx12Device.GetDevice()->CreateShaderResourceView(texture->_resource.Get(), &srvDesc, srvHandle);
-
-            texture->_srvHandle = srvHandle;
-        }
-
-        _textures.emplace("Niko", std::move(texture));
-    }
-
     void Renderer::CreateMaterialPipelineState()
     {
         GraphicsPipelineStateDesc pipelineStateDesc;
         pipelineStateDesc._identifier = "Material";
         pipelineStateDesc._inputLayout = InputLayoutPreset::MaterialInputLayout();
 
-        auto VS = _shaders.find("Material_VS");
-        auto PS = _shaders.find("Material_PS");
+        auto VS = g_graphicsResources.GetShader("Material_VS");
+        auto PS = g_graphicsResources.GetShader("Material_PS");
 
-        pipelineStateDesc._desc.PS = {PS->second.get()->_bytecode->GetBufferPointer(),
-                                      PS->second.get()->_bytecode->GetBufferSize()};
-        pipelineStateDesc._desc.VS = {VS->second.get()->_bytecode->GetBufferPointer(),
-                                      VS->second.get()->_bytecode->GetBufferSize()};
+        pipelineStateDesc._desc.PS = {PS->_bytecode->GetBufferPointer(),
+                                      PS->_bytecode->GetBufferSize()};
+        pipelineStateDesc._desc.VS = {VS->_bytecode->GetBufferPointer(),
+                                      VS->_bytecode->GetBufferSize()};
 
         // Inputlayout..
         pipelineStateDesc._desc.InputLayout = {pipelineStateDesc._inputLayout.GetPointer(),
