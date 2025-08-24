@@ -39,10 +39,11 @@ struct VSOutput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD0;
-    float3 worldPos : TEXCOORD1;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitangent : BITANGENT;
+    float4 color : COLOR;
+    //float3 worldPos : TEXCOORD1;
+    //float3 normal : NORMAL;
+    //float3 tangent : TANGENT;
+    //float3 bitangent : BITANGENT;
 };
 
 // 기본적인 Blinn-Phong 조명 계산

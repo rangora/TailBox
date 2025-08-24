@@ -39,6 +39,7 @@ struct Vertex
 {
     Vector3 _pos;
     Vector2 _uv;
+    Vector4 _color;
 };
 
 namespace tb
