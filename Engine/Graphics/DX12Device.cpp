@@ -500,6 +500,39 @@ namespace tb
         WaitForSingleObject(_fenceEvent, INFINITE);
     }
 
+    void DX12Device::OnWindowResized(UINT width, UINT height)
+    {
+        // rtv
+        tb::g_dx12Device.WaitForLastSubmittedFrame();
+        tb::g_dx12Device.CleanupRenderTarget();
+        HRESULT result = tb::g_dx12Device.GetSwapChain()->ResizeBuffers(
+            0, width, height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
+        assert(SUCCEEDED(result) && "Failed to resize swapchain.");
+        tb::g_dx12Device.CreateRenderTarget();
+
+        // dsv
+        _dsBuffer.Reset();
+
+        D3D12_CLEAR_VALUE clearValue = {};
+        clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+        clearValue.DepthStencil.Depth = 1.f;
+        clearValue.DepthStencil.Stencil = 0.f;
+
+        D3D12_HEAP_PROPERTIES defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+        CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, width, height, 1, 0, 1,
+                                                                          0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+        _device->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc,
+                                         D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&_dsBuffer));
+
+        D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+        dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+        dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+        dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+        _device->CreateDepthStencilView(_dsBuffer.Get(), &dsvDesc, _dsHeap->GetCPUDescriptorHandleForHeapStart());
+    }
+
     void DX12Device::Flush()
     {
         FrameContext& ctx = _frameContexts[_frameIndex];

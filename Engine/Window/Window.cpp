@@ -22,13 +22,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             if (tb::g_dx12Device.GetDevice() != nullptr && wParam != SIZE_MINIMIZED)
             {
-                tb::g_dx12Device.WaitForLastSubmittedFrame();
-                tb::g_dx12Device.CleanupRenderTarget();
-                HRESULT result = tb::g_dx12Device.GetSwapChain()->ResizeBuffers(
-                    0, (UINT)LOWORD(lParam), (UINT)HIWORD(lParam), DXGI_FORMAT_UNKNOWN,
-                    DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT);
-                assert(SUCCEEDED(result) && "Failed to resize swapchain.");
-                tb::g_dx12Device.CreateRenderTarget();
+                tb::g_dx12Device.OnWindowResized((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
             }
             return 0;
         }
@@ -63,7 +57,7 @@ namespace tb
         DWORD fixedStyle = WS_OVERLAPPED // 기본 윈도우
                            | WS_CAPTION  // 제목 표시줄
                            | WS_SYSMENU  // 시스템 메뉴 (닫기 버튼 등)
-                           | WS_MINIMIZEBOX;
+                           | WS_MINIMIZEBOX | WS_OVERLAPPEDWINDOW;
 
         _hWnd = ::CreateWindowW(_wc.lpszClassName, titleWidStr.c_str(), fixedStyle, 100, 100, _windowContext._width,
                                 _windowContext._height, nullptr, nullptr, _wc.hInstance, nullptr);

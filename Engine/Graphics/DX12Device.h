@@ -55,6 +55,7 @@ namespace tb
         void CleanupRenderTarget();
         FrameContext* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
+        void OnWindowResized(UINT width, UINT height);
 
         // 애매한 함수들..
         void Flush();
