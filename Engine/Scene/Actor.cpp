@@ -22,6 +22,11 @@ namespace tb
         _transform._pos = location;
     }
 
+    void Actor::SetScale(const Vector3& scale)
+    {
+        _transform._scale = scale;
+    }
+
     void Actor::Render(const XMMATRIX& vpMtx)
     {
         for (auto it : _registeredCompoent)

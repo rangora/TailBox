@@ -39,7 +39,7 @@ struct VSOutput
 {
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD0;
-    float4 color : COLOR;
+    //float4 color : COLOR;
     //float3 worldPos : TEXCOORD1;
     //float3 normal : NORMAL;
     //float3 tangent : TANGENT;

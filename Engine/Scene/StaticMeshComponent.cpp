@@ -51,14 +51,19 @@ namespace tb
 
         g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
 
-        Transform parentTransform = _ownerActor->GetTrnasform();
-        Vector3 calcPos = parentTransform._pos + _transform._pos;
+        const Transform& parentTransform = _ownerActor->GetTrnasform();
 
-        FXMVECTOR posVec = DirectX::XMLoadFloat3(&calcPos);
+        XMMATRIX parentTranslateMtx = XMMatrixTranslation(parentTransform._pos.x, parentTransform._pos.y, parentTransform._pos.z);
+        XMMATRIX parentRotMtx = XMMatrixRotationRollPitchYaw(parentTransform._rot.x, parentTransform._rot.y, parentTransform._rot.z);
+        XMFLOAT4X4 parentScale = Matrix::CreateScale(parentTransform._scale);
+        XMMATRIX parentWorldMtx = XMLoadFloat4x4(&parentScale) * parentRotMtx * parentTranslateMtx;
 
+
+        XMMATRIX translateMtx = XMMatrixTranslation(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         XMMATRIX rotMtx = XMMatrixRotationRollPitchYaw(_transform._rot.x, _transform._rot.y, _transform._rot.z);
-        XMMATRIX translateMtx = XMMatrixTranslationFromVector(posVec);
-        XMMATRIX worldMtx = rotMtx * translateMtx;
+        XMFLOAT4X4 scale = Matrix::CreateScale(_transform._scale);
+        XMMATRIX worldMtx = parentWorldMtx * (XMLoadFloat4x4(&scale) * rotMtx * translateMtx);
+
         worldMtx = XMMatrixTranspose(worldMtx);
 
         BaseConstants constantBuffers;

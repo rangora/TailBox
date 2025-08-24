@@ -22,6 +22,7 @@ namespace tb
 
         auto Cube2 = new CubeActor(this);
         Cube2->SetLocation({3.f, 0.f, 0.f});
+        Cube2->SetScale({0.3f, 0.3f, 0.3f});
     }
 
     void Scene::Update(float deltaTime)

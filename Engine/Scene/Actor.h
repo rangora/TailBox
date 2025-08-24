@@ -15,6 +15,7 @@ namespace tb
         ~Actor();
 
         void SetLocation(const Vector3& location);
+        void SetScale(const Vector3& scale);
 
         void Render(const XMMATRIX& vpMtx);
         void Clear();
