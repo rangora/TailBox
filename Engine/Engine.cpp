@@ -63,6 +63,7 @@ namespace tb
 
         // Sutting down
         g_dx12Device.WaitForLastSubmittedFrame();
+        delete _sceneManager;
         _window->ShutdownImGuiContext();
         g_commandContext.Release();
         g_renderer.Release();

@@ -7,10 +7,14 @@
 
 namespace tb
 {
+    class StaticMeshComponent;
+
     class CubeActor : public Actor
     {
     public:
         CubeActor(Scene* scene);
-        ~CubeActor();
+        virtual ~CubeActor();
+
+        StaticMeshComponent* _staticMeshComponent = nullptr;
     };
 } // namespace tb

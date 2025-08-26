@@ -3,7 +3,12 @@
 
 namespace tb
 {
-    StaticMeshRenderResource::StaticMeshRenderResource() = default;
+    StaticMeshRenderResource::StaticMeshRenderResource()
+    {
+        _material = new Material;
+        _material->InitializeDefaultProperties();
+    }
+
     StaticMeshRenderResource::~StaticMeshRenderResource()
     {
         if (_material)

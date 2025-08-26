@@ -167,7 +167,11 @@ namespace tb
 
         std::vector<TextureResource*> CreateDefaultTextureResource()
         {
-            std::vector<std::string> paths = {tb::core::projectPath + "/Resources/Texture/niko.png"};
+            std::vector<std::string> paths =
+            {
+                tb::core::projectPath + "/Resources/Texture/niko.png",
+                tb::core::projectPath + "/Resources/Texture/light.png"
+            };
             std::vector<TextureResource*> ret;
 
             ret.reserve(paths.size());

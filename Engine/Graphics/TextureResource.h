@@ -10,6 +10,8 @@ namespace tb
     {
     public:
         TextureResource();
+        TextureResource(const TextureResource&) = delete;
+
         ~TextureResource();
 
         void Destroy() final;

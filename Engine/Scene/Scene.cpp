@@ -1,7 +1,9 @@
 #include "Scene.h"
 #include "Core/Input.h"
 #include "Scene/CubeActor.h"
+#include "Scene/StaticMeshComponent.h"
 #include "Window/Window.h"
+#include "Graphics/Material.h"
 
 namespace tb
 {
@@ -11,6 +13,10 @@ namespace tb
 
     Scene::~Scene()
     {
+        for (Actor* actor : _actors)
+        {
+            delete actor;
+        }
     }
 
     void Scene::Initialize()
@@ -19,10 +25,12 @@ namespace tb
         // 호출 위치도 바뀌어야 한다.
         auto Cube1 = new CubeActor(this);
         Cube1->SetLocation({0.f, 0.f, 0.f});
+        Material* material1 = Cube1->_staticMeshComponent->GetMaterial();
+        material1->BindTextures(TextureType::BASECOLOR, "light");
 
-        auto Cube2 = new CubeActor(this);
-        Cube2->SetLocation({3.f, 0.f, 0.f});
-        Cube2->SetScale({0.3f, 0.3f, 0.3f});
+        //auto Cube2 = new CubeActor(this);
+        //Cube2->SetLocation({3.f, 0.f, 0.f});
+        //Cube2->SetScale({0.3f, 0.3f, 0.3f});
     }
 
     void Scene::Update(float deltaTime)

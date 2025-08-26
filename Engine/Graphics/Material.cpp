@@ -3,8 +3,15 @@
 
 namespace tb
 {
-    Material::Material() = default;
-    Material::~Material() = default;
+    Material::Material()
+    {
+
+    }
+
+    Material::~Material()
+    {
+        Release();
+    }
 
     void Material::InitializeDefaultProperties()
     {
@@ -18,8 +25,36 @@ namespace tb
         _properties._emissive = {0.0f, 0.0f, 0.0f, 0.0f};
     }
 
-    void Material::BindTextures()
+    void Material::Release()
     {
+        /*  for (TextureResource* ptr : _textureResources)
+          {
+              if (ptr)
+              {
+                  delete ptr;
+              }
+          }*/
+
+        if (_constantBuffer)
+        {
+            _constantBuffer->Destroy();
+            _constantBuffer.reset();
+            _constantBuffer = nullptr;
+        }
+    }
+
+    void Material::BindTextures(TextureType type, const std::string& textureId)
+    {
+        int32 idx = static_cast<int32>(type);
+
+        TextureResource* foundTex = g_graphicsResources.GetTexture(textureId);
+        if (!foundTex)
+        {
+            spdlog::warn("No textureId {0}", textureId);
+            return;
+        }
+
+        _textureResources[idx] = foundTex;
     }
 
     void Material::UpdateMaterialConstantBuffer(MaterialConstants& cBuffer)
@@ -28,6 +63,12 @@ namespace tb
         cBuffer._diffuse = _properties._diffuse;
         cBuffer._emissive = _properties._emissive;
         cBuffer._specular = _properties._specular;
+    }
+
+    TextureResource* Material::GetTextureResource(TextureType type)
+    {
+        int32 idx = static_cast<int32>(type);
+        return _textureResources[idx];
     }
 
 } // namespace tb

@@ -18,16 +18,28 @@ namespace tb
         _camera.SetProjection(90.f, (float)rw / (float)rh, 0.1f, 1000.f);
     }
 
+    SceneManager::~SceneManager()
+    {
+        Release();
+    }
+
+    void SceneManager::Release()
+    {
+        for (auto& [_, idx] : _layerIndex)
+        {
+            delete _scenes[idx];
+        }
+    }
+
     void SceneManager::SetLayer(uint32 index, const std::string& name)
     {
+        _activeIndex = index;
         if (_layerIndex.find(name) == _layerIndex.end())
         {
-            _activeIndex = _scenes.size();
             _layerIndex.insert({name, _activeIndex});
             _scenes[index] = new Scene;
         }
 
-        _activeIndex = index;
 
         Scene* newScene = _scenes[_activeIndex];
         newScene->Initialize();

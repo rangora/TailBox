@@ -12,7 +12,7 @@ namespace tb
     {
     public:
         Actor(Scene* scene);
-        ~Actor();
+        virtual ~Actor();
 
         void SetLocation(const Vector3& location);
         void SetScale(const Vector3& scale);

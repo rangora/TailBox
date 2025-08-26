@@ -18,7 +18,9 @@ namespace tb
     {
     public:
         SceneManager();
-        ~SceneManager() = default;
+        ~SceneManager();
+
+        void Release();
 
         void SetLayer(uint32 index, const std::string& name);
 

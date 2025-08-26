@@ -6,10 +6,10 @@ namespace tb
 {
     CubeActor::CubeActor(Scene* scene) : Actor(scene)
     {
-        StaticMeshComponent* staticMeshComp = new StaticMeshComponent(this);
-        RegisterComponent(staticMeshComp);
+        _staticMeshComponent = new StaticMeshComponent(this);
+        RegisterComponent(_staticMeshComponent);
 
-        staticMeshComp->SetStaticMesh("Cube");
+        _staticMeshComponent->SetStaticMesh("Cube");
     }
 
     CubeActor::~CubeActor()

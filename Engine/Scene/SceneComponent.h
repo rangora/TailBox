@@ -12,7 +12,7 @@ namespace tb
     public:
         SceneComponent() = delete;
         SceneComponent(Actor* ownerActor);
-        ~SceneComponent();
+        virtual ~SceneComponent();
 
         void SetLocation(const Vector3& location);
 

@@ -10,7 +10,7 @@ namespace tb
     {
     public:
         MeshRenderResource();
-        ~MeshRenderResource();
+        virtual ~MeshRenderResource();
 
         bool LinkGeometryResources(const std::string& resourceKey);
         const GeometryBuffer* GetGeometryBuffer() const { return _geoemtryBuffer; }

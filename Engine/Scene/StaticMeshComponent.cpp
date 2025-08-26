@@ -11,6 +11,7 @@ namespace tb
 {
     StaticMeshComponent::StaticMeshComponent(Actor* ownerActor) : SceneComponent(ownerActor)
     {
+
     }
 
     StaticMeshComponent::~StaticMeshComponent()
@@ -76,7 +77,7 @@ namespace tb
         constantBuffers._global._cameraPosition = Engine::GetActiveCameraPosition();
         constantBuffers._global._time = 0.f;
 
-        auto material = _renderResource.GetMaterial();
+        Material* material = _renderResource.GetMaterial();
         if (material)
         {
             material->UpdateMaterialConstantBuffer(constantBuffers._material);
@@ -118,12 +119,18 @@ namespace tb
                                                         D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         // tex
-        TextureResource* textureResource = g_graphicsResources.GetTexture("niko");
-        if (textureResource->_srvHandle.ptr)
+        //TextureResource* textureResource = g_graphicsResources.GetTexture("niko");
+
+        //Material* material = _renderResource.GetMaterial();
+        if (material)
         {
-            CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
-            g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
-                                                            D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
+            if (textureResource->_srvHandle.ptr)
+            {
+                CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
+                g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
+                                                                D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+            }
         }
 
         g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);

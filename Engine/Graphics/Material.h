@@ -9,6 +9,7 @@ namespace tb
 {
     enum class TextureType
     {
+        BASECOLOR,
         DIFFUSE,
         SPECULAR,
         AMBIENT,
@@ -33,14 +34,16 @@ namespace tb
         Material();
         ~Material();
         void InitializeDefaultProperties();
+        void Release();
 
-        void BindTextures();
+        void BindTextures(TextureType type, const std::string& textureId);
         void UpdateMaterialConstantBuffer(MaterialConstants& cBuffer);
+        TextureResource* GetTextureResource(TextureType type);
 
     private:
         std::string _name;
         MaterialProperties _properties;
-        std::array<std::shared_ptr<TextureResource>, MAX_TEXTURE_TYTPE_SIZE> _textureResources;
+        std::array<TextureResource*, MAX_TEXTURE_TYTPE_SIZE> _textureResources{};
 
         std::unique_ptr<GpuBuffer> _constantBuffer = nullptr;
     };

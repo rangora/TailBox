@@ -14,11 +14,12 @@ namespace tb
     public:
         StaticMeshComponent() = delete;
         StaticMeshComponent(Actor* ownerActor);
-        ~StaticMeshComponent();
+        virtual ~StaticMeshComponent();
 
         virtual bool CheckResourceValidation() const final;
 
         void SetStaticMesh(const std::string& meshName);
+        Material* GetMaterial() { return _renderResource.GetMaterial(); }
 
         // proxy functions
         void Render(const XMMATRIX& vpMtx) final;
