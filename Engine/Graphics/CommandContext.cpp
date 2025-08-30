@@ -11,6 +11,7 @@ namespace tb
     {
         _descriptorPool.release();
         _constantBufferPool.release();
+        _solidDescriptorPool.release();
     }
 
     void CommandContext::Initialize()

@@ -61,15 +61,21 @@ namespace tb
             EngineTick(_renderTick);
         }
 
+
         // Sutting down
         g_dx12Device.WaitForLastSubmittedFrame();
+
+        _sceneManager->ReleaseAllScenes();
         delete _sceneManager;
+
         _window->ShutdownImGuiContext();
+        _window->ShutdownWindow();
+        delete _window;
+
         g_commandContext.Release();
         g_renderer.Release();
         g_graphicsResources.Release();
         g_dx12Device.ReleaseDevice();
-        _window->ShutdownWindow();
     }
 
     void Engine::EngineTick(const float tick)

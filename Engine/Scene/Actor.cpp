@@ -11,9 +11,20 @@ namespace tb
 
     Actor::~Actor()
     {
-        for (auto it : _registeredCompoent)
+        if (_scene)
         {
-            delete it;
+            Destroy();
+        }
+    }
+
+    void Actor::Destroy()
+    {
+        // scene이 없다 == destroy되었다.
+        _scene = nullptr;
+
+        for (auto comp : _registeredCompoent)
+        {
+            delete comp;
         }
     }
 
@@ -47,5 +58,4 @@ namespace tb
     {
         _registeredCompoent.push_back(component);
     }
-
 } // namespace tb

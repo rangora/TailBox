@@ -24,7 +24,10 @@ namespace tb
 
         virtual void Destroy()
         {
-            _resource = nullptr;
+            if (_resource)
+            {
+                _resource.Reset();
+            }
             _gpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
         }
 

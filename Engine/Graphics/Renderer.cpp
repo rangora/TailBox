@@ -35,9 +35,11 @@ namespace tb
         {
             resource.reset();
         }
+        _rootSignatures.clear();
 
         if (_pipelineStateHandler)
         {
+            _pipelineStateHandler->Release();
             _pipelineStateHandler.reset();
         }
     }

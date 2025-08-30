@@ -60,7 +60,10 @@ namespace tb
     }
 
     ConstantBufferPool::ConstantBufferPool() = default;
-    ConstantBufferPool::~ConstantBufferPool() = default;
+    ConstantBufferPool::~ConstantBufferPool()
+    {
+        Clean();
+    }
 
     void ConstantBufferPool::Initialize(int32 blockSize, int32 maxSize)
     {

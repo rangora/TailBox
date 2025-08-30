@@ -19,6 +19,11 @@ namespace tb
         SceneComponent::~SceneComponent();
     }
 
+    void StaticMeshComponent::Release()
+    {
+        SceneComponent::Release();
+    }
+
     bool StaticMeshComponent::CheckResourceValidation() const
     {
         if (!_renderResource.GetGeometryBuffer())
@@ -125,11 +130,14 @@ namespace tb
         if (material)
         {
             TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
-            if (textureResource->_srvHandle.ptr)
+            if (textureResource)
             {
-                CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
-                g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
-                                                                D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                if (textureResource->_srvHandle.ptr)
+                {
+                    CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
+                    g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
+                                                                    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                }
             }
         }
 

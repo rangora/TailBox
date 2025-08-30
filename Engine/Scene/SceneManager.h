@@ -20,7 +20,7 @@ namespace tb
         SceneManager();
         ~SceneManager();
 
-        void Release();
+        void ReleaseAllScenes();
 
         void SetLayer(uint32 index, const std::string& name);
 
@@ -42,7 +42,7 @@ namespace tb
         };
 
         std::map<std::string, uint32> _layerIndex;
-        std::array<Scene*, MAX_LAYER> _scenes;
+        std::array<Scene*, MAX_LAYER> _scenes{};
 
         uint32 _activeIndex = -1;
 

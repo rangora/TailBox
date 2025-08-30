@@ -14,6 +14,8 @@ namespace tb
         SceneComponent(Actor* ownerActor);
         virtual ~SceneComponent();
 
+        virtual void Release();
+
         void SetLocation(const Vector3& location);
 
         // proxy functions

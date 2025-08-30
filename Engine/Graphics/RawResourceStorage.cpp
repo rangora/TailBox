@@ -31,6 +31,7 @@ namespace tb
     {
         for (auto& [_, resource] : _geoemtryBuffers)
         {
+            resource->Destroy();
             delete resource;
         }
         _geoemtryBuffers.clear();
@@ -43,6 +44,7 @@ namespace tb
 
         for (auto& [_, resource] : _textures)
         {
+            resource->Destroy();
             delete resource;
         }
         _textures.clear();

@@ -28,9 +28,19 @@ namespace tb
         Material* material1 = Cube1->_staticMeshComponent->GetMaterial();
         material1->BindTextures(TextureType::BASECOLOR, "light");
 
-        //auto Cube2 = new CubeActor(this);
-        //Cube2->SetLocation({3.f, 0.f, 0.f});
-        //Cube2->SetScale({0.3f, 0.3f, 0.3f});
+        auto Cube2 = new CubeActor(this);
+        Cube2->SetLocation({3.f, 0.f, 0.f});
+        Cube2->SetScale({0.3f, 0.3f, 0.3f});
+        Material* material2 = Cube2->_staticMeshComponent->GetMaterial();
+        material2->BindTextures(TextureType::BASECOLOR, "light");
+    }
+
+    void Scene::ReleaseAllActors()
+    {
+        for (Actor* actor : _actors)
+        {
+            delete actor;
+        }
     }
 
     void Scene::Update(float deltaTime)

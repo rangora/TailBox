@@ -8,7 +8,18 @@ namespace tb
     {
     }
 
-    SceneComponent::~SceneComponent() = default;
+    SceneComponent::~SceneComponent()
+    {
+        if (_ownerActor)
+        {
+            Release();
+        }
+    }
+
+    void SceneComponent::Release()
+    {
+        _ownerActor = nullptr;
+    }
 
     void SceneComponent::SetLocation(const Vector3& location)
     {

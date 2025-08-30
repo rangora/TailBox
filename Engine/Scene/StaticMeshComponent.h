@@ -16,6 +16,7 @@ namespace tb
         StaticMeshComponent(Actor* ownerActor);
         virtual ~StaticMeshComponent();
 
+        void Release() final;
         virtual bool CheckResourceValidation() const final;
 
         void SetStaticMesh(const std::string& meshName);

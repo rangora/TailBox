@@ -35,8 +35,11 @@ namespace tb
         _lastTime = timeGetTime();
 
 #ifdef _DEBUG
-        ::D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController));
-        _debugController->EnableDebugLayer();
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController))))
+        {
+            _debugController->EnableDebugLayer();
+        }
+
         ID3D12Debug5* debugController5 = nullptr;
         if (S_OK == _debugController->QueryInterface(IID_PPV_ARGS(&debugController5)))
         {
@@ -45,6 +48,7 @@ namespace tb
             debugController5->Release();
         }
         _debugController.Reset();
+        _debugController = nullptr;
 #endif
 
         if (!CreateD3D12evice_internal())
@@ -60,7 +64,6 @@ namespace tb
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
         pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
-        pInfoQueue->Release();
 
         D3D12_MESSAGE_ID hide[] = {
             D3D12_MESSAGE_ID_CREATERESOURCE_STATE_IGNORED
@@ -70,6 +73,8 @@ namespace tb
         filter.DenyList.pIDList = hide;
 
         pInfoQueue->AddStorageFilterEntries(&filter);
+        pInfoQueue->Release();
+        pInfoQueue = nullptr;
 #endif
         // Create commandQueue
         {
@@ -239,6 +244,15 @@ namespace tb
     void DX12Device::ReleaseDevice()
     {
         CleanupRenderTarget();
+
+        for (auto& stage : _staged)
+        {
+            if (stage._stagedBuffer)
+            {
+                stage._stagedBuffer.Reset();
+            }
+        }
+
         if (_swapChain)
         {
             _swapChain->SetFullscreenState(false, nullptr);
@@ -303,12 +317,15 @@ namespace tb
             _device.Reset();
         }
 #ifdef DX12_ENABLE_DEBUG_LAYER
+
         IDXGIDebug1* pDebug = nullptr;
         if (SUCCEEDED(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&pDebug))))
         {
-            pDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
+            pDebug->ReportLiveObjects(DXGI_DEBUG_ALL,
+                                      DXGI_DEBUG_RLO_FLAGS(DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_IGNORE_INTERNAL));
             pDebug->Release();
         }
+
 #endif
     }
 
@@ -576,6 +593,13 @@ namespace tb
 
                 adapterIndex++;
             }
+
+        }
+
+        if (adapter)
+        {
+            adapter->Release();
+            adapter = nullptr;
         }
 
         return false;

@@ -43,6 +43,10 @@ namespace tb
 
     void TextureResource::Destroy()
     {
+        if (_srvHeap)
+        {
+            _srvHeap.Reset();
+        }
     }
 
     void TextureResource::CreateTexture(const std::string& path)

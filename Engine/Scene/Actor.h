@@ -14,6 +14,8 @@ namespace tb
         Actor(Scene* scene);
         virtual ~Actor();
 
+        virtual void Destroy();
+
         void SetLocation(const Vector3& location);
         void SetScale(const Vector3& scale);
 

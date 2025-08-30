@@ -27,14 +27,6 @@ namespace tb
 
     void Material::Release()
     {
-        /*  for (TextureResource* ptr : _textureResources)
-          {
-              if (ptr)
-              {
-                  delete ptr;
-              }
-          }*/
-
         if (_constantBuffer)
         {
             _constantBuffer->Destroy();

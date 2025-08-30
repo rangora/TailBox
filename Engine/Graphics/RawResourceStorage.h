@@ -16,7 +16,6 @@ namespace tb
         void Initialize();
         void Release();
 
-        ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& key);
         GeometryBuffer* GetGeometryBuffer(const std::string& name);
         Shader* GetShader(const std::string& name);
         TextureResource* GetTexture(const std::string& name);

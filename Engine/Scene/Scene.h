@@ -15,6 +15,7 @@ namespace tb
         ~Scene();
 
         void Initialize();
+        void ReleaseAllActors();
 
         void Update(float deltaTime);
         void Render(const XMMATRIX& vpMtx);
@@ -23,7 +24,6 @@ namespace tb
         void RegisterActor(Actor* actor);
 
     private:
-        std::vector<SceneProxy*> _sceneProxies; // proxy는 다음에..
         std::vector<Actor*> _actors;
     };
 }; // namespace tb

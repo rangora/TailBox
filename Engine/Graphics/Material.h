@@ -43,7 +43,7 @@ namespace tb
     private:
         std::string _name;
         MaterialProperties _properties;
-        std::array<TextureResource*, MAX_TEXTURE_TYTPE_SIZE> _textureResources{};
+        std::array<TextureResource*, MAX_TEXTURE_TYTPE_SIZE> _textureResources{}; // shared_ptr??
 
         std::unique_ptr<GpuBuffer> _constantBuffer = nullptr;
     };

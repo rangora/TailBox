@@ -29,6 +29,8 @@ namespace tb
         bool CreatePipelineState(GraphicsPipelineStateDesc& desc);
         ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& name);
 
+        void Release();
+
     private:
         std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> _pipelineStates;
     };

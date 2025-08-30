@@ -20,15 +20,17 @@ namespace tb
 
     SceneManager::~SceneManager()
     {
-        Release();
+        ReleaseAllScenes();
     }
 
-    void SceneManager::Release()
-    {
+    void SceneManager::ReleaseAllScenes()
+{
         for (auto& [_, idx] : _layerIndex)
         {
             delete _scenes[idx];
         }
+
+        _layerIndex.clear();
     }
 
     void SceneManager::SetLayer(uint32 index, const std::string& name)

@@ -42,4 +42,16 @@ namespace tb
         return it == _pipelineStates.end() ? nullptr : it->second;
     }
 
+    void PipelineStateHandler::Release()
+    {
+        for (auto& [_, state] : _pipelineStates)
+        {
+            if (state)
+            {
+                state.Reset();
+            }
+        }
+        _pipelineStates.clear();
+    }
+
 } // namespace tb
