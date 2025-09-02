@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GpuResource.h"
+#include "Graphics/RenderResource/ShaderStructure.h"
+
 
 namespace tb
 {

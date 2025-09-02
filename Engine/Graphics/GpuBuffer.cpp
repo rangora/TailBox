@@ -1,6 +1,7 @@
 #include "GpuBuffer.h"
 #include "UploadBuffer.h"
 #include "GraphicsCore.h"
+#include "RenderResource/ShaderStructure.h"
 
 namespace tb
 {

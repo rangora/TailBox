@@ -35,12 +35,6 @@ using namespace Microsoft::WRL;
 
 #define D3D12_GPU_VIRTUAL_ADDRESS_NULL ((D3D12_GPU_VIRTUAL_ADDRESS)0)
 
-struct Vertex
-{
-    Vector3 _pos;
-    Vector2 _uv;
-    Vector4 _color;
-};
 
 namespace tb
 {

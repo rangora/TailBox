@@ -24,15 +24,20 @@ namespace tb
         // spawnActor로 wrapping 필
         // 호출 위치도 바뀌어야 한다.
         auto Cube1 = new CubeActor(this);
-        Cube1->SetLocation({0.f, 0.f, 0.f});
+        Cube1->SetLocation({-2.f, 0.f, 0.f});
         Material* material1 = Cube1->_staticMeshComponent->GetMaterial();
-        material1->BindTextures(TextureType::BASECOLOR, "light");
+        material1->BindTextures(TextureType::BASECOLOR, "niko");
 
         auto Cube2 = new CubeActor(this);
-        Cube2->SetLocation({3.f, 0.f, 0.f});
-        Cube2->SetScale({0.3f, 0.3f, 0.3f});
+        Cube2->SetLocation({2.f, 0.f, 0.f});
         Material* material2 = Cube2->_staticMeshComponent->GetMaterial();
-        material2->BindTextures(TextureType::BASECOLOR, "light");
+        material2->BindTextures(TextureType::BASECOLOR, "niko");
+
+        auto light = new CubeActor(this);
+        light->SetLocation({0.f, 3.f, 0.f});
+        light->SetScale({0.3f, 0.3f, 0.3f});
+        Material* material3 = light->_staticMeshComponent->GetMaterial();
+        material3->BindTextures(TextureType::BASECOLOR, "light");
     }
 
     void Scene::ReleaseAllActors()
