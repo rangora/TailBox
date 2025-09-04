@@ -40,6 +40,6 @@ namespace tb
 {
     namespace core
     {
-        const std::string projectPath = PROJECT_PATH;
+        const std::string enginePath = ENGINE_PATH;
     }
 }

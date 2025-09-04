@@ -169,8 +169,8 @@ namespace tb
         {
             std::vector<std::string> paths =
             {
-                tb::core::projectPath + "/Resources/Texture/niko.png",
-                tb::core::projectPath + "/Resources/Texture/light.png"
+                tb::core::enginePath + "/Resources/Texture/niko.png",
+                tb::core::enginePath + "/Resources/Texture/light.png"
             };
             std::vector<TextureResource*> ret;
 

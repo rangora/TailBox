@@ -55,8 +55,8 @@ namespace tb
     void Renderer::InitializeShaders()
     {
         std::vector<ShaderCompileDesc> shaderCompileDescs;
-        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::projectPath + "/Resources/Shader/MaterialVS.hlsl", "Material_VS"});
-        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::projectPath + "/Resources/Shader/MaterialPS.hlsl", "Material_PS"});
+        shaderCompileDescs.push_back({ShaderType::Vertex, tb::core::enginePath + "/Resources/Shader/MaterialVS.hlsl", "Material_VS"});
+        shaderCompileDescs.push_back({ShaderType::Pixel, tb::core::enginePath + "/Resources/Shader/MaterialPS.hlsl", "Material_PS"});
 
         for (const auto& shaderCompileDesc : shaderCompileDescs)
         {

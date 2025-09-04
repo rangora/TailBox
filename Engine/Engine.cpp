@@ -5,9 +5,39 @@
 #include "Window/Window.h"
 #include "Scene/SceneManager.h"
 #include <vector>
+#include <ShlObj.h>
+#include <filesystem>
 
 namespace tb
 {
+    std::wstring GetPixGpuCapturerPath()
+    {
+        LPWSTR programFilesPath;
+        SHGetKnownFolderPath(FOLDERID_ProgramFiles, KF_FLAG_DEFAULT, NULL, &programFilesPath);
+
+        std::wstring versionPath;
+        std::filesystem::path pixInstalledPath = programFilesPath;
+        pixInstalledPath /= "Microsoft PIX";
+
+        for (const auto& directory : std::filesystem::directory_iterator(pixInstalledPath))
+        {
+            if (directory.is_directory())
+            {
+                if (versionPath.empty() || versionPath < directory.path().filename().c_str())
+                {
+                    versionPath = directory.path().filename().c_str();
+                }
+            }
+        }
+
+        if (versionPath.empty())
+        {
+            return {};
+        }
+
+        return pixInstalledPath / versionPath / L"WinPixGpuCapturer.dll";
+    }
+
     SceneManager* Engine::_sceneManager = nullptr;
 
     Engine::Engine()
@@ -114,11 +144,22 @@ namespace tb
 
     void Engine::LoadModules()
     {
-        std::string pix = "C:/Program Files/Microsoft PIX/2405.15.002-OneBranch_release/WinPixGpuCapturer.dll";
-        HMODULE hPixModule = LoadLibraryA(pix.c_str());
-        if (hPixModule)
+        std::filesystem::path pixEventRuntimePath =
+            std::filesystem::path(core::enginePath).parent_path() / "external" / "bin" / "x64" / "WinPixEventRuntime.dll";
+        HMODULE hPixEventRuntimeModule = LoadLibraryW(pixEventRuntimePath.c_str());
+        if (hPixEventRuntimeModule)
         {
-            spdlog::info("pix module load success.");
+            spdlog::info("PixEventRuntime module load success.");
+        }
+
+        std::optional<std::wstring> pixCapturerPath = GetPixGpuCapturerPath();
+        if (pixCapturerPath)
+        {
+            HMODULE hCapturererModule = LoadLibraryW(pixCapturerPath.value().c_str());
+            if (hCapturererModule)
+            {
+                spdlog::info("PixGpuCapturerer module load success.");
+            }
         }
     }
 } // namespace tb
