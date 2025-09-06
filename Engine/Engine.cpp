@@ -2,7 +2,7 @@
 #include "Graphics/DX12Device.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
-#include "Window/Window.h"
+#include "Editor/Window/Window.h"
 #include "Scene/SceneManager.h"
 #include <vector>
 #include <ShlObj.h>

@@ -2,7 +2,7 @@
 #include "Core/Input.h"
 #include "Scene/CubeActor.h"
 #include "Scene/StaticMeshComponent.h"
-#include "Window/Window.h"
+#include "Editor/Window/Window.h"
 #include "Graphics/Material.h"
 
 namespace tb

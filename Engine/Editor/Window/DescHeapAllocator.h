@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core.h"
-#include "imgui/imgui.h"
+#include "Editor/imgui/imgui.h"
 
 namespace tb
 {

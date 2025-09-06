@@ -4,7 +4,7 @@
 #include "Graphics/GraphicsCore.h"
 #include "Scene.h"
 #include "Engine.h"
-#include "Window/Window.h"
+#include "Editor/Window/Window.h"
 
 namespace tb
 {

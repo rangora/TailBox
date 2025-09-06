@@ -6,10 +6,10 @@
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/UploadBuffer.h"
 #include "Scene/SceneManager.h"
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_dx12.h"
+#include "Editor/imgui/imgui.h"
+#include "Editor/imgui/imgui_impl_dx12.h"
+#include "Editor/Window/Window.h"
 #include "Core/Event.h"
-#include "Window/Window.h"
 
 // Windows
 #include <mmsystem.h>
