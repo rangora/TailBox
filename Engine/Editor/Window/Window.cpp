@@ -68,9 +68,9 @@ namespace tb
     {
     }
 
-    void Window::Initialize()
+    void Window::Initialize(DX12Device* device)
     {
-        _heapAlloc.Create(g_dx12Device.GetDevice(), g_dx12Device.GetImGuiDescHeap());
+        _heapAlloc.Create(device->GetDevice(), device->GetImGuiDescHeap());
 
         // Seteup Imgui
         IMGUI_CHECKVERSION();
@@ -96,9 +96,9 @@ namespace tb
         ImGui_ImplWin32_Init(_hWnd);
 
         ImGui_ImplDX12_InitInfo initInfo = {};
-        initInfo.Device = g_dx12Device.GetDevice();
-        initInfo.CommandQueue = g_dx12Device.GetCommandQueue();
-        initInfo.SrvDescriptorHeap = g_dx12Device.GetImGuiDescHeap();
+        initInfo.Device = device->GetDevice();
+        initInfo.CommandQueue = device->GetCommandQueue();
+        initInfo.SrvDescriptorHeap = device->GetImGuiDescHeap();
         initInfo.NumFramesInFlight = BUFFERCOUNT;
         initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         initInfo.DSVFormat = DXGI_FORMAT_UNKNOWN;

@@ -34,15 +34,12 @@ namespace tb
         void Launch();
         void EngineTick(const float tick);
 
-        class Window* GetWindow() { return _window; }
-
         void OnUpdateRenderTick(float deltaTime) { _renderTick = deltaTime; }
 
     private:
         void LoadModules();
 
         inline static Engine* _instance = nullptr;
-        Window* _window = nullptr;
         static SceneManager* _sceneManager;
 
         float _renderTick = 0.f;

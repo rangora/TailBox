@@ -3,6 +3,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
 #include "Editor/Window/Window.h"
+#include "Editor/EditorCore.h"
 #include "Scene/SceneManager.h"
 #include <vector>
 #include <ShlObj.h>
@@ -73,14 +74,17 @@ namespace tb
     {
         LoadModules();
 
-        _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
+        g_editor.CreateWinWindow({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
+
         g_dx12Device.Initialize();
-        g_dx12Device.CreateSwapChain(_window->GetWndRef());
+        g_dx12Device.CreateSwapChain(g_editor.GetWndRef());
         g_dx12Device.PostSwapChainCreated();
         g_dx12Device.PostDeviceCreated();
+
+        g_editor.BindDevice(&g_dx12Device);
+
         g_commandContext.Initialize();
         g_graphicsResources.Initialize();
-        _window->Initialize();
 
         // Init scene.
         _sceneManager = new SceneManager;
@@ -91,20 +95,16 @@ namespace tb
             EngineTick(_renderTick);
         }
 
-
         // Sutting down
         g_dx12Device.WaitForLastSubmittedFrame();
 
         _sceneManager->ReleaseAllScenes();
         delete _sceneManager;
 
-        _window->ShutdownImGuiContext();
-        _window->ShutdownWindow();
-        delete _window;
-
         g_commandContext.Release();
-        g_renderer.Release();
         g_graphicsResources.Release();
+        g_renderer.Release();
+        g_editor.ShutDown();
         g_dx12Device.ReleaseDevice();
     }
 
@@ -133,7 +133,7 @@ namespace tb
             return;
         }
 
-        _window->Update(); // key
+        g_editor.Update(tick);
         _sceneManager->Update(tick); // logic
         _sceneManager->OnRenderBegin();
         g_dx12Device.Update(); // render

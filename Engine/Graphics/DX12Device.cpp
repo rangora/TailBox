@@ -9,6 +9,7 @@
 #include "Editor/imgui/imgui.h"
 #include "Editor/imgui/imgui_impl_dx12.h"
 #include "Editor/Window/Window.h"
+#include "Editor/EditorCore.h"
 #include "Core/Event.h"
 
 // Windows
@@ -627,7 +628,7 @@ namespace tb
             dispatcher.Dispatch<RenderInfoDisplayEvent>(
                 [](RenderInfoDisplayEvent& e)
                 {
-                    Engine::Get().GetWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
+                    g_editor.GetWinWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
                     return true;
                 });
         }

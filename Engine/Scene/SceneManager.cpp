@@ -5,6 +5,8 @@
 #include "Scene.h"
 #include "Engine.h"
 #include "Editor/Window/Window.h"
+#include "Editor/EditorCore.h"
+#include "Editor/Editor.h"
 
 namespace tb
 {
@@ -51,7 +53,8 @@ namespace tb
     {
         static int32 preMousePosX = 0;
         static int32 preMousePosY = 0;
-        auto window = Engine::Get().GetWindow();
+        Window* window = g_editor.GetWinWindow();
+
 
         if (Input::IsMouseButtonPressed(MouseButton::Right))
         {
@@ -107,7 +110,7 @@ namespace tb
 
             dispatcher.Dispatch<CameraInfoDisplayEvent>([](CameraInfoDisplayEvent& e)
                 {
-                    Engine::Get().GetWindow()->OnUpdateCameraInfo(e.GetPos(), e.GetRot());
+                    g_editor.GetWinWindow()->OnUpdateCameraInfo(e.GetPos(), e.GetRot());
                     return true;
                 });
         }
