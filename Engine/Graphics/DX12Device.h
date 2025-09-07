@@ -46,7 +46,6 @@ namespace tb
         ID3D12Device* GetDevice() const { return _device.Get(); }
 
         IDXGISwapChain3* GetSwapChain() const { return _swapChain.Get(); }
-        ID3D12DescriptorHeap* GetImGuiDescHeap() const { return _imguiDescHeap.Get(); }
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
         ID3D12GraphicsCommandList* GetCommmandList() const { return _commandList.Get(); }
         void GetRenderTargetViewSize(float& width, float& height) { width = _rw; height = _rh; }
@@ -76,7 +75,6 @@ namespace tb
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
         ComPtr<IDXGISwapChain3> _swapChain = nullptr;
 
-        ComPtr<ID3D12DescriptorHeap> _imguiDescHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _dsHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _srvHeap = nullptr;
         ComPtr<ID3D12DescriptorHeap> _mainRtvHeap = nullptr;

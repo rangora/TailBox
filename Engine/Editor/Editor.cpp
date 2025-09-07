@@ -3,6 +3,10 @@
 #include "Core/Input.h"
 #include "imgui/imgui_impl_win32.h"
 #include "imgui/imgui_impl_dx12.h"
+#include "Graphics/GraphicsCore.h"
+#include "Graphics/CommandContext.h"
+#include "Graphics/MemoryAllocator.h"
+#include "Graphics/TextureResource.h"
 
 namespace tb
 {
@@ -16,6 +20,11 @@ namespace tb
 
     void Editor::ShutDown()
     {
+        if (_imguiDescHeap)
+        {
+            _imguiDescHeap.Reset();
+        }
+
         ImGui_ImplDX12_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
@@ -36,12 +45,12 @@ namespace tb
 
         _window->Update();
 
+        TestFunc();
         ImGui::Begin("Scene");
 
-        /* D3D12_GPU_DESCRIPTOR_HANDLE handle;
-            ImTextureID textureID = (ImTextureID)texture->_srvGpuHandle.ptr;
-            ImVec2 imageSize(512, 512);
-             ImGui::Image(textureID, imageSize);*/
+        ImTextureID textureID = (ImTextureID)_gpuHandle.ptr;
+        ImVec2 imageSize(512, 512);
+        ImGui::Image(textureID, imageSize);
 
         ImGui::End();
 
@@ -56,6 +65,28 @@ namespace tb
 
     void Editor::BindDevice(DX12Device* device)
     {
+        // imgui [TEMP]
+        {
+            D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+            desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+            desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+            desc.NumDescriptors = 64;
+            if (g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) !=
+                S_OK)
+            {
+                spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
+                return;
+            }
+
+            int32 descriptorSize =
+                g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+            auto CpuStartHandle = _imguiDescHeap->GetCPUDescriptorHandleForHeapStart();
+            auto GpuStartHandle = _imguiDescHeap->GetGPUDescriptorHandleForHeapStart();
+            _cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(CpuStartHandle, 0, descriptorSize);
+            _gpuHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(GpuStartHandle, 0, descriptorSize);
+        }
+
         _window->Initialize(device);
     }
 
@@ -147,4 +178,28 @@ namespace tb
             }
         }
     }
+
+    void Editor::TestFunc()
+    {
+       /* _cpuHandle = {};
+        _gpuHandle = {};
+
+        if (!g_commandContext._descriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle, 1))
+        {
+            return;
+        }*/
+
+        TextureResource* texture = g_graphicsResources.GetTexture("niko");
+        if (texture == nullptr)
+        {
+            return;
+        }
+
+        int32 descriptorSize =
+            g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(_cpuHandle, 0, descriptorSize);
+        g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, texture->_srvCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
 } // namespace tb

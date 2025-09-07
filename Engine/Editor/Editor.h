@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core.h"
 #include "Window/Window.h"
 
 namespace tb
@@ -19,11 +20,18 @@ namespace tb
         void BindDevice(DX12Device* device);
         void CreateDefaultLayout();
 
-        Window* GetWinWindow() { return _window; } // TEMP
-        HWND& GetWndRef() { return _window->GetWndRef(); }
+        Window* GetWinWindow() const { return _window; } // TEMP
+        HWND& GetWndRef() const { return _window->GetWndRef(); }
+        ID3D12DescriptorHeap* GetImguiHeap() const { return _imguiDescHeap.Get(); }
 
     private:
         void ProcessKeyInput();
+
+        void TestFunc();
+        CD3DX12_CPU_DESCRIPTOR_HANDLE _cpuHandle = {};
+        CD3DX12_GPU_DESCRIPTOR_HANDLE _gpuHandle = {};
+        ComPtr<ID3D12DescriptorHeap> _imguiDescHeap = nullptr;
+
 
         Window* _window = nullptr;
     };

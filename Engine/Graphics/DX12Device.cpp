@@ -98,16 +98,6 @@ namespace tb
             _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frameContexts[0]._commandAllocator,
                                        nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
             _commandList->Close();
-
-            D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-            desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            desc.NumDescriptors = 64;
-            if (_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) != S_OK)
-            {
-                spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
-                return;
-            }
         }
 
         // Create fence
@@ -288,10 +278,6 @@ namespace tb
         {
             _commandList.Reset();
         }
-        if (_imguiDescHeap)
-        {
-            _imguiDescHeap.Reset();
-        }
         if (_srvHeap)
         {
             _srvHeap.Reset();
@@ -431,7 +417,7 @@ namespace tb
 
     void DX12Device::RenderImGui()
     {
-        ID3D12DescriptorHeap* descHeaps[] = {_imguiDescHeap.Get()};
+        ID3D12DescriptorHeap* descHeaps[] = {g_editor.GetImguiHeap()};
         _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }

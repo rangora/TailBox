@@ -5,6 +5,7 @@
 #include "Editor/imgui/imgui_impl_win32.h"
 #include "Core/Input.h"
 #include <Windowsx.h>
+#include <Editor/EditorCore.h>
 
 // forward declare
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -70,7 +71,7 @@ namespace tb
 
     void Window::Initialize(DX12Device* device)
     {
-        _heapAlloc.Create(device->GetDevice(), device->GetImGuiDescHeap());
+        _heapAlloc.Create(device->GetDevice(), g_editor.GetImguiHeap());
 
         // Seteup Imgui
         IMGUI_CHECKVERSION();
@@ -98,7 +99,7 @@ namespace tb
         ImGui_ImplDX12_InitInfo initInfo = {};
         initInfo.Device = device->GetDevice();
         initInfo.CommandQueue = device->GetCommandQueue();
-        initInfo.SrvDescriptorHeap = device->GetImGuiDescHeap();
+        initInfo.SrvDescriptorHeap = g_editor.GetImguiHeap();
         initInfo.NumFramesInFlight = BUFFERCOUNT;
         initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         initInfo.DSVFormat = DXGI_FORMAT_UNKNOWN;
