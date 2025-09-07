@@ -10,13 +10,14 @@ namespace tb
     {
     public:
         Editor() = default;
-        ~Editor() = default;
+        ~Editor();
 
         void ShutDown();
         void Update(float delta);
 
         void CreateWinWindow(const WindowContext& _windowContext);
         void BindDevice(DX12Device* device);
+        void CreateDefaultLayout();
 
         Window* GetWinWindow() { return _window; } // TEMP
 

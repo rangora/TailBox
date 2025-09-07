@@ -3,6 +3,13 @@
 
 namespace tb
 {
+    Editor::~Editor()
+    {
+        if (_window)
+        {
+            delete _window;
+        }
+    }
 
     void Editor::ShutDown()
     {
@@ -28,4 +35,7 @@ namespace tb
         _window->Initialize(device);
     }
 
+    void Editor::CreateDefaultLayout()
+    {
+    }
 } // namespace tb

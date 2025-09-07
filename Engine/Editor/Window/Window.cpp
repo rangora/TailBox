@@ -122,7 +122,17 @@ namespace tb
         ImGui::NewFrame();
 
         Overlay();
-        //ImGui::ShowDemoWindow();
+
+        ImGui::Begin("Scene");
+
+        //D3D12_GPU_DESCRIPTOR_HANDLE handle;
+        //ImTextureID textureID = (ImTextureID)handle.ptr;
+        //ImVec2 imageSize(512, 512);
+        //ImGui::Image(textureID, imageSize);
+
+        ImGui::End();
+
+        ImGui::ShowDemoWindow();
 
         ImGui::Render();
     }
