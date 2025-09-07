@@ -20,10 +20,11 @@ namespace tb
         void CreateDefaultLayout();
 
         Window* GetWinWindow() { return _window; } // TEMP
-
         HWND& GetWndRef() { return _window->GetWndRef(); }
 
     private:
+        void ProcessKeyInput();
+
         Window* _window = nullptr;
     };
 } // namespace tb

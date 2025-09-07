@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "Graphics/GraphicsCore.h"
-#include "Editor/imgui/imgui.h"
+#include "Graphics/TextureResource.h"
 #include "Editor/imgui/imgui_impl_dx12.h"
 #include "Editor/imgui/imgui_impl_win32.h"
 #include "Core/Input.h"
@@ -115,26 +115,7 @@ namespace tb
 
     void Window::Update()
     {
-        ProcessKeyInput();
-
-        ImGui_ImplDX12_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-
         Overlay();
-
-        ImGui::Begin("Scene");
-
-        //D3D12_GPU_DESCRIPTOR_HANDLE handle;
-        //ImTextureID textureID = (ImTextureID)handle.ptr;
-        //ImVec2 imageSize(512, 512);
-        //ImGui::Image(textureID, imageSize);
-
-        ImGui::End();
-
-        ImGui::ShowDemoWindow();
-
-        ImGui::Render();
     }
 
     void Window::PostRenderEnd()
@@ -145,13 +126,6 @@ namespace tb
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
         }
-    }
-
-    void Window::ShutdownImGuiContext()
-    {
-        ImGui_ImplDX12_Shutdown();
-        ImGui_ImplWin32_Shutdown();
-        ImGui::DestroyContext();
     }
 
     void Window::ShutdownWindow()
@@ -235,90 +209,5 @@ namespace tb
         }
 
         ImGui::End();
-    }
-
-    void Window::ProcessKeyInput()
-    {
-        Input::ClearReleasedInput();
-        Input::TransitionPressedButtons();
-
-        ImGuiKey startKey = ImGuiKey_NamedKey_BEGIN;
-        for (ImGuiKey key = startKey; key < ImGuiKey_NamedKey_END; key = static_cast<ImGuiKey>(key + 1))
-        {
-            if (key == ImGuiKey_MouseRight)
-            {
-                if (ImGui::IsKeyDown(key))
-                {
-                    if (!Input::IsMouseButtonDown(MouseButton::Right))
-                    {
-                        Input::UpdateMouseButtonState(MouseButton::Right, KeyState::Pressed);
-                    }
-                }
-                else if (Input::IsMouseButtonDown(MouseButton::Right))
-                {
-                    Input::UpdateMouseButtonState(MouseButton::Right, KeyState::Released);
-                }
-            }
-
-            if (key == ImGuiKey_W)
-            {
-                if (ImGui::IsKeyDown(key))
-                {
-                    if (!Input::IsKeyButtonDown(KeyButton::W))
-                    {
-                        Input::UpdateKeyButtonState(KeyButton::W, KeyState::Pressed);
-                    }
-                }
-                else if (Input::IsKeyButtonDown(KeyButton::W))
-                {
-                    Input::UpdateKeyButtonState(KeyButton::W, KeyState::Released);
-                }
-            }
-
-            if (key == ImGuiKey_S)
-            {
-                if (ImGui::IsKeyDown(key))
-                {
-                    if (!Input::IsKeyButtonDown(KeyButton::S))
-                    {
-                        Input::UpdateKeyButtonState(KeyButton::S, KeyState::Pressed);
-                    }
-                }
-                else if (Input::IsKeyButtonDown(KeyButton::S))
-                {
-                    Input::UpdateKeyButtonState(KeyButton::S, KeyState::Released);
-                }
-            }
-
-            if (key == ImGuiKey_A)
-            {
-                if (ImGui::IsKeyDown(key))
-                {
-                    if (!Input::IsKeyButtonDown(KeyButton::A))
-                    {
-                        Input::UpdateKeyButtonState(KeyButton::A, KeyState::Pressed);
-                    }
-                }
-                else if (Input::IsKeyButtonDown(KeyButton::A))
-                {
-                    Input::UpdateKeyButtonState(KeyButton::A, KeyState::Released);
-                }
-            }
-
-            if (key == ImGuiKey_D)
-            {
-                if (ImGui::IsKeyDown(key))
-                {
-                    if (!Input::IsKeyButtonDown(KeyButton::D))
-                    {
-                        Input::UpdateKeyButtonState(KeyButton::D, KeyState::Pressed);
-                    }
-                }
-                else if (Input::IsKeyButtonDown(KeyButton::D))
-                {
-                    Input::UpdateKeyButtonState(KeyButton::D, KeyState::Released);
-                }
-            }
-        }
     }
 } // namespace tb

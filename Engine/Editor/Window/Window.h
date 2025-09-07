@@ -32,7 +32,6 @@ namespace tb
         void Update();
         void PostRenderEnd();
 
-        void ShutdownImGuiContext();
         void ShutdownWindow();
 
         void OnUpdateRenderTime(float fps, float deltaTime);
@@ -47,9 +46,6 @@ namespace tb
 
     private:
         void Overlay();
-
-        // Input
-        void ProcessKeyInput();
 
         WindowContext _windowContext;
 

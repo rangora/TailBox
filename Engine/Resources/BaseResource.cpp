@@ -186,13 +186,10 @@ namespace tb
                 srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
                 srvDesc.Texture2D.MipLevels = 1;
 
-                D3D12_CPU_DESCRIPTOR_HANDLE srvHandle = {};
-                if (g_commandContext._solidDescriptorPool->AllocDescriptor(&srvHandle))
+                if (g_commandContext._solidDescriptorPool->AllocDescriptor(&texResource->_srvCpuHandle))
                 {
                     g_dx12Device.GetDevice()->CreateShaderResourceView(texResource->_resource.Get(), &srvDesc,
-                                                                       srvHandle);
-
-                    texResource->_srvHandle = srvHandle;
+                                                                       texResource->_srvCpuHandle);
                 }
 
                 std::filesystem::path p(paths[idx]);

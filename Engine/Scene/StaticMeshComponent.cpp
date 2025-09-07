@@ -132,10 +132,10 @@ namespace tb
             TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
             if (textureResource)
             {
-                if (textureResource->_srvHandle.ptr)
+                if (textureResource->_srvCpuHandle.ptr)
                 {
                     CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
-                    g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvHandle,
+                    g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvCpuHandle,
                                                                     D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
                 }
             }

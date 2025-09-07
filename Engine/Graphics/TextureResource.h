@@ -17,7 +17,7 @@ namespace tb
         void Destroy() final;
         void CreateTexture(const std::string& path);
 
-        D3D12_CPU_DESCRIPTOR_HANDLE _srvHandle;
+        D3D12_CPU_DESCRIPTOR_HANDLE _srvCpuHandle = {};
         ComPtr<ID3D12DescriptorHeap> _srvHeap = nullptr;
     };
 } // namespace tb
