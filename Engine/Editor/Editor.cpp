@@ -20,11 +20,6 @@ namespace tb
 
     void Editor::ShutDown()
     {
-        if (_imguiDescHeap)
-        {
-            _imguiDescHeap.Reset();
-        }
-
         ImGui_ImplDX12_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
@@ -65,27 +60,7 @@ namespace tb
 
     void Editor::BindDevice(DX12Device* device)
     {
-        // imgui [TEMP]
-        {
-            D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-            desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-            desc.NumDescriptors = 64;
-            if (g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_imguiDescHeap.GetAddressOf())) !=
-                S_OK)
-            {
-                spdlog::error("[FATAL] Failed to create imguiDescriptorHeap.");
-                return;
-            }
-
-            int32 descriptorSize =
-                g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-            auto CpuStartHandle = _imguiDescHeap->GetCPUDescriptorHandleForHeapStart();
-            auto GpuStartHandle = _imguiDescHeap->GetGPUDescriptorHandleForHeapStart();
-            _cpuHandle = CD3DX12_CPU_DESCRIPTOR_HANDLE(CpuStartHandle, 0, descriptorSize);
-            _gpuHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(GpuStartHandle, 0, descriptorSize);
-        }
+        g_commandContext._guiDescriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle);
 
         _window->Initialize(device);
     }
@@ -181,14 +156,6 @@ namespace tb
 
     void Editor::TestFunc()
     {
-       /* _cpuHandle = {};
-        _gpuHandle = {};
-
-        if (!g_commandContext._descriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle, 1))
-        {
-            return;
-        }*/
-
         TextureResource* texture = g_graphicsResources.GetTexture("niko");
         if (texture == nullptr)
         {

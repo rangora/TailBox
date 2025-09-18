@@ -12,6 +12,7 @@ namespace tb
         _descriptorPool.release();
         _constantBufferPool.release();
         _solidDescriptorPool.release();
+        _guiDescriptorPool.release();
     }
 
     void CommandContext::Initialize()
@@ -21,6 +22,9 @@ namespace tb
 
         _solidDescriptorPool = std::make_unique<SolidDescriptorPool>();
         _solidDescriptorPool->Initialize(256, D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+
+        _guiDescriptorPool = std::make_unique<class GuiDescriptorPool>();
+        _guiDescriptorPool->Initialize(256, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
         _constantBufferPool = std::make_unique<class ConstantBufferPool>();
         _constantBufferPool->Initialize(sizeof(TempConstants), 256);
@@ -47,6 +51,10 @@ namespace tb
         if (_solidDescriptorPool)
         {
             _solidDescriptorPool.reset();
+        }
+        if (_guiDescriptorPool)
+        {
+            _guiDescriptorPool.reset();
         }
     }
 

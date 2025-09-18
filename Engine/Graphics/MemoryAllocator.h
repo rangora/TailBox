@@ -49,6 +49,28 @@ namespace tb
         UINT _descriptorSize = 0;
     };
 
+    class GuiDescriptorPool
+    {
+    public:
+        GuiDescriptorPool();
+        ~GuiDescriptorPool();
+
+        void Initialize(int32 maxCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags);
+        bool AllocDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE* outCpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* outGpuHandle);
+        bool FreeDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle);
+        bool Validate(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle);
+
+        ID3D12DescriptorHeap* GetDescriptorHeap() const { return _descriptorHeap.Get(); }
+
+    private:
+        ComPtr<ID3D12DescriptorHeap> _descriptorHeap = nullptr;
+        D3D12_CPU_DESCRIPTOR_HANDLE _cpuHandle = {};
+        D3D12_GPU_DESCRIPTOR_HANDLE _gpuHandle = {};
+
+        IndexDispenser _idxDispenser;
+        UINT _descriptorSize = 0;
+    };
+
     struct CBBlock
     {
         D3D12_CPU_DESCRIPTOR_HANDLE _handle;

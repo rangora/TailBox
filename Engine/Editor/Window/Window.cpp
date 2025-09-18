@@ -1,6 +1,7 @@
 #include "Window.h"
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/TextureResource.h"
+#include "Graphics/MemoryAllocator.h"
 #include "Editor/imgui/imgui_impl_dx12.h"
 #include "Editor/imgui/imgui_impl_win32.h"
 #include "Core/Input.h"
@@ -71,7 +72,7 @@ namespace tb
 
     void Window::Initialize(DX12Device* device)
     {
-        _heapAlloc.Create(device->GetDevice(), g_editor.GetImguiHeap());
+        _heapAlloc.Create(device->GetDevice(), g_commandContext._guiDescriptorPool->GetDescriptorHeap());
 
         // Seteup Imgui
         IMGUI_CHECKVERSION();
@@ -99,7 +100,7 @@ namespace tb
         ImGui_ImplDX12_InitInfo initInfo = {};
         initInfo.Device = device->GetDevice();
         initInfo.CommandQueue = device->GetCommandQueue();
-        initInfo.SrvDescriptorHeap = g_editor.GetImguiHeap();
+        initInfo.SrvDescriptorHeap = g_commandContext._guiDescriptorPool->GetDescriptorHeap();
         initInfo.NumFramesInFlight = BUFFERCOUNT;
         initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
         initInfo.DSVFormat = DXGI_FORMAT_UNKNOWN;

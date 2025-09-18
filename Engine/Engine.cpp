@@ -81,10 +81,10 @@ namespace tb
         g_dx12Device.PostSwapChainCreated();
         g_dx12Device.PostDeviceCreated();
 
-        g_editor.BindDevice(&g_dx12Device);
-
         g_commandContext.Initialize();
         g_graphicsResources.Initialize();
+
+        g_editor.BindDevice(&g_dx12Device);
 
         // Init scene.
         _sceneManager = new SceneManager;

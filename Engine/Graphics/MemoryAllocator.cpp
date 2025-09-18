@@ -220,4 +220,77 @@ namespace tb
 
         return true;
     }
+
+    GuiDescriptorPool::GuiDescriptorPool()
+    {
+    }
+
+    GuiDescriptorPool::~GuiDescriptorPool()
+    {
+        if (_descriptorHeap)
+        {
+            _descriptorHeap.Reset();
+        }
+    }
+
+    void GuiDescriptorPool::Initialize(int32 maxCount, D3D12_DESCRIPTOR_HEAP_FLAGS flags)
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
+        heapDesc.NumDescriptors = maxCount;
+        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        heapDesc.Flags = flags;
+
+        if (S_OK != g_dx12Device.GetDevice()->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&_descriptorHeap)))
+        {
+            spdlog::error("Failed to create descriptorHeap during creating guiDescriptorPool.");
+            return;
+        }
+
+        _idxDispenser.Initialize(maxCount);
+        _descriptorSize =
+            g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
+    bool GuiDescriptorPool::AllocDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE* outCpuHandle,
+                                            D3D12_GPU_DESCRIPTOR_HANDLE* outGpuHandle)
+    {
+        uint32 index = _idxDispenser.Allocate();
+        if (index == -1)
+        {
+            return false;
+        }
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(_descriptorHeap->GetCPUDescriptorHandleForHeapStart(), index, _descriptorSize);
+        CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(_descriptorHeap->GetGPUDescriptorHandleForHeapStart(), index, _descriptorSize);
+        *outCpuHandle = cpuHandle;
+        *outGpuHandle = gpuHandle;
+        return true;
+    }
+
+    bool GuiDescriptorPool::FreeDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE base = _descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        if (cpuHandle.ptr < base.ptr)
+        {
+            assert(false);
+            return false;
+        }
+
+        uint32 index = (uint32)(cpuHandle.ptr - base.ptr) / _descriptorSize;
+        _idxDispenser.Free(index);
+        return true;
+    }
+
+    bool GuiDescriptorPool::Validate(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle)
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE base = _descriptorHeap->GetCPUDescriptorHandleForHeapStart();
+        if (cpuHandle.ptr < base.ptr)
+        {
+            assert(false);
+            return false;
+        }
+
+        return true;
+    }
+
 } // namespace tb

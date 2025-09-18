@@ -5,6 +5,7 @@
 #include "Graphics/RootSignature.h"
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/UploadBuffer.h"
+#include "Graphics/MemoryAllocator.h"
 #include "Scene/SceneManager.h"
 #include "Editor/imgui/imgui.h"
 #include "Editor/imgui/imgui_impl_dx12.h"
@@ -417,7 +418,7 @@ namespace tb
 
     void DX12Device::RenderImGui()
     {
-        ID3D12DescriptorHeap* descHeaps[] = {g_editor.GetImguiHeap()};
+        ID3D12DescriptorHeap* descHeaps[] = { g_commandContext._guiDescriptorPool->GetDescriptorHeap() };
         _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
         ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
