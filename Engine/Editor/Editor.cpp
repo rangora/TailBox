@@ -7,9 +7,12 @@
 #include "Graphics/CommandContext.h"
 #include "Graphics/MemoryAllocator.h"
 #include "Graphics/TextureResource.h"
+#include "Graphics/Utility/RenderTexture.h"
 
 namespace tb
 {
+    Editor::Editor() = default;
+
     Editor::~Editor()
     {
         if (_window)
@@ -41,13 +44,13 @@ namespace tb
         _window->Update();
 
         TestFunc();
-        ImGui::Begin("Scene");
+        /* ImGui::Begin("Scene");
 
-        ImTextureID textureID = (ImTextureID)_gpuHandle.ptr;
-        ImVec2 imageSize(512, 512);
-        ImGui::Image(textureID, imageSize);
+         ImTextureID textureID = (ImTextureID)_gpuHandle.ptr;
+         ImVec2 imageSize(512, 512);
+         ImGui::Image(textureID, imageSize);
 
-        ImGui::End();
+         ImGui::End();*/
 
         ImGui::ShowDemoWindow();
         ImGui::Render();
@@ -63,6 +66,33 @@ namespace tb
         g_commandContext._guiDescriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle);
 
         _window->Initialize(device);
+
+        // create rtv
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        desc.NumDescriptors = BUFFERCOUNT;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        desc.NodeMask = 1;
+        g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_textureRtvHeap.GetAddressOf()));
+        _rtvHandle = _textureRtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+        {
+            CD3DX12_RESOURCE_DESC rtvDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 800, 600, 1, 1,
+                                                                         1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+            CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+            D3D12_CLEAR_VALUE clearValue = {};
+            clearValue.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            g_dx12Device.GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &rtvDesc,
+                                                              D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
+                                                              IID_PPV_ARGS(_rtvResource.GetAddressOf()));
+
+            g_dx12Device.GetDevice()->CreateRenderTargetView(_rtvResource.Get(), nullptr, _rtvHandle);
+        }
+
+
+        // set texture cpuHandle
+        _renderTexture = std::make_unique<RenderTexture>(DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
+        _renderTexture->SetSrvHandle(_cpuHandle);
     }
 
     void Editor::CreateDefaultLayout()
