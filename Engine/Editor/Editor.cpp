@@ -8,6 +8,8 @@
 #include "Graphics/MemoryAllocator.h"
 #include "Graphics/TextureResource.h"
 #include "Graphics/Utility/RenderTexture.h"
+#include "Scene/SceneManager.h"
+#include "Engine.h"
 
 namespace tb
 {
@@ -93,11 +95,11 @@ namespace tb
         _rtvHandle = _textureRtvHeap->GetCPUDescriptorHandleForHeapStart();
 
         {
-            CD3DX12_RESOURCE_DESC rtvDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 800, 600, 1, 1,
+            CD3DX12_RESOURCE_DESC rtvDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UNORM, 800, 600, 1, 1,
                                                                          1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
             CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
             D3D12_CLEAR_VALUE clearValue = {};
-            clearValue.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+            clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
             g_dx12Device.GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &rtvDesc,
                                                               D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
                                                               IID_PPV_ARGS(_rtvResource.GetAddressOf()));
@@ -107,10 +109,10 @@ namespace tb
 
 
         // set texture cpuHandle
-        _renderTexture = std::make_unique<RenderTexture>(DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT);
+        _renderTexture = std::make_unique<RenderTexture>(DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
         _renderTexture->SetSrvHandle(_cpuHandle);
         _renderTexture->SetRtvHandle(_rtvHandle);
-        _renderTexture->CreateResource(512, 512);
+        _renderTexture->CreateResource(800, 600);
     }
 
     void Editor::CreateDefaultLayout()
@@ -211,7 +213,9 @@ namespace tb
         {
             // Draw
             {
+
                 _renderTexture->Clear(g_dx12Device.GetCommmandList());
+                Engine::Get().GetSceneManager()->Render();
             }
 
             g_dx12Device.GetCommmandList()->Close();

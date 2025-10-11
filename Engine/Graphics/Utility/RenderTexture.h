@@ -23,9 +23,14 @@ namespace tb
 
     private:
         ComPtr<ID3D12Resource> _resource = nullptr;
+        ComPtr<ID3D12Resource> _dsBuffer = nullptr;
+        ComPtr<ID3D12DescriptorHeap> _dsHeap = nullptr;
         D3D12_RESOURCE_STATES _state;
         D3D12_CPU_DESCRIPTOR_HANDLE _srvHandle;
         D3D12_CPU_DESCRIPTOR_HANDLE _rtvHandle;
+
+        D3D12_VIEWPORT _viewport = {};
+        D3D12_RECT _rect = {};
 
         DXGI_FORMAT _format;
         int32 _width = 100;
