@@ -43,6 +43,10 @@ namespace tb
             CD3DX12_RESOURCE_DESC::Tex2D(_format, static_cast<UINT64>(_width), static_cast<UINT>(_height), 1, 1, 1, 0,
                                          D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
 
+        _clearColor[0] = 1.0f; // R
+        _clearColor[1] = 0.0f; // G
+        _clearColor[2] = 0.0f; // B
+        _clearColor[3] = 1.0f; // A
         D3D12_CLEAR_VALUE clearValue = {_format, {}};
         memcpy(clearValue.Color, _clearColor, sizeof(clearValue.Color));
 
@@ -56,11 +60,16 @@ namespace tb
         g_dx12Device.GetDevice()->CreateShaderResourceView(_resource.Get(), nullptr, _srvHandle);
     }
 
-    void RenderTexture::TransitionTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
+    void RenderTexture::Clear(ID3D12GraphicsCommandList* commandList)
+    {
+        commandList->ClearRenderTargetView(_rtvHandle, _clearColor, 0, nullptr);
+    }
+
+    bool RenderTexture::TransitionTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
     {
         if (_state == newState)
         {
-            return;
+            return false;
         }
 
         D3D12_RESOURCE_BARRIER desc = {};
@@ -72,6 +81,8 @@ namespace tb
         commandList->ResourceBarrier(1, &desc);
 
         _state = newState;
+
+        return true;
     }
 
 } // namespace tb

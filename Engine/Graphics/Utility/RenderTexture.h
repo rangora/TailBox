@@ -17,8 +17,9 @@ namespace tb
         void SetSrvHandle(D3D12_CPU_DESCRIPTOR_HANDLE srvHandle);
         void SetRtvHandle(D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle);
         void CreateResource(int32 width, int32 height);
+        void Clear(ID3D12GraphicsCommandList* commandList);
 
-        void TransitionTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+        bool TransitionTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 
     private:
         ComPtr<ID3D12Resource> _resource = nullptr;
@@ -29,6 +30,6 @@ namespace tb
         DXGI_FORMAT _format;
         int32 _width = 100;
         int32 _height = 100;
-        float _clearColor[4];
+        float _clearColor[4] = {};
     };
 }

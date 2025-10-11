@@ -378,7 +378,7 @@ namespace tb
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
         // Render from sceneManager
-        Engine::Get().GetSceneManager()->Render();
+        //Engine::Get().GetSceneManager()->Render();
 
         // imgui
         RenderImGui();
@@ -540,7 +540,7 @@ namespace tb
 
     void DX12Device::Flush()
     {
-        FrameContext& ctx = _frameContexts[_frameIndex];
+        FrameContext& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
         _commandList->Reset(ctx._commandAllocator, nullptr);
     }
 
@@ -550,7 +550,7 @@ namespace tb
         _commandQueue->Signal(_fence.Get(), fenceValue);
         _fenceLastSignalValue = fenceValue;
 
-        FrameContext& ctx = _frameContexts[_frameIndex];
+        FrameContext& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
         ctx._fenceValue = fenceValue;
 
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
