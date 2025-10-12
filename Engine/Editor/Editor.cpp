@@ -7,9 +7,14 @@
 #include "Graphics/CommandContext.h"
 #include "Graphics/MemoryAllocator.h"
 #include "Graphics/TextureResource.h"
+#include "Graphics/Utility/RenderTexture.h"
+#include "Scene/SceneManager.h"
+#include "Engine.h"
 
 namespace tb
 {
+    Editor::Editor() = default;
+
     Editor::~Editor()
     {
         if (_window)
@@ -20,6 +25,22 @@ namespace tb
 
     void Editor::ShutDown()
     {
+        if (_renderTexture)
+        {
+            _renderTexture->Release();
+            _renderTexture.reset();
+        }
+
+        if (_rtvResource)
+        {
+            _rtvResource.Reset();
+        }
+
+        if (_textureRtvHeap)
+        {
+            _textureRtvHeap.Reset();
+        }
+
         ImGui_ImplDX12_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
@@ -49,7 +70,7 @@ namespace tb
 
         ImGui::End();
 
-        ImGui::ShowDemoWindow();
+        //ImGui::ShowDemoWindow();
         ImGui::Render();
     }
 
@@ -63,6 +84,35 @@ namespace tb
         g_commandContext._guiDescriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle);
 
         _window->Initialize(device);
+
+        // create rtv
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        desc.NumDescriptors = BUFFERCOUNT;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        desc.NodeMask = 1;
+        g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_textureRtvHeap.GetAddressOf()));
+        _rtvHandle = _textureRtvHeap->GetCPUDescriptorHandleForHeapStart();
+
+        {
+            CD3DX12_RESOURCE_DESC rtvDesc = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_R8G8B8A8_UNORM, 800, 600, 1, 1,
+                                                                         1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET);
+            CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
+            D3D12_CLEAR_VALUE clearValue = {};
+            clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            g_dx12Device.GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &rtvDesc,
+                                                              D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
+                                                              IID_PPV_ARGS(_rtvResource.GetAddressOf()));
+
+            g_dx12Device.GetDevice()->CreateRenderTargetView(_rtvResource.Get(), nullptr, _rtvHandle);
+        }
+
+
+        // set texture cpuHandle
+        _renderTexture = std::make_unique<RenderTexture>(DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM);
+        _renderTexture->SetSrvHandle(_cpuHandle);
+        _renderTexture->SetRtvHandle(_rtvHandle);
+        _renderTexture->CreateResource(800, 600);
     }
 
     void Editor::CreateDefaultLayout()
@@ -156,17 +206,30 @@ namespace tb
 
     void Editor::TestFunc()
     {
-        TextureResource* texture = g_graphicsResources.GetTexture("niko");
-        if (texture == nullptr)
+        ID3D12CommandList* ppCommandLists[] = {g_dx12Device.GetCommmandList()};
+
+        g_dx12Device.Flush();
+        if (_renderTexture->TransitionTo(g_dx12Device.GetCommmandList(), D3D12_RESOURCE_STATE_RENDER_TARGET))
         {
-            return;
+            // Draw
+            {
+
+                _renderTexture->Clear(g_dx12Device.GetCommmandList());
+                Engine::Get().GetSceneManager()->Render();
+            }
+
+            g_dx12Device.GetCommmandList()->Close();
+            g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+            g_dx12Device.Signal();
         }
 
-        int32 descriptorSize =
-            g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-        CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(_cpuHandle, 0, descriptorSize);
-        g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, texture->_srvCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        g_dx12Device.Flush();
+        if (_renderTexture->TransitionTo(g_dx12Device.GetCommmandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE))
+        {
+            g_dx12Device.GetCommmandList()->Close();
+            g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+            g_dx12Device.Signal();
+        }
     }
 
 } // namespace tb

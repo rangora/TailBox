@@ -10,7 +10,7 @@ namespace tb
     class Editor
     {
     public:
-        Editor() = default;
+        Editor();
         ~Editor();
 
         void ShutDown();
@@ -29,6 +29,12 @@ namespace tb
         void TestFunc();
         CD3DX12_CPU_DESCRIPTOR_HANDLE _cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE _gpuHandle = {};
+
+        ComPtr<ID3D12Resource> _rtvResource = nullptr;
+        ComPtr<ID3D12DescriptorHeap> _textureRtvHeap = nullptr;
+        CD3DX12_CPU_DESCRIPTOR_HANDLE _rtvHandle = {};
+
+        std::unique_ptr<class RenderTexture> _renderTexture = nullptr;
 
         Window* _window = nullptr;
     };
