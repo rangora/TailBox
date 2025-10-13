@@ -11,6 +11,7 @@ using uint64 = unsigned __int64;
 
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "dxgi1_4.h"
 #include <DirectXMath.h>

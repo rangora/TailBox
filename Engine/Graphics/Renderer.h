@@ -22,6 +22,8 @@ namespace tb
 
         void Release();
 
+        void Render();
+
     private:
         void InitializeRootSignature();
         void InitializeShaders();

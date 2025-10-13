@@ -136,6 +136,7 @@ namespace tb
         g_editor.Update(tick);
         _sceneManager->Update(tick); // logic
         _sceneManager->OnRenderBegin();
+        g_renderer.Render();
         g_dx12Device.Update(); // render
 
         // OnEndFrame

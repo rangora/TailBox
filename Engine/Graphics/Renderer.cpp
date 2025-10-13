@@ -8,6 +8,8 @@
 #include "RootSignature.h"
 #include "GraphicsCore.h"
 #include "MemoryAllocator.h"
+#include "RenderPassManager.h"
+#include "RenderAPI.h"
 
 namespace tb
 {
@@ -16,6 +18,9 @@ namespace tb
 
     void Renderer::Initialize()
     {
+        RenderAPI::Create();
+        RenderPassManager::Create();
+
         _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
 
         _rootSignatures.reserve(100);
@@ -42,6 +47,11 @@ namespace tb
             _pipelineStateHandler->Release();
             _pipelineStateHandler.reset();
         }
+    }
+
+    void Renderer::Render()
+    {
+        auto renderPassMgr = RenderPassManager::Get();
     }
 
     void Renderer::InitializeRootSignature()
