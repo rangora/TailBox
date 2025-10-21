@@ -7,6 +7,7 @@ namespace tb
     class Shader;
     class GeometryBuffer;
     class TextureResource;
+    class Mesh;
 
     struct RawResourceStorage
     {
@@ -28,5 +29,6 @@ namespace tb
         std::unordered_map<std::string, Shader*> _shaders;
         std::unordered_map<std::string, GeometryBuffer*> _geoemtryBuffers;
         std::unordered_map<std::string, TextureResource*> _textures;
+        std::unordered_map<std::string, Mesh*> _meshes;
     };
 } // namespace tb

@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "TextureResource.h"
 #include "Resources/BaseResource.h"
+#include "StaticMesh.h"
 
 namespace tb
 {
@@ -25,6 +26,12 @@ namespace tb
             _textures.emplace(texResource->_alias, texResource);
 
         }
+
+        // meshes
+        _meshes.reserve(100);
+
+        auto cubeMesh = new StaticMesh(br::_cubeVertices, br::_cubeIndices);
+    
     }
 
     void RawResourceStorage::Release()
