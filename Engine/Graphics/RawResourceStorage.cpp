@@ -30,8 +30,8 @@ namespace tb
         // meshes
         _meshes.reserve(100);
 
-        auto cubeMesh = new StaticMesh(br::_cubeVertices, br::_cubeIndices);
-    
+        _cubeMesh = new StaticMesh(br::_cubeVertices, br::_cubeIndices);
+
     }
 
     void RawResourceStorage::Release()

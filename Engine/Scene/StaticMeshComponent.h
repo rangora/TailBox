@@ -30,5 +30,7 @@ namespace tb
         std::string _meshName;
 
         StaticMeshRenderResource _renderResource;
+
+        class StaticMesh* _staticMesh = nullptr;
     };
 } // namespace tb

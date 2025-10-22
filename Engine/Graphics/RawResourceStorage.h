@@ -24,6 +24,7 @@ namespace tb
         void AddShader(const std::string& key, Shader* shader);
         void AddTexture(const std::string& key, TextureResource* texture);
 
+        class StaticMesh* _cubeMesh = nullptr;
 
     private:
         std::unordered_map<std::string, Shader*> _shaders;

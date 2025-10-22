@@ -15,6 +15,8 @@ namespace tb
 
         void SetupStaticMesh(unsigned int& VOI, const std::vector<Vertex>& vertices, const std::vector<uint32>& indices) final;
 
+        void Draw(uint32 VOI) final;
+
     private:
         int32 AllocateVOIndex();
         D3D12VO* GetVO(int32 idx);

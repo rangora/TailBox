@@ -6,6 +6,8 @@
 #include "Graphics/MemoryAllocator.h"
 #include "Actor.h"
 #include "Engine.h"
+#include "Graphics/StaticMesh.h"
+#include "../Graphics/D3D12RenderAPI.h"
 
 namespace tb
 {
@@ -36,12 +38,14 @@ namespace tb
 
     void StaticMeshComponent::SetStaticMesh(const std::string& meshName)
     {
-        if (_renderResource.LinkGeometryResources(meshName))
+        if (!_renderResource.LinkGeometryResources(meshName))
         {
             return;
         }
 
         _meshName = meshName;
+
+        _staticMesh = g_graphicsResources._cubeMesh;
     }
 
     void StaticMeshComponent::Render(const XMMATRIX& vpMtx)
@@ -50,8 +54,6 @@ namespace tb
         {
             return;
         }
-
-        auto geometryBuffer = _renderResource.GetGeometryBuffer();
 
         SceneComponent::Render(vpMtx);
 
@@ -141,11 +143,20 @@ namespace tb
             }
         }
 
+        g_graphicsResources._cubeMesh->_VOI;
+        auto geometryBuffer = _renderResource.GetGeometryBuffer();
         g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
+
+        auto api = D3D12RenderAPI::Get();
+        api->Draw(g_graphicsResources._cubeMesh->_VOI);
+        /*   g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
+           g_dx12Device.GetCommmandList()->IASetIndexBuffer(&geometryBuffer->_indexBufferView);
+           g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);*/
+
+     /*   g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
         g_dx12Device.GetCommmandList()->IASetIndexBuffer(&geometryBuffer->_indexBufferView);
-        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);
+        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);*/
     }
 
     void StaticMeshComponent::Clear()

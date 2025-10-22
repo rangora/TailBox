@@ -25,19 +25,29 @@ namespace tb
         {
             uint32 vertexCount = static_cast<uint32>(br::_cubeVertices.size());
             uint32 vertexBufferSize = vertexCount * sizeof(Vertex);
+            VO->_vertexCount = vertexCount;
             VO->_vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
                                              D3D12_HEAP_TYPE_DEFAULT, false, true, br::_cubeVertices.data());
             VO->_vertexBufferView.SizeInBytes = vertexBufferSize;
             VO->_vertexBufferView.StrideInBytes = sizeof(Vertex);
             VO->_vertexBufferView.BufferLocation = VO->_vertexBuffer._gpuAddr;
 
+            uint32 indexCount = static_cast<uint32>(br::_cubeIndices.size());
             uint32 indexBufferSize = static_cast<uint32>(br::_cubeIndices.size() * sizeof(uint32));
+            VO->_indexCount = indexCount;
             VO->_indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
                                             D3D12_HEAP_TYPE_DEFAULT, false, true, br::_cubeIndices.data());
             VO->_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
             VO->_indexBufferView.SizeInBytes = indexBufferSize;
             VO->_indexBufferView.BufferLocation = VO->_indexBuffer._gpuAddr;
         }
+    }
+
+    void D3D12RenderAPI::Draw(uint32 VOI)
+    {
+        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_VOs[VOI]->_vertexBufferView);
+        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&_VOs[VOI]->_indexBufferView);
+        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);
     }
 
     int32 D3D12RenderAPI::AllocateVOIndex()
