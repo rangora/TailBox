@@ -10,7 +10,7 @@ namespace tb
     class UploadBuffer;
     class CommandContext;
 
-    struct FrameContext
+    struct FrameContext_old
     {
         ID3D12CommandAllocator* _commandAllocator = nullptr;
         uint64 _fenceValue = 0;
@@ -52,7 +52,7 @@ namespace tb
 
         void CreateRenderTarget();
         void CleanupRenderTarget();
-        FrameContext* WaitForNextFrameResources();
+        FrameContext_old* WaitForNextFrameResources();
         void WaitForLastSubmittedFrame();
         void OnWindowResized(UINT width, UINT height);
 
@@ -94,8 +94,8 @@ namespace tb
         HANDLE _swapChainWaitableObject = nullptr;
         uint64 _fenceLastSignalValue = 0;
 
-        FrameContext _frameContexts[BUFFERCOUNT] = {};
-        FrameContext* _nextFrameCtx = nullptr;
+        FrameContext_old _frameContexts[BUFFERCOUNT] = {};
+        FrameContext_old* _nextFrameCtx = nullptr;
         uint32 _frameIndex = 0;
         uint32 _backBufferIndex = 0;
         bool _bSwapChainOccluded = false;

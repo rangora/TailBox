@@ -7,9 +7,10 @@ namespace tb
     class RenderPassForwardRendering : public RenderPass
     {
     public:
-        RenderPassForwardRendering();
+        RenderPassForwardRendering() = delete;
+        RenderPassForwardRendering(ID3D12Device* device) : RenderPass(device) {}
         ~RenderPassForwardRendering();
 
-        void Render(Camera* camera) final;
+        void Render(const D3D12View& view) final;
     };
 }

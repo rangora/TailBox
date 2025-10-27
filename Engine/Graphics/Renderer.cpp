@@ -10,6 +10,7 @@
 #include "MemoryAllocator.h"
 #include "RenderPassManager.h"
 #include "RenderAPI.h"
+#include "../Engine.h"
 
 namespace tb
 {
@@ -20,6 +21,8 @@ namespace tb
     {
         RenderAPI::Create();
         RenderPassManager::Create();
+
+        RenderPassManager::Get()->SetupRenderPass(RenderPiplineType::Forward);
 
         _pipelineStateHandler = std::make_unique<PipelineStateHandler>();
 
@@ -49,9 +52,20 @@ namespace tb
         }
     }
 
+    void Renderer::RenderBegin()
+    {
+
+    }
+
     void Renderer::Render()
     {
+        // view 정보 업데이트 하는거 개선 해여 함
+        auto projMtx = Engine::GetActiveProjectionMatrix();
+        auto viewMtx = Engine::GetActiveViewMatrix();
+
+        D3D12View view{projMtx, viewMtx};
         auto renderPassMgr = RenderPassManager::Get();
+        renderPassMgr->Render(view);
     }
 
     void Renderer::InitializeRootSignature()

@@ -22,4 +22,21 @@ namespace tb
         D3D12Buffer _vertexBuffer;
         D3D12_VERTEX_BUFFER_VIEW _vertexBufferView = {};
     };
+
+    struct D3D12DrawCommand
+    {
+        uint32 _VOI = 0;
+    };
+
+    struct D3D12FrameContext
+    {
+        ComPtr<ID3D12CommandAllocator> _commandAllocator = nullptr;
+        uint64 _fenceValue = 0;
+    };
+
+    struct D3D12View
+    {
+        XMMATRIX _projMtx;
+        XMMATRIX _sceneViewMtx;
+    };
 }

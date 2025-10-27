@@ -145,8 +145,8 @@ namespace tb
 
         g_graphicsResources._cubeMesh->_VOI;
         auto geometryBuffer = _renderResource.GetGeometryBuffer();
-        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
         g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
 
         auto api = D3D12RenderAPI::Get();
         api->Draw(g_graphicsResources._cubeMesh->_VOI);

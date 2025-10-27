@@ -463,7 +463,7 @@ namespace tb
         }
     }
 
-    FrameContext* DX12Device::WaitForNextFrameResources()
+    FrameContext_old* DX12Device::WaitForNextFrameResources()
     {
         uint64 nextFrameIndex = _frameIndex + 1;
         _frameIndex = nextFrameIndex;
@@ -471,7 +471,7 @@ namespace tb
         HANDLE waitableObjects[] = {_swapChainWaitableObject, nullptr};
         DWORD numWaitableObjects = 1;
 
-        FrameContext* ctx = &_frameContexts[nextFrameIndex % BUFFERCOUNT];
+        FrameContext_old* ctx = &_frameContexts[nextFrameIndex % BUFFERCOUNT];
         uint64 fenceValue = ctx->_fenceValue;
         if (fenceValue != 0)
         {
@@ -488,7 +488,7 @@ namespace tb
 
     void DX12Device::WaitForLastSubmittedFrame()
     {
-        FrameContext* ctx = &_frameContexts[_frameIndex % BUFFERCOUNT];
+        FrameContext_old* ctx = &_frameContexts[_frameIndex % BUFFERCOUNT];
         uint64 fenceValue = ctx->_fenceValue;
         if (fenceValue == 0)
         {
@@ -540,7 +540,7 @@ namespace tb
 
     void DX12Device::Flush()
     {
-        FrameContext& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
+        FrameContext_old& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
         _commandList->Reset(ctx._commandAllocator, nullptr);
     }
 
@@ -550,7 +550,7 @@ namespace tb
         _commandQueue->Signal(_fence.Get(), fenceValue);
         _fenceLastSignalValue = fenceValue;
 
-        FrameContext& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
+        FrameContext_old& ctx = _frameContexts[_frameIndex % BUFFERCOUNT];
         ctx._fenceValue = fenceValue;
 
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);

@@ -22,6 +22,7 @@ namespace tb
 
         void Release();
 
+        void RenderBegin();
         void Render();
 
     private:

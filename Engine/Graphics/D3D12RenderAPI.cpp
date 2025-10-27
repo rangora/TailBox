@@ -8,6 +8,9 @@ namespace tb
     {
         _device = g_dx12Device.GetDevice();
 
+        D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+        _device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_commandQueue.GetAddressOf()));
+
         _VOs.resize(1024, nullptr);
         _idxDispenser.Initialize(1024);
     }
@@ -45,6 +48,8 @@ namespace tb
 
     void D3D12RenderAPI::Draw(uint32 VOI)
     {
+        _drawCommands.emplace_back(VOI);
+
         g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_VOs[VOI]->_vertexBufferView);
         g_dx12Device.GetCommmandList()->IASetIndexBuffer(&_VOs[VOI]->_indexBufferView);
         g_dx12Device.GetCommmandList()->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);

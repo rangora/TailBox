@@ -7,6 +7,12 @@
 
 namespace tb
 {
+    struct FrameContext
+    {
+        ComPtr<ID3D12CommandAllocator> _commandAllocator = nullptr;
+        uint64 _fenceValue = 0;
+    };
+
     class D3D12RenderAPI : public RenderAPI
     {
     public:
@@ -26,8 +32,10 @@ namespace tb
                                  D3D12_HEAP_TYPE heapType, bool cpuAddr, bool gpuAddr, const void* data);
 
         std::vector<D3D12VO*> _VOs;
+        std::vector<D3D12DrawCommand> _drawCommands;
 
         ComPtr<ID3D12Device> _device = nullptr;
+        ComPtr<ID3D12CommandQueue> _commandQueue = nullptr;
 
         IndexDispenser _idxDispenser;
     };

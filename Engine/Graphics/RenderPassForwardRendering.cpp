@@ -2,15 +2,11 @@
 
 namespace tb
 {
-    RenderPassForwardRendering::RenderPassForwardRendering()
-    {
-    }
-
     RenderPassForwardRendering::~RenderPassForwardRendering()
     {
     }
 
-    void RenderPassForwardRendering::Render(Camera* camera)
+    void RenderPassForwardRendering::Render(const D3D12View& view)
     {
     }
 } // namespace tb
