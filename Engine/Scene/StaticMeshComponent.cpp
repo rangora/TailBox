@@ -48,16 +48,16 @@ namespace tb
         _staticMesh = g_graphicsResources._cubeMesh;
     }
 
-    void StaticMeshComponent::Render(const XMMATRIX& vpMtx)
+    void StaticMeshComponent::Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList)
     {
         if (!CheckResourceValidation())
         {
             return;
         }
 
-        SceneComponent::Render(vpMtx);
+        SceneComponent::Render(vpMtx, cmdList);
 
-        g_dx12Device.GetCommmandList()->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
+        cmdList->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
 
         const Transform& parentTransform = _ownerActor->GetTrnasform();
 
@@ -118,7 +118,7 @@ namespace tb
         meshBuffer->_emissive = constantBuffers._material._emissive;
 
         ID3D12DescriptorHeap* descriptorHeap = g_commandContext._descriptorPool->GetDescriptorHeap();
-        g_dx12Device.GetCommmandList()->SetDescriptorHeaps(1, &descriptorHeap);
+        cmdList->SetDescriptorHeaps(1, &descriptorHeap);
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(cpuHandle, registerIndex, descriptorSize);
 
@@ -145,11 +145,11 @@ namespace tb
 
         g_graphicsResources._cubeMesh->_VOI;
         auto geometryBuffer = _renderResource.GetGeometryBuffer();
-        g_dx12Device.GetCommmandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        g_dx12Device.GetCommmandList()->SetGraphicsRootDescriptorTable(0, gpuHandle);
+        cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        cmdList->SetGraphicsRootDescriptorTable(0, gpuHandle);
 
         auto api = D3D12RenderAPI::Get();
-        api->Draw(g_graphicsResources._cubeMesh->_VOI);
+        api->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
         /*   g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
            g_dx12Device.GetCommmandList()->IASetIndexBuffer(&geometryBuffer->_indexBufferView);
            g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);*/

@@ -1,5 +1,7 @@
 .vscode
 .vs
+.claude
 build
 out
 imgui.ini
+CLAUDE.md

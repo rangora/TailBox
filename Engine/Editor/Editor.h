@@ -26,7 +26,7 @@ namespace tb
     private:
         void ProcessKeyInput();
 
-        void TestFunc();
+        void TestFunc2();
         CD3DX12_CPU_DESCRIPTOR_HANDLE _cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE _gpuHandle = {};
 

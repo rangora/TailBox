@@ -26,7 +26,7 @@ namespace tb
         _transform._pos = location;
     }
 
-    void SceneComponent::Render(const XMMATRIX& vpMtx)
+    void SceneComponent::Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList)
     {
     }
 

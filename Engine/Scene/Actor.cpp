@@ -38,11 +38,11 @@ namespace tb
         _transform._scale = scale;
     }
 
-    void Actor::Render(const XMMATRIX& vpMtx)
+    void Actor::Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList)
     {
         for (auto it : _registeredCompoent)
         {
-            it->Render(vpMtx);
+            it->Render(vpMtx, cmdList);
         }
     }
 

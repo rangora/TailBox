@@ -19,7 +19,7 @@ namespace tb
         void SetLocation(const Vector3& location);
         void SetScale(const Vector3& scale);
 
-        void Render(const XMMATRIX& vpMtx);
+        void Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList);
         void Clear();
 
         void RegisterComponent(SceneComponent* component);

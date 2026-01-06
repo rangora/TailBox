@@ -6,13 +6,77 @@ namespace tb
 {
     D3D12RenderAPI::D3D12RenderAPI()
     {
-        _device = g_dx12Device.GetDevice();
+#ifdef _DEBUG
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&_debugController))))
+        {
+            _debugController->EnableDebugLayer();
+        }
+
+        ID3D12Debug5* debugController5 = nullptr;
+        if (S_OK == _debugController->QueryInterface(IID_PPV_ARGS(&debugController5)))
+        {
+            debugController5->SetEnableGPUBasedValidation(TRUE);
+            debugController5->SetEnableAutoName(TRUE);
+            debugController5->Release();
+        }
+        _debugController.Reset();
+        _debugController = nullptr;
+#endif
+
+        if (!CreateDevice())
+        {
+            spdlog::error("Failed to create d3d12device.");
+            assert(false);
+            return;
+        }
+
+#ifdef _DEBUG
+        ID3D12InfoQueue* pInfoQueue = nullptr;
+        _device->QueryInterface(IID_PPV_ARGS(&pInfoQueue));
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_ERROR, true);
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_CORRUPTION, true);
+        pInfoQueue->SetBreakOnSeverity(D3D12_MESSAGE_SEVERITY_WARNING, true);
+
+        D3D12_MESSAGE_ID hide[] = {D3D12_MESSAGE_ID_CREATERESOURCE_STATE_IGNORED};
+        D3D12_INFO_QUEUE_FILTER filter = {};
+        filter.DenyList.NumIDs = static_cast<UINT>(std::size(hide));
+        filter.DenyList.pIDList = hide;
+
+        pInfoQueue->AddStorageFilterEntries(&filter);
+        pInfoQueue->Release();
+        pInfoQueue = nullptr;
+#endif
 
         D3D12_COMMAND_QUEUE_DESC queueDesc = {};
         _device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(_commandQueue.GetAddressOf()));
 
         _VOs.resize(1024, nullptr);
         _idxDispenser.Initialize(1024);
+
+         for (int32 i = 0; i < BUFFERCOUNT; ++i)
+        {
+            _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+                                            IID_PPV_ARGS(_frameContexts[i]._commandAllocator.GetAddressOf()));
+        }
+
+        _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _frameContexts[0]._commandAllocator.Get(),
+                                   nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
+        _commandList->Close();
+
+        if (_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.GetAddressOf())) != S_OK)
+        {
+            spdlog::error("[FATAL] Failed to create fence.");
+            return;
+        }
+
+        // Create fenceEvent
+        _fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if (_fenceEvent == nullptr)
+        {
+            spdlog::error("[FATAL] Failed to create fenceEvent.");
+            return;
+        }
+
     }
 
     D3D12RenderAPI::~D3D12RenderAPI()
@@ -46,13 +110,89 @@ namespace tb
         }
     }
 
-    void D3D12RenderAPI::Draw(uint32 VOI)
+    void D3D12RenderAPI::Draw(uint32 VOI, ID3D12GraphicsCommandList* cmdList)
     {
         _drawCommands.emplace_back(VOI);
 
-        g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &_VOs[VOI]->_vertexBufferView);
-        g_dx12Device.GetCommmandList()->IASetIndexBuffer(&_VOs[VOI]->_indexBufferView);
-        g_dx12Device.GetCommmandList()->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);
+        cmdList->IASetVertexBuffers(0, 1, &_VOs[VOI]->_vertexBufferView);
+        cmdList->IASetIndexBuffer(&_VOs[VOI]->_indexBufferView);
+        cmdList->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);
+    }
+
+    void D3D12RenderAPI::Signal()
+    {
+        uint64 fenceValue = _fenceLastSignalValue + 1;
+        _commandQueue->Signal(_fence.Get(), fenceValue);
+        _fenceLastSignalValue = fenceValue;
+
+        _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
+        WaitForSingleObject(_fenceEvent, INFINITE);
+    }
+
+    bool D3D12RenderAPI::CreateDevice()
+    {
+        CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&_dxgi));
+        D3D_FEATURE_LEVEL featureLevels[] = {D3D_FEATURE_LEVEL_12_2, D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0,
+                                             D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0};
+
+        IDXGIAdapter1* adapter = nullptr;
+        DXGI_ADAPTER_DESC1 adapterDesc = {};
+        int32 levelCount = _countof(featureLevels);
+        for (int32 i = 0; i < levelCount; ++i)
+        {
+            int32 adapterIndex = 0;
+            while (DXGI_ERROR_NOT_FOUND != _dxgi->EnumAdapters1(adapterIndex, &adapter))
+            {
+                adapter->GetDesc1(&adapterDesc);
+                if (SUCCEEDED(D3D12CreateDevice(adapter, featureLevels[i], IID_PPV_ARGS(&_device))))
+                {
+                    adapter->Release();
+                    adapter = nullptr;
+                    return true;
+                }
+
+                adapterIndex++;
+            }
+        }
+
+        if (adapter)
+        {
+            adapter->Release();
+            adapter = nullptr;
+        }
+
+        return false;
+    }
+
+    void D3D12RenderAPI::CreateSwapChain(const HWND& hWnd)
+    {
+        DXGI_SWAP_CHAIN_DESC1 desc = {};
+        ZeroMemory(&desc, sizeof(desc));
+        desc.BufferCount = BUFFERCOUNT;
+        desc.Width = 0;
+        desc.Height = 0;
+        desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        desc.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+        desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        desc.SampleDesc.Count = 1;
+        desc.SampleDesc.Quality = 0;
+        desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        desc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+        desc.Scaling = DXGI_SCALING_STRETCH;
+        desc.Stereo = FALSE;
+
+        IDXGISwapChain1* _swapChain1 = nullptr;
+        if (_dxgi->CreateSwapChainForHwnd(_commandQueue.Get(), hWnd, &desc, nullptr, nullptr, &_swapChain1) != S_OK)
+        {
+            spdlog::error("[FATAL] Failed to create swapChain.");
+            return;
+        }
+
+        _swapChain1->QueryInterface(IID_PPV_ARGS(&_swapChain));
+        _swapChain1->Release();
+        _dxgi.Reset();
+        //_swapChain->SetMaximumFrameLatency(BUFFERCOUNT);                        // drop
+        //_swapChainWaitableObject = _swapChain->GetFrameLatencyWaitableObject(); // drop
     }
 
     int32 D3D12RenderAPI::AllocateVOIndex()

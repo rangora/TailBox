@@ -10,10 +10,14 @@
 #include "Graphics/Utility/RenderTexture.h"
 #include "Scene/SceneManager.h"
 #include "Engine.h"
+#include "../Graphics/EditorRenderer.h"
+#include "../Graphics/D3D12RenderAPI.h"
 
 namespace tb
 {
-    Editor::Editor() = default;
+    Editor::Editor()
+    {
+    }
 
     Editor::~Editor()
     {
@@ -61,7 +65,7 @@ namespace tb
 
         _window->Update();
 
-        TestFunc();
+        TestFunc2();
         ImGui::Begin("Scene");
 
         ImTextureID textureID = (ImTextureID)_gpuHandle.ptr;
@@ -81,6 +85,9 @@ namespace tb
 
     void Editor::BindDevice(DX12Device* device)
     {
+        EditorRenderer::Create();
+        EditorRenderer::Get()->Initialize();
+
         g_commandContext._guiDescriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle);
 
         _window->Initialize(device);
@@ -204,31 +211,34 @@ namespace tb
         }
     }
 
-    void Editor::TestFunc()
+    void Editor::TestFunc2()
     {
-        ID3D12CommandList* ppCommandLists[] = {g_dx12Device.GetCommmandList()};
+        auto renderer = EditorRenderer::Get();
+        auto renderAPI = static_cast<D3D12RenderAPI*>(D3D12RenderAPI::Get());
 
-        g_dx12Device.Flush();
-        if (_renderTexture->TransitionTo(g_dx12Device.GetCommmandList(), D3D12_RESOURCE_STATE_RENDER_TARGET))
+        ID3D12CommandList* ppCommandLists[] = {renderer->GetCommmandList()};
+
+        renderer->Flush();
+        if (_renderTexture->TransitionTo(renderer->GetCommmandList(), D3D12_RESOURCE_STATE_RENDER_TARGET))
         {
             // Draw
             {
 
-                _renderTexture->Clear(g_dx12Device.GetCommmandList());
-                Engine::Get().GetSceneManager()->Render();
+                _renderTexture->Clear(renderer->GetCommmandList());
+                Engine::Get().GetSceneManager()->Render(renderer->GetCommmandList());
             }
 
-            g_dx12Device.GetCommmandList()->Close();
-            g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-            g_dx12Device.Signal();
+            renderer->GetCommmandList()->Close();
+            renderAPI->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+            renderAPI->Signal();
         }
 
-        g_dx12Device.Flush();
-        if (_renderTexture->TransitionTo(g_dx12Device.GetCommmandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE))
+        renderer->Flush();
+        if (_renderTexture->TransitionTo(renderer->GetCommmandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE))
         {
-            g_dx12Device.GetCommmandList()->Close();
-            g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-            g_dx12Device.Signal();
+            renderer->GetCommmandList()->Close();
+            renderAPI->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
+            renderAPI->Signal();
         }
     }
 

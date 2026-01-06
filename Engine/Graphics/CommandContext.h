@@ -15,7 +15,7 @@ namespace tb
         void Reset();
         void Release();
 
-        void SetRootSignature(const std::string& name);
+        void SetRootSignature(const std::string& name, ID3D12GraphicsCommandList* cmdList);
 
         std::vector<std::string> _reservedRootSignature;
 

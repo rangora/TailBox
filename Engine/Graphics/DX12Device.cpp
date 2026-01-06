@@ -378,7 +378,7 @@ namespace tb
         _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
 
         // Render from sceneManager
-        //Engine::Get().GetSceneManager()->Render();
+        //Engine::Get().GetSceneManager()->Render(_commandList.Get());
 
         // imgui
         RenderImGui();
