@@ -4,6 +4,12 @@
 
 namespace tb
 {
+    struct D3D12Fence
+    {
+        uint64 _fenceValue = 0;
+        ComPtr<ID3D12Fence> _fence = nullptr;
+    };
+
     struct D3D12Buffer
     {
         ComPtr<ID3D12Resource> _buffer = nullptr;

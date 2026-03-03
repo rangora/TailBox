@@ -83,6 +83,8 @@ namespace tb
 
         {
 
+
+
             D3D12_SUBRESOURCE_DATA subData = {};
             subData.pData = reinterpret_cast<BYTE*>(vertexArray.data());
             subData.RowPitch = size;

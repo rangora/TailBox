@@ -63,6 +63,14 @@ namespace tb
                                    nullptr, IID_PPV_ARGS(_commandList.GetAddressOf()));
         _commandList->Close();
 
+        _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+                                        IID_PPV_ARGS(_immediateCommandAllocator.GetAddressOf()));
+        _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _immediateCommandAllocator.Get(),
+                                   nullptr, IID_PPV_ARGS(_immediateCommandList.GetAddressOf()));
+        _immediateCommandList->Close();
+
+        _device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence2._fence.GetAddressOf()));
+
         if (_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(_fence.GetAddressOf())) != S_OK)
         {
             spdlog::error("[FATAL] Failed to create fence.");
@@ -93,7 +101,8 @@ namespace tb
             uint32 vertexCount = static_cast<uint32>(br::_cubeVertices.size());
             uint32 vertexBufferSize = vertexCount * sizeof(Vertex);
             VO->_vertexCount = vertexCount;
-            VO->_vertexBuffer = CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
+            VO->_vertexBuffer =
+                CreateBuffer(vertexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
                                              D3D12_HEAP_TYPE_DEFAULT, false, true, br::_cubeVertices.data());
             VO->_vertexBufferView.SizeInBytes = vertexBufferSize;
             VO->_vertexBufferView.StrideInBytes = sizeof(Vertex);
@@ -102,7 +111,8 @@ namespace tb
             uint32 indexCount = static_cast<uint32>(br::_cubeIndices.size());
             uint32 indexBufferSize = static_cast<uint32>(br::_cubeIndices.size() * sizeof(uint32));
             VO->_indexCount = indexCount;
-            VO->_indexBuffer = CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
+            VO->_indexBuffer =
+                CreateBuffer(indexBufferSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ,
                                             D3D12_HEAP_TYPE_DEFAULT, false, true, br::_cubeIndices.data());
             VO->_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
             VO->_indexBufferView.SizeInBytes = indexBufferSize;
@@ -127,6 +137,29 @@ namespace tb
 
         _fence->SetEventOnCompletion(fenceValue, _fenceEvent);
         WaitForSingleObject(_fenceEvent, INFINITE);
+    }
+
+    void D3D12RenderAPI::ExecuteImmediately(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& func)
+    {
+        _immediateCommandAllocator->Reset();
+        _immediateCommandList->Reset(_immediateCommandAllocator.Get(), nullptr);
+
+        func(_immediateCommandList);
+
+        _immediateCommandList->Close();
+        ID3D12CommandList* cmdLists[] = {_immediateCommandList.Get()};
+        _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+    
+        _fence2._fenceValue++;
+        _commandQueue->Signal(_fence2._fence.Get(), _fence2._fenceValue);
+
+        if (_fence2._fence->GetCompletedValue() < _fence2._fenceValue)
+        {
+            HANDLE eventHandle = CreateEventEx(nullptr, FALSE, FALSE, EVENT_ALL_ACCESS);
+            _fence2._fence->SetEventOnCompletion(_fence2._fenceValue, eventHandle);
+            WaitForSingleObject(eventHandle, INFINITE);
+            CloseHandle(eventHandle);
+        }
     }
 
     bool D3D12RenderAPI::CreateDevice()

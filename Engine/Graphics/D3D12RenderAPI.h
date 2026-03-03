@@ -27,6 +27,10 @@ namespace tb
 
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
 
+
+
+        void ExecuteImmediately(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& func);
+
         ComPtr<ID3D12Device> _device = nullptr;
 
     private:
@@ -58,6 +62,10 @@ namespace tb
         uint64 _fenceLastSignalValue = 0;
 
         ComPtr<ID3D12GraphicsCommandList> _commandList = nullptr;
-        ComPtr<ID3D12CommandAllocator> _commandAllocator[2]; // ?
+
+        ComPtr<ID3D12CommandAllocator> _immediateCommandAllocator = nullptr;
+        ComPtr<ID3D12GraphicsCommandList> _immediateCommandList = nullptr;
+
+        D3D12Fence _fence2;
     };
 }
