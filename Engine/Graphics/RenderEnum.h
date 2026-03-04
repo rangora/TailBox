@@ -8,4 +8,11 @@ namespace tb
         Vertex,
         Pixel
     };
+
+    enum RenderStageType
+    {
+        SCENE = 0,
+        UI,
+        REDNERSTAGE_MAX,
+    };
 };

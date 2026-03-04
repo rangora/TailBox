@@ -34,6 +34,12 @@ namespace tb
         uint32 _VOI = 0;
     };
 
+    struct D3D12RenderStage
+    {
+        std::vector<ComPtr<ID3D12CommandAllocator>> _allocators;
+        std::vector<ComPtr<ID3D12GraphicsCommandList>> _commandLists;
+    };
+
     struct D3D12FrameContext
     {
         ComPtr<ID3D12CommandAllocator> _commandAllocator = nullptr;

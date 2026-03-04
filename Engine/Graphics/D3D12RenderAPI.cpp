@@ -85,6 +85,7 @@ namespace tb
             return;
         }
 
+        CreateRenderStages();
     }
 
     D3D12RenderAPI::~D3D12RenderAPI()
@@ -226,6 +227,27 @@ namespace tb
         _dxgi.Reset();
         //_swapChain->SetMaximumFrameLatency(BUFFERCOUNT);                        // drop
         //_swapChainWaitableObject = _swapChain->GetFrameLatencyWaitableObject(); // drop
+    }
+
+    void D3D12RenderAPI::CreateRenderStages()
+    {
+        for (auto& stage : _renderStages)
+        {
+            stage._allocators.resize(BUFFERCOUNT);
+            stage._commandLists.resize(BUFFERCOUNT);
+
+            for (int32 i = 0; i < BUFFERCOUNT; ++i)
+            {
+                _device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
+                                                IID_PPV_ARGS(stage._allocators[i].GetAddressOf()));
+
+                _device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
+                                           stage._allocators[i].Get(), nullptr,
+                                           IID_PPV_ARGS(stage._commandLists[i].GetAddressOf()));
+
+                stage._commandLists[i]->Close();
+            }
+        }
     }
 
     int32 D3D12RenderAPI::AllocateVOIndex()

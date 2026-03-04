@@ -11,7 +11,7 @@ namespace tb
     {
         RENDER_PASS_FORWARD_RENDERING = 0,
         RENDER_PASS_UI_RENDERING,
-        MAX
+        RENDER_PASS_MAX
     };
 
     enum RenderPiplineType

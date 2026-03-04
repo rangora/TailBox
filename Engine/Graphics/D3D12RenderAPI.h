@@ -3,7 +3,7 @@
 #include "RenderAPI.h"
 #include "DirectX12/D3D12Struct.h"
 #include "Utility/IndexDispenser.h"
-#include <vector>
+#include "RenderEnum.h"
 
 namespace tb
 {
@@ -36,6 +36,7 @@ namespace tb
     private:
         bool CreateDevice();
         void CreateSwapChain(const HWND& hWnd);
+        void CreateRenderStages();
 
         int32 AllocateVOIndex();
         D3D12VO* GetVO(int32 idx);
@@ -46,6 +47,7 @@ namespace tb
 
         std::vector<D3D12VO*> _VOs;
         std::vector<D3D12DrawCommand> _drawCommands;
+        std::array<D3D12RenderStage, RenderStageType::REDNERSTAGE_MAX> _renderStages;
 
         ComPtr<ID3D12CommandQueue> _commandQueue = nullptr;
 
