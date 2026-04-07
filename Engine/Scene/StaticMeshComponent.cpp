@@ -93,7 +93,7 @@ namespace tb
         CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
 
-        if (!g_commandContext._descriptorPool->AllocDescriptor(&cpuHandle, &gpuHandle, 2))
+        if (!g_commandContext._descriptorPool->AllocDescriptor(&cpuHandle, &gpuHandle, 1))
         {
             return;
         }
@@ -104,7 +104,6 @@ namespace tb
             return;
         }
 
-        int32 registerIndex = 0;
         int32 descriptorSize = g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         TempConstants* meshBuffer = reinterpret_cast<TempConstants*>(cbBlock->_cpuMemAddr);
@@ -117,36 +116,25 @@ namespace tb
         meshBuffer->_ambient = constantBuffers._material._ambient;
         meshBuffer->_emissive = constantBuffers._material._emissive;
 
+        cmdList->SetGraphicsRootConstantBufferView(0, cbBlock->_gpuMemAddr);
+
         ID3D12DescriptorHeap* descriptorHeap = g_commandContext._descriptorPool->GetDescriptorHeap();
         cmdList->SetDescriptorHeaps(1, &descriptorHeap);
 
-        CD3DX12_CPU_DESCRIPTOR_HANDLE cbvDest(cpuHandle, registerIndex, descriptorSize);
-
-        g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, cbvDest, cbBlock->_handle,
-                                                        D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
-        // tex
-        //TextureResource* textureResource = g_graphicsResources.GetTexture("niko");
-
-        //Material* material = _renderResource.GetMaterial();
         if (material)
         {
             TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
-            if (textureResource)
+            if (textureResource && textureResource->_srvCpuHandle.ptr)
             {
-                if (textureResource->_srvCpuHandle.ptr)
-                {
-                    CD3DX12_CPU_DESCRIPTOR_HANDLE srvDest(cpuHandle, 1, descriptorSize);
-                    g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, srvDest, textureResource->_srvCpuHandle,
-                                                                    D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-                }
+                g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, cpuHandle, textureResource->_srvCpuHandle,
+                                                                D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             }
         }
 
         g_graphicsResources._cubeMesh->_VOI;
         auto geometryBuffer = _renderResource.GetGeometryBuffer();
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        cmdList->SetGraphicsRootDescriptorTable(0, gpuHandle);
+        cmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
         auto api = D3D12RenderAPI::Get();
         api->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
