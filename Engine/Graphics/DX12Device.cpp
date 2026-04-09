@@ -2,7 +2,6 @@
 #include "Engine.h"
 #include "Renderer.h"
 #include "Graphics/Shader.h"
-#include "Graphics/RootSignature.h"
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/UploadBuffer.h"
 #include "Graphics/MemoryAllocator.h"

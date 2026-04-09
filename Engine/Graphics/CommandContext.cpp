@@ -1,6 +1,5 @@
 #include "CommandContext.h"
 #include "GraphicsCore.h"
-#include "RootSignature.h"
 #include "MemoryAllocator.h"
 #include "ShaderResource.h"
 
@@ -60,9 +59,9 @@ namespace tb
 
     void CommandContext::SetRootSignature(const std::string& name, ID3D12GraphicsCommandList* cmdList)
     {
-        if (RootSignature* rs = g_renderer.GetRootSignature(name))
+        if (ID3D12RootSignature* rs = g_renderer.GetRootSignature(name))
         {
-            cmdList->SetGraphicsRootSignature(rs->_rootSignature.Get());
+            cmdList->SetGraphicsRootSignature(rs);
         }
     }
 } // namespace tb

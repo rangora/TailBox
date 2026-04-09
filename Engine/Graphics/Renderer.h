@@ -8,7 +8,6 @@ namespace tb
 {
     class PipelineStateHandler;
     class TextureResource;
-    class RootSignature;
 
     class Renderer
     {
@@ -17,7 +16,11 @@ namespace tb
         ~Renderer();
 
         void Initialize();
-        RootSignature* GetRootSignature(const std::string& name) { return _rootSignatures.find(name)->second.get(); }
+        ID3D12RootSignature* GetRootSignature(const std::string& name)
+        {
+            auto it = _rootSignatures.find(name);
+            return (it != _rootSignatures.end()) ? it->second.Get() : nullptr;
+        }
         ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& identifier);
 
         void Release();
@@ -31,7 +34,7 @@ namespace tb
 
         void CreateDefaultlPipelineState();
 
-        std::unordered_map<std::string, std::unique_ptr<RootSignature>> _rootSignatures;
+        std::unordered_map<std::string, ComPtr<ID3D12RootSignature>> _rootSignatures;
         std::unique_ptr<PipelineStateHandler> _pipelineStateHandler = nullptr;
     };
 } // namespace tb
