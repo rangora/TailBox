@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Core.h"
+//#include "Core.h"
 #include "GpuBuffer.h"
 #include "Shader.h"
+#include "DirectX12/D3D12Struct.h"
 
 namespace tb
 {
-    class PipelineStateHandler;
     class TextureResource;
 
     class Renderer
@@ -16,12 +16,9 @@ namespace tb
         ~Renderer();
 
         void Initialize();
-        ID3D12RootSignature* GetRootSignature(const std::string& name)
-        {
-            auto it = _rootSignatures.find(name);
-            return (it != _rootSignatures.end()) ? it->second.Get() : nullptr;
-        }
-        ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& identifier);
+
+        ID3D12RootSignature* GetRootSignature(const std::string& name);
+        ComPtr<ID3D12PipelineState> GetPipelineState(const std::string& name);
 
         void Release();
 
@@ -29,12 +26,9 @@ namespace tb
         void Render();
 
     private:
-        void InitializeRootSignature();
+        void InitializePipelines();
         void InitializeShaders();
 
-        void CreateDefaultlPipelineState();
-
-        std::unordered_map<std::string, ComPtr<ID3D12RootSignature>> _rootSignatures;
-        std::unique_ptr<PipelineStateHandler> _pipelineStateHandler = nullptr;
+        std::unordered_map<std::string, D3D12Pipeline> _pipelines;
     };
 } // namespace tb

@@ -1,14 +1,12 @@
 #pragma once
 
 #include <memory>
-#include "Graphics/PipelineStateHandler.h"
 #include "Graphics/RenderResource/ShaderStructure.h"
 
 namespace tb
 {
     class GeometryBuffer;
     class TextureResource;
-    class GraphicsPipelineStateDesc;
 
     namespace br
     {
@@ -16,7 +14,6 @@ namespace tb
         GeometryBuffer* CreateBoxBuffer();
 
         std::vector<TextureResource*> CreateDefaultTextureResource();
-        std::vector<GraphicsPipelineStateDesc> CreateDefaultPipelineState();
 
         static std::vector<Vertex> _cubeVertices = {
             // Front face

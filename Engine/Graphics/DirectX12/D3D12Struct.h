@@ -46,6 +46,12 @@ namespace tb
         uint64 _fenceValue = 0;
     };
 
+    struct D3D12Pipeline
+    {
+        ComPtr<ID3D12RootSignature> rootSignature = nullptr;
+        ComPtr<ID3D12PipelineState> pipelineState = nullptr;
+    };
+
     struct D3D12View
     {
         XMMATRIX _projMtx;
