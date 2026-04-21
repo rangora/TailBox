@@ -349,22 +349,14 @@ namespace tb
                 subData.RowPitch = size;
                 subData.SlicePitch = size;
 
-                // 대체 필
-                 g_dx12Device.Flush();
-                UpdateSubresources(g_dx12Device.GetCommmandList(), buffer._buffer.Get(), uploadBuffer.Get(), 0, 0,
-                                   1, &subData);
-
-                CD3DX12_RESOURCE_BARRIER resourceBarrier =
-                    CD3DX12_RESOURCE_BARRIER::Transition(buffer._buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
-                                                         D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
-
-                g_dx12Device.GetCommmandList()->ResourceBarrier(1, &resourceBarrier);
-
-                g_dx12Device.GetCommmandList()->Close();
-                ID3D12CommandList* ppCommandLists[] = {g_dx12Device.GetCommmandList()};
-                g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-                g_dx12Device.Signal();
-                // 대체
+                ExecuteImmediately([&](ComPtr<ID3D12GraphicsCommandList> cmdList)
+                {
+                    UpdateSubresources(cmdList.Get(), buffer._buffer.Get(), uploadBuffer.Get(), 0, 0, 1, &subData);
+                    CD3DX12_RESOURCE_BARRIER resourceBarrier =
+                        CD3DX12_RESOURCE_BARRIER::Transition(buffer._buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+                                                             D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
+                    cmdList->ResourceBarrier(1, &resourceBarrier);
+                });
             }
         }
 

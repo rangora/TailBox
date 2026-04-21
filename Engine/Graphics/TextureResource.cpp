@@ -95,20 +95,14 @@ namespace tb
             return;
         }
 
-        g_dx12Device.Flush();
-        UpdateSubresources(g_dx12Device.GetCommmandList(), _resource.Get(), textureUploadHeap.Get(),
-                             0, 0, static_cast<unsigned int>(subResources.size()), subResources.data());
-
-        CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-            _resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-        g_dx12Device.GetCommmandList()->ResourceBarrier(1, &barrier);
-
-        g_dx12Device.GetCommmandList()->Close();
-        ID3D12CommandList* ppCommandLists[] = {g_dx12Device.GetCommmandList()};
-        g_dx12Device.GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-
-        // 임시로 Singal 사용.. stage에 올리도록 해야함
-        g_dx12Device.Signal();
+        g_renderAPI->ExecuteImmediately([&](ComPtr<ID3D12GraphicsCommandList> cmdList)
+        {
+            UpdateSubresources(cmdList.Get(), _resource.Get(), textureUploadHeap.Get(),
+                               0, 0, static_cast<unsigned int>(subResources.size()), subResources.data());
+            CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+                _resource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+            cmdList->ResourceBarrier(1, &barrier);
+        });
     }
 
 } // namespace tb
