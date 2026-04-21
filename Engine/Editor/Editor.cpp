@@ -98,7 +98,7 @@ namespace tb
         desc.NumDescriptors = BUFFERCOUNT;
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         desc.NodeMask = 1;
-        g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_textureRtvHeap.GetAddressOf()));
+        g_renderAPI->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(_textureRtvHeap.GetAddressOf()));
         _rtvHandle = _textureRtvHeap->GetCPUDescriptorHandleForHeapStart();
 
         {
@@ -107,11 +107,11 @@ namespace tb
             CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_DEFAULT);
             D3D12_CLEAR_VALUE clearValue = {};
             clearValue.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            g_dx12Device.GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &rtvDesc,
+            g_renderAPI->GetDevice()->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &rtvDesc,
                                                               D3D12_RESOURCE_STATE_RENDER_TARGET, &clearValue,
                                                               IID_PPV_ARGS(_rtvResource.GetAddressOf()));
 
-            g_dx12Device.GetDevice()->CreateRenderTargetView(_rtvResource.Get(), nullptr, _rtvHandle);
+            g_renderAPI->GetDevice()->CreateRenderTargetView(_rtvResource.Get(), nullptr, _rtvHandle);
         }
 
 

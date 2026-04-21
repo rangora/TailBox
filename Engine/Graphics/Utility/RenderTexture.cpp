@@ -54,18 +54,18 @@ namespace tb
         D3D12_CLEAR_VALUE clearValue = {_format, {}};
         memcpy(clearValue.Color, _clearColor, sizeof(clearValue.Color));
 
-        g_dx12Device.GetDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES, &desc,
+        g_renderAPI->GetDevice()->CreateCommittedResource(&prop, D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES, &desc,
                                                           _state, &clearValue, IID_PPV_ARGS(_resource.ReleaseAndGetAddressOf()));
 
 
-        g_dx12Device.GetDevice()->CreateRenderTargetView(_resource.Get(), nullptr, _rtvHandle);
-        g_dx12Device.GetDevice()->CreateShaderResourceView(_resource.Get(), nullptr, _srvHandle);
+        g_renderAPI->GetDevice()->CreateRenderTargetView(_resource.Get(), nullptr, _rtvHandle);
+        g_renderAPI->GetDevice()->CreateShaderResourceView(_resource.Get(), nullptr, _srvHandle);
 
         {
             D3D12_DESCRIPTOR_HEAP_DESC desc = {};
             desc.NumDescriptors = 1;
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-            if (g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_dsHeap)) != S_OK)
+            if (g_renderAPI->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_dsHeap)) != S_OK)
             {
                 spdlog::error("[FATAL] Failed to create dsHeap.");
                 return;
@@ -87,15 +87,15 @@ namespace tb
             D3D12_HEAP_PROPERTIES defaultHeapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
             CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Tex2D(
                 DXGI_FORMAT_D32_FLOAT, _rw, _rh, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
-            g_dx12Device.GetDevice()->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc,
+            g_renderAPI->GetDevice()->CreateCommittedResource(&defaultHeapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc,
                                              D3D12_RESOURCE_STATE_DEPTH_WRITE, &clearValue, IID_PPV_ARGS(&_dsBuffer));
-            if (g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_dsHeap)) != S_OK)
+            if (g_renderAPI->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_dsHeap)) != S_OK)
             {
                 spdlog::error("[FATAL] Failed to create dsHeap after commit.");
                 return;
             }
             _dsHeap->SetName(L"depth/stencil resource heap2");
-            g_dx12Device.GetDevice()->CreateDepthStencilView(_dsBuffer.Get(), &dsvDesc,
+            g_renderAPI->GetDevice()->CreateDepthStencilView(_dsBuffer.Get(), &dsvDesc,
                                                              _dsHeap->GetCPUDescriptorHandleForHeapStart());
         }
     }

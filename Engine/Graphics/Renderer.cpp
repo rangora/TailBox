@@ -97,7 +97,7 @@ namespace tb
                 return;
             }
 
-            g_dx12Device.GetDevice()->CreateRootSignature(
+            g_renderAPI->GetDevice()->CreateRootSignature(
                 0, blobSignature->GetBufferPointer(), blobSignature->GetBufferSize(),
                 IID_PPV_ARGS(material.rootSignature.GetAddressOf()));
         }
@@ -143,7 +143,7 @@ namespace tb
             desc.SampleDesc.Count = 1;
             desc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 
-            if (FAILED(g_dx12Device.GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(material.pipelineState.GetAddressOf()))))
+            if (FAILED(g_renderAPI->GetDevice()->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(material.pipelineState.GetAddressOf()))))
             {
                 spdlog::error("Failed to create Material pipeline state");
                 assert(false);

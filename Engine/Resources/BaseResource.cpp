@@ -84,7 +84,7 @@ namespace tb
                 D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
                 D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
-                g_dx12Device.GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
+                g_renderAPI->GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
                                                              D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
                                                              IID_PPV_ARGS(&geometryBuffer->_indexBuffer));
                 void* indexDataBuffer = nullptr;
@@ -147,7 +147,7 @@ namespace tb
                 D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
                 D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
-                g_dx12Device.GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
+                g_renderAPI->GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
                                                              D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
                                                              IID_PPV_ARGS(&geometryBuffer->_indexBuffer));
 
@@ -188,7 +188,7 @@ namespace tb
 
                 if (g_commandContext._solidDescriptorPool->AllocDescriptor(&texResource->_srvCpuHandle))
                 {
-                    g_dx12Device.GetDevice()->CreateShaderResourceView(texResource->_resource.Get(), &srvDesc,
+                    g_renderAPI->GetDevice()->CreateShaderResourceView(texResource->_resource.Get(), &srvDesc,
                                                                        texResource->_srvCpuHandle);
                 }
 

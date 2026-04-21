@@ -22,7 +22,7 @@ namespace tb
         D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
 
-        g_dx12Device.GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
+        g_renderAPI->GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
                                                      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
                                                      IID_PPV_ARGS(&_resource));
         _resource->Map(0, nullptr, reinterpret_cast<void**>(&_mappedBuffer));
@@ -34,10 +34,10 @@ namespace tb
             desc.NumDescriptors = _elementCount;
             desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
             desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-            g_dx12Device.GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_bufferHeap));
+            g_renderAPI->GetDevice()->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_bufferHeap));
             _cpuHandleBegin = _bufferHeap->GetCPUDescriptorHandleForHeapStart();
             _handleIncrementSize =
-                g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                g_renderAPI->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
             for (int i = 0; i < _elementCount; ++i)
             {
@@ -46,7 +46,7 @@ namespace tb
                 D3D12_CONSTANT_BUFFER_VIEW_DESC bufferDesc = {};
                 bufferDesc.BufferLocation = _gpuVirtualAddress + static_cast<uint64>(_elementSize) * i;
                 bufferDesc.SizeInBytes = _elementSize;
-                g_dx12Device.GetDevice()->CreateConstantBufferView(&bufferDesc, bufferHandle);
+                g_renderAPI->GetDevice()->CreateConstantBufferView(&bufferDesc, bufferHandle);
             }
         }
     }
@@ -71,7 +71,7 @@ namespace tb
         D3D12_HEAP_PROPERTIES heapProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
         D3D12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(size);
 
-        g_dx12Device.GetDevice()->CreateCommittedResource(
+        g_renderAPI->GetDevice()->CreateCommittedResource(
             &heapProp, D3D12_HEAP_FLAG_NONE, &desc,
                                                      D3D12_RESOURCE_STATE_COPY_DEST, nullptr,
                                                      IID_PPV_ARGS(&_resource));

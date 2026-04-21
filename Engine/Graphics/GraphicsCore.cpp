@@ -6,4 +6,5 @@ namespace tb
     DX12Device g_dx12Device;
     Renderer g_renderer;
     RawResourceStorage g_graphicsResources;
+    D3D12RenderAPI* g_renderAPI = nullptr;
 }

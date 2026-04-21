@@ -3,6 +3,7 @@
 #include "RawResourceStorage.h"
 #include "DX12Device.h"
 #include "Renderer.h"
+#include "D3D12RenderAPI.h"
 
 namespace tb
 {
@@ -10,4 +11,5 @@ namespace tb
     extern DX12Device g_dx12Device;
     extern Renderer g_renderer;
     extern RawResourceStorage g_graphicsResources;
+    extern D3D12RenderAPI* g_renderAPI;
 } // namespace tb

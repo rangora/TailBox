@@ -11,8 +11,8 @@ namespace tb
     RenderPassManager::RenderPassManager()
     {
         _renderPasses.resize(RenderpassType::RENDER_PASS_MAX);
-        _renderPasses[RenderpassType::RENDER_PASS_FORWARD_RENDERING] = new RenderPassForwardRendering(g_dx12Device.GetDevice());
-        _renderPasses[RenderpassType::RENDER_PASS_UI_RENDERING] = new RenderPassUIRendering(g_dx12Device.GetDevice());
+        _renderPasses[RenderpassType::RENDER_PASS_FORWARD_RENDERING] = new RenderPassForwardRendering(g_renderAPI->GetDevice());
+        _renderPasses[RenderpassType::RENDER_PASS_UI_RENDERING] = new RenderPassUIRendering(g_renderAPI->GetDevice());
     }
 
     RenderPassManager::~RenderPassManager()

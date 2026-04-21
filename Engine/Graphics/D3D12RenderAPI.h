@@ -26,8 +26,7 @@ namespace tb
         void Signal();
 
         ID3D12CommandQueue* GetCommandQueue() const { return _commandQueue.Get(); }
-
-
+        ID3D12Device* GetDevice() const { return _device.Get(); }
 
         void ExecuteImmediately(std::function<void(ComPtr<ID3D12GraphicsCommandList> cmdList)>&& func);
 

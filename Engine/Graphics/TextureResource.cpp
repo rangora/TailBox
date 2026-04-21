@@ -66,14 +66,14 @@ namespace tb
             spdlog::error("Texture convert failed {}", path);
         }
 
-        if (FAILED(::CreateTexture(g_dx12Device.GetDevice(), image.GetMetadata(), &_resource)))
+        if (FAILED(::CreateTexture(g_renderAPI->GetDevice(), image.GetMetadata(), &_resource)))
         {
             spdlog::error("Texture convert failed {}", path);
             return;
         }
 
         std::vector<D3D12_SUBRESOURCE_DATA> subResources;
-        if (FAILED(::PrepareUpload(g_dx12Device.GetDevice(), image.GetImages(), image.GetImageCount(),
+        if (FAILED(::PrepareUpload(g_renderAPI->GetDevice(), image.GetImages(), image.GetImageCount(),
                                    image.GetMetadata(), subResources)))
         {
             spdlog::error("Texture upload failed {}", path);
@@ -87,7 +87,7 @@ namespace tb
 
         ComPtr<ID3D12Resource> textureUploadHeap;
 
-        if (FAILED(g_dx12Device.GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
+        if (FAILED(g_renderAPI->GetDevice()->CreateCommittedResource(&heapProp, D3D12_HEAP_FLAG_NONE, &desc,
                                                                       D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,
                                                                       IID_PPV_ARGS(textureUploadHeap.GetAddressOf()))))
         {

@@ -86,6 +86,8 @@ namespace tb
         }
 
         CreateRenderStages();
+
+        g_renderAPI = this;
     }
 
     D3D12RenderAPI::~D3D12RenderAPI()

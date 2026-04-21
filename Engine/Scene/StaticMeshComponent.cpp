@@ -104,7 +104,7 @@ namespace tb
             return;
         }
 
-        int32 descriptorSize = g_dx12Device.GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        int32 descriptorSize = g_renderAPI->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
         TempConstants* meshBuffer = reinterpret_cast<TempConstants*>(cbBlock->_cpuMemAddr);
         meshBuffer->_worldMtx = constantBuffers._mesh._worldMtx;
@@ -126,7 +126,7 @@ namespace tb
             TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
             if (textureResource && textureResource->_srvCpuHandle.ptr)
             {
-                g_dx12Device.GetDevice()->CopyDescriptorsSimple(1, cpuHandle, textureResource->_srvCpuHandle,
+                g_renderAPI->GetDevice()->CopyDescriptorsSimple(1, cpuHandle, textureResource->_srvCpuHandle,
                                                                 D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
             }
         }

@@ -22,7 +22,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_SIZE:
         {
-            if (tb::g_dx12Device.GetDevice() != nullptr && wParam != SIZE_MINIMIZED)
+            if (tb::g_renderAPI != nullptr && wParam != SIZE_MINIMIZED)
             {
                 tb::g_dx12Device.OnWindowResized((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
             }
