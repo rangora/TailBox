@@ -1,5 +1,5 @@
 #include "StaticMesh.h"
-#include "RenderAPI.h"
+#include "GraphicsCore.h"
 
 namespace tb
 {
@@ -9,7 +9,7 @@ namespace tb
         _vertices = vertices;
         _indices = indices;
 
-        RenderAPI::Get()->SetupStaticMesh(_VOI, vertices, indices);
+        g_renderAPI->SetupStaticMesh(_VOI, vertices, indices);
     }
 
     void StaticMesh::SetupMesh()

@@ -6,7 +6,7 @@
 #include "TextureResource.h"
 #include "GraphicsCore.h"
 #include "RenderPassManager.h"
-#include "RenderAPI.h"
+#include "D3D12RenderAPI.h"
 
 namespace tb
 {
@@ -15,7 +15,7 @@ namespace tb
 
     void Renderer::Initialize()
     {
-        RenderAPI::Create();
+        new D3D12RenderAPI();
         RenderPassManager::Create();
 
         RenderPassManager::Get()->SetupRenderPass(RenderPiplineType::Forward);

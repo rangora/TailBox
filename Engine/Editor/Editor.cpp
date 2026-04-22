@@ -214,7 +214,7 @@ namespace tb
     void Editor::TestFunc2()
     {
         auto renderer = EditorRenderer::Get();
-        auto renderAPI = static_cast<D3D12RenderAPI*>(D3D12RenderAPI::Get());
+        auto renderAPI = g_renderAPI;
 
         ID3D12CommandList* ppCommandLists[] = {renderer->GetCommmandList()};
 

@@ -7,7 +7,6 @@
 #include "Actor.h"
 #include "Engine.h"
 #include "Graphics/StaticMesh.h"
-#include "../Graphics/D3D12RenderAPI.h"
 
 namespace tb
 {
@@ -136,8 +135,7 @@ namespace tb
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         cmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 
-        auto api = D3D12RenderAPI::Get();
-        api->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
+        g_renderAPI->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
         /*   g_dx12Device.GetCommmandList()->IASetVertexBuffers(0, 1, &geometryBuffer->_vertexBufferView);
            g_dx12Device.GetCommmandList()->IASetIndexBuffer(&geometryBuffer->_indexBufferView);
            g_dx12Device.GetCommmandList()->DrawIndexedInstanced(geometryBuffer->_indexCount, 1, 0, 0, 0);*/

@@ -1,5 +1,5 @@
 #include "EditorRenderer.h"
-#include "D3D12RenderAPI.h"
+#include "GraphicsCore.h"
 
 namespace tb
 {
@@ -12,7 +12,7 @@ namespace tb
 
     void EditorRenderer::Initialize()
     {
-        _renderAPI = static_cast<D3D12RenderAPI*>(RenderAPI::Get());
+        _renderAPI = g_renderAPI;
         _renderAPI->_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,
                                                     IID_PPV_ARGS(_commandAllocator.GetAddressOf()));
         _renderAPI->_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, _commandAllocator.Get(), nullptr,
