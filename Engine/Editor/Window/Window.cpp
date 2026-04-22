@@ -24,7 +24,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         {
             if (tb::g_renderAPI != nullptr && wParam != SIZE_MINIMIZED)
             {
-                tb::g_dx12Device.OnWindowResized((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
+                tb::g_renderAPI->OnWindowResized((UINT)LOWORD(lParam), (UINT)HIWORD(lParam));
             }
             return 0;
         }
@@ -70,9 +70,9 @@ namespace tb
     {
     }
 
-    void Window::Initialize(DX12Device* device)
+    void Window::Initialize()
     {
-        _heapAlloc.Create(device->GetDevice(), g_commandContext._guiDescriptorPool->GetDescriptorHeap());
+        _heapAlloc.Create(g_renderAPI->GetDevice(), g_commandContext._guiDescriptorPool->GetDescriptorHeap());
 
         // Seteup Imgui
         IMGUI_CHECKVERSION();
@@ -98,8 +98,8 @@ namespace tb
         ImGui_ImplWin32_Init(_hWnd);
 
         ImGui_ImplDX12_InitInfo initInfo = {};
-        initInfo.Device = device->GetDevice();
-        initInfo.CommandQueue = device->GetCommandQueue();
+        initInfo.Device = g_renderAPI->GetDevice();
+        initInfo.CommandQueue = g_renderAPI->GetCommandQueue();
         initInfo.SrvDescriptorHeap = g_commandContext._guiDescriptorPool->GetDescriptorHeap();
         initInfo.NumFramesInFlight = BUFFERCOUNT;
         initInfo.RTVFormat = DXGI_FORMAT_R8G8B8A8_UNORM;

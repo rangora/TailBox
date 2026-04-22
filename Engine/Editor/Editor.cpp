@@ -83,14 +83,14 @@ namespace tb
         _window = new Window({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
     }
 
-    void Editor::BindDevice(DX12Device* device)
+    void Editor::BindDevice()
     {
         EditorRenderer::Create();
         EditorRenderer::Get()->Initialize();
 
         g_commandContext._guiDescriptorPool->AllocDescriptor(&_cpuHandle, &_gpuHandle);
 
-        _window->Initialize(device);
+        _window->Initialize();
 
         // create rtv
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};

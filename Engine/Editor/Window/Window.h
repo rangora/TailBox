@@ -9,8 +9,6 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace tb
 {
-    class DX12Device;
-
     struct WindowContext
     {
         std::string _title;
@@ -28,7 +26,7 @@ namespace tb
         Window(const WindowContext winContext);
         ~Window();
 
-        void Initialize(DX12Device* device);
+        void Initialize();
         void Update();
         void PostRenderEnd();
 

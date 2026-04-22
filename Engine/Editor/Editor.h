@@ -5,8 +5,6 @@
 
 namespace tb
 {
-    class DX12Device;
-
     class Editor
     {
     public:
@@ -17,7 +15,7 @@ namespace tb
         void Update(float delta);
 
         void CreateWinWindow(const WindowContext& _windowContext);
-        void BindDevice(DX12Device* device);
+        void BindDevice();
         void CreateDefaultLayout();
 
         Window* GetWinWindow() const { return _window; } // TEMP

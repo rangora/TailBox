@@ -13,7 +13,7 @@ namespace tb
     SceneManager::SceneManager()
     {
         float rw = 0.0, rh = 0.f;
-        g_dx12Device.GetRenderTargetViewSize(rw, rh);
+        g_renderAPI->GetRenderTargetViewSize(rw, rh);
 
         _camera.SetPosition(0.f, 0.f, -4.f);
         _camera.SetRotation(0.f, 0.f, 0.f);

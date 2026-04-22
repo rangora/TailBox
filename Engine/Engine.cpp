@@ -1,5 +1,4 @@
 #include "Engine.h"
-#include "Graphics/DX12Device.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
 #include "Editor/Window/Window.h"
@@ -76,15 +75,15 @@ namespace tb
 
         g_editor.CreateWinWindow({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
 
-        g_dx12Device.Initialize();
-        g_dx12Device.CreateSwapChain(g_editor.GetWndRef());
-        g_dx12Device.PostSwapChainCreated();
-        g_dx12Device.PostDeviceCreated();
+        g_renderer.Initialize();  // D3D12RenderAPI 생성 (g_renderAPI 설정)
+
+        g_renderAPI->CreateSwapChain(g_editor.GetWndRef());
+        g_renderAPI->PostSwapChainCreated();
 
         g_commandContext.Initialize();
         g_graphicsResources.Initialize();
 
-        g_editor.BindDevice(&g_dx12Device);
+        g_editor.BindDevice();
 
         // Init scene.
         _sceneManager = new SceneManager;
@@ -96,7 +95,7 @@ namespace tb
         }
 
         // Sutting down
-        g_dx12Device.WaitForLastSubmittedFrame();
+        g_renderAPI->WaitForLastSubmittedFrame();
 
         _sceneManager->ReleaseAllScenes();
         delete _sceneManager;
@@ -105,7 +104,7 @@ namespace tb
         g_graphicsResources.Release();
         g_renderer.Release();
         g_editor.ShutDown();
-        g_dx12Device.ReleaseDevice();
+        g_renderAPI->ReleaseDevice();
     }
 
     void Engine::EngineTick(const float tick)
@@ -127,7 +126,7 @@ namespace tb
             return;
         }
 
-        if (g_dx12Device.IsScreenLocked())
+        if (g_renderAPI->IsScreenLocked())
         {
             ::Sleep(10);
             return;
@@ -137,7 +136,7 @@ namespace tb
         _sceneManager->Update(tick); // logic
         _sceneManager->OnRenderBegin();
         g_renderer.Render();
-        g_dx12Device.Update(); // render
+        g_renderAPI->Update(); // render
 
         // OnEndFrame
         _sceneManager->OnEndFrame();
