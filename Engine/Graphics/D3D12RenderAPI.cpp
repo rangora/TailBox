@@ -495,8 +495,7 @@ namespace tb
 #endif
     }
 
-
-    void D3D12RenderAPI::RenderBegin()
+    void D3D12RenderAPI::BeginFrame()
     {
         g_commandContext.Reset();
 
@@ -520,32 +519,16 @@ namespace tb
         _commandList->ResourceBarrier(1, &barrier);
 
         const float clearColors[4] = {0.45f, 0.55f, 0.6f, 1.f};
-
         CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
-
-        ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
-        if (platform_io.Viewports.Data)
-        {
-            _viewport.Height = platform_io.Viewports[0]->DrawData->DisplaySize.y;
-            _viewport.Width = platform_io.Viewports[0]->DrawData->DisplaySize.x;
-            _rect.bottom = static_cast<LONG>(platform_io.Viewports[0]->DrawData->DisplaySize.y);
-            _rect.right = static_cast<LONG>(platform_io.Viewports[0]->DrawData->DisplaySize.x);
-        }
-
-        _commandList->RSSetViewports(1, &_viewport);
-        _commandList->RSSetScissorRects(1, &_rect);
         _commandList->ClearRenderTargetView(_mainRtvCpuHandle[_backBufferIndex], clearColors, 0, nullptr);
         _commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+
+        _commandList->Close();
+        ID3D12CommandList* cmdLists[] = {_commandList.Get()};
+        _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
     }
 
-    void D3D12RenderAPI::Render()
-    {
-        CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(_dsHeap->GetCPUDescriptorHandleForHeapStart());
-        _commandList->OMSetRenderTargets(1, &_mainRtvCpuHandle[_backBufferIndex], FALSE, &dsvHandle);
-        RenderImGui();
-    }
-
-    void D3D12RenderAPI::RenderEnd()
+    void D3D12RenderAPI::EndFrame()
     {
         D3D12_RESOURCE_BARRIER barrier = {};
         barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -554,11 +537,14 @@ namespace tb
         barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
         barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
         barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-        _commandList->ResourceBarrier(1, &barrier);
-        _commandList->Close();
 
-        ID3D12CommandList* ppCommandLists[] = {_commandList.Get()};
-        _commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+        _immediateCommandAllocator->Reset();
+        _immediateCommandList->Reset(_immediateCommandAllocator.Get(), nullptr);
+        _immediateCommandList->ResourceBarrier(1, &barrier);
+        _immediateCommandList->Close();
+
+        ID3D12CommandList* cmdLists[] = {_immediateCommandList.Get()};
+        _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 
         ImGuiIO& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -574,13 +560,6 @@ namespace tb
         _commandQueue->Signal(_fence.Get(), fenceValue);
         _fenceLastSignalValue = fenceValue;
         _nextFrameCtx->_fenceValue = fenceValue;
-    }
-
-    void D3D12RenderAPI::RenderImGui()
-    {
-        ID3D12DescriptorHeap* descHeaps[] = {g_commandContext._guiDescriptorPool->GetDescriptorHeap()};
-        _commandList->SetDescriptorHeaps(_countof(descHeaps), descHeaps);
-        ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), _commandList.Get());
     }
 
     void D3D12RenderAPI::PostRenderEnd()

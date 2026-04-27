@@ -30,9 +30,15 @@ namespace tb
         void ReleaseDevice();
 
         // Frame loop
-        void Update();
+        void BeginFrame();
+        void EndFrame();
+        void PostRenderEnd();
+        void UpdateTimer();
         bool IsScreenLocked();
         void WaitForLastSubmittedFrame();
+
+        D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRTVHandle() const { return _mainRtvCpuHandle[_backBufferIndex]; }
+        D3D12_CPU_DESCRIPTOR_HANDLE GetDSVHandle() const { return _dsHeap->GetCPUDescriptorHandleForHeapStart(); }
 
         // Window
         void OnWindowResized(UINT width, UINT height);
@@ -54,12 +60,6 @@ namespace tb
         void CreateRenderStages();
         FrameContext* WaitForNextFrameResources();
 
-        void RenderBegin();
-        void Render();
-        void RenderEnd();
-        void PostRenderEnd();
-        void RenderImGui();
-        void UpdateTimer();
 
         int32 AllocateVOIndex();
         D3D12VO* GetVO(int32 idx);
@@ -101,8 +101,6 @@ namespace tb
         ComPtr<ID3D12DescriptorHeap> _dsHeap = nullptr;
         ComPtr<ID3D12Resource> _dsBuffer = nullptr;
 
-        D3D12_VIEWPORT _viewport = {};
-        D3D12_RECT _rect = {};
         uint32 _rw = 0;
         uint32 _rh = 0;
 
