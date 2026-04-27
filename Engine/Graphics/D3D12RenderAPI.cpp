@@ -495,14 +495,6 @@ namespace tb
 #endif
     }
 
-    void D3D12RenderAPI::Update()
-    {
-        RenderBegin();
-        Render();
-        RenderEnd();
-        PostRenderEnd();
-        UpdateTimer();
-    }
 
     void D3D12RenderAPI::RenderBegin()
     {

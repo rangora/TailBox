@@ -1,6 +1,7 @@
 #include "Engine.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
+#include "Graphics/EditorRenderer.h"
 #include "Editor/Window/Window.h"
 #include "Editor/EditorCore.h"
 #include "Scene/SceneManager.h"
@@ -133,13 +134,18 @@ namespace tb
         }
 
         g_editor.Update(tick);
-        _sceneManager->Update(tick); // logic
-        _sceneManager->OnRenderBegin();
-        g_renderer.Render();
-        g_renderAPI->Update(); // render
+        _sceneManager->Update(tick);
 
-        // OnEndFrame
+        g_renderAPI->BeginFrame();
+        _sceneManager->OnRenderBegin();
+
+        g_renderer.Render();
+        EditorRenderer::Get()->Render();
+
         _sceneManager->OnEndFrame();
+        g_renderAPI->EndFrame();
+        g_renderAPI->PostRenderEnd();
+        g_renderAPI->UpdateTimer();
     }
 
     void Engine::LoadModules()
