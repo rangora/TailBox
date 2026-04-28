@@ -74,9 +74,11 @@ namespace tb
             CD3DX12_DESCRIPTOR_RANGE srvRange = {};
             srvRange.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
-            CD3DX12_ROOT_PARAMETER params[2] = {};
-            params[0].InitAsConstantBufferView(0);
-            params[1].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
+            CD3DX12_ROOT_PARAMETER params[4] = {};
+            params[0].InitAsConstantBufferView(0); // b0: MeshConstants
+            params[1].InitAsConstantBufferView(1); // b1: GlobalConstants
+            params[2].InitAsConstantBufferView(2); // b2: MaterialConstants
+            params[3].InitAsDescriptorTable(1, &srvRange, D3D12_SHADER_VISIBILITY_PIXEL);
 
             D3D12_STATIC_SAMPLER_DESC sampler = CD3DX12_STATIC_SAMPLER_DESC(0);
 

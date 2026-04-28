@@ -26,7 +26,7 @@ namespace tb
         _guiDescriptorPool->Initialize(256, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
 
         _constantBufferPool = std::make_unique<class ConstantBufferPool>();
-        _constantBufferPool->Initialize(sizeof(TempConstants), 256);
+        _constantBufferPool->Initialize(sizeof(MeshConstants), 256);
 
         _reservedRootSignature.push_back("Default"); // TEMP
     }

@@ -1,11 +1,17 @@
-cbuffer TempConstants : register(b0)
+cbuffer MeshConstants : register(b0)
 {
     matrix WorldMatrix;
-    matrix ViewProjMatrix;
+};
 
+cbuffer GlobalConstants : register(b1)
+{
+    matrix ViewProjMatrix;
     float3 CameraPosition;
     float Time;
+};
 
+cbuffer MaterialConstants : register(b2)
+{
     float4 Diffuse;
     float4 Specular;
     float4 Ambient;

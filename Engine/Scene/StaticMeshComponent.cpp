@@ -73,20 +73,22 @@ namespace tb
 
         worldMtx = XMMatrixTranspose(worldMtx);
 
-        BaseConstants constantBuffers;
-        XMStoreFloat4x4(&constantBuffers._mesh._worldMtx, worldMtx);
+        MeshConstants meshConst;
+        XMStoreFloat4x4(&meshConst._worldMtx, worldMtx);
 
+        GlobalConstants globalConst;
         auto projMtx = Engine::GetActiveProjectionMatrix();
         auto viewMtx = Engine::GetActiveViewMatrix();
         XMMATRIX viewProjMtx = viewMtx * projMtx;
-        XMStoreFloat4x4(&constantBuffers._global._viewProj, XMMatrixTranspose(viewProjMtx));
-        constantBuffers._global._cameraPosition = Engine::GetActiveCameraPosition();
-        constantBuffers._global._time = 0.f;
+        XMStoreFloat4x4(&globalConst._viewProj, XMMatrixTranspose(viewProjMtx));
+        globalConst._cameraPosition = Engine::GetActiveCameraPosition();
+        globalConst._time = 0.f;
 
+        MaterialConstants materialConst = {};
         Material* material = _renderResource.GetMaterial();
         if (material)
         {
-            material->UpdateMaterialConstantBuffer(constantBuffers._material);
+            material->UpdateMaterialConstantBuffer(materialConst);
         }
 
         CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
@@ -97,25 +99,21 @@ namespace tb
             return;
         }
 
-        CBBlock* cbBlock = g_commandContext._constantBufferPool->Allocate();
-        if (!cbBlock)
+        CBBlock* meshCB = g_commandContext._constantBufferPool->Allocate();
+        CBBlock* globalCB = g_commandContext._constantBufferPool->Allocate();
+        CBBlock* materialCB = g_commandContext._constantBufferPool->Allocate();
+        if (!meshCB || !globalCB || !materialCB)
         {
             return;
         }
 
-        int32 descriptorSize = g_renderAPI->GetDevice()->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        *reinterpret_cast<MeshConstants*>(meshCB->_cpuMemAddr) = meshConst;
+        *reinterpret_cast<GlobalConstants*>(globalCB->_cpuMemAddr) = globalConst;
+        *reinterpret_cast<MaterialConstants*>(materialCB->_cpuMemAddr) = materialConst;
 
-        TempConstants* meshBuffer = reinterpret_cast<TempConstants*>(cbBlock->_cpuMemAddr);
-        meshBuffer->_worldMtx = constantBuffers._mesh._worldMtx;
-        meshBuffer->_viewProj = constantBuffers._global._viewProj;
-        meshBuffer->_cameraPosition = constantBuffers._global._cameraPosition;
-        meshBuffer->_time = constantBuffers._global._time;
-        meshBuffer->_diffuse = constantBuffers._material._diffuse;
-        meshBuffer->_specular = constantBuffers._material._specular;
-        meshBuffer->_ambient = constantBuffers._material._ambient;
-        meshBuffer->_emissive = constantBuffers._material._emissive;
-
-        cmdList->SetGraphicsRootConstantBufferView(0, cbBlock->_gpuMemAddr);
+        cmdList->SetGraphicsRootConstantBufferView(0, meshCB->_gpuMemAddr);
+        cmdList->SetGraphicsRootConstantBufferView(1, globalCB->_gpuMemAddr);
+        cmdList->SetGraphicsRootConstantBufferView(2, materialCB->_gpuMemAddr);
 
         ID3D12DescriptorHeap* descriptorHeap = g_commandContext._descriptorPool->GetDescriptorHeap();
         cmdList->SetDescriptorHeaps(1, &descriptorHeap);
@@ -133,7 +131,7 @@ namespace tb
         g_graphicsResources._cubeMesh->_VOI;
         auto geometryBuffer = _renderResource.GetGeometryBuffer();
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        cmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+        cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);
 
         g_renderAPI->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
     }
