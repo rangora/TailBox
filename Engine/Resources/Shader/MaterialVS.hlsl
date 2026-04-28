@@ -1,14 +1,4 @@
-cbuffer MeshConstants : register(b0)
-{
-    matrix WorldMatrix;
-};
-
-cbuffer GlobalConstants : register(b1)
-{
-    matrix ViewProjMatrix;
-    float3 CameraPosition;
-    float Time;
-};
+#include "CommonCB.hlsli"
 
 struct VSInput
 {

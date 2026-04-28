@@ -65,7 +65,6 @@ namespace tb
         XMFLOAT4X4 parentScale = Matrix::CreateScale(parentTransform._scale);
         XMMATRIX parentWorldMtx = XMLoadFloat4x4(&parentScale) * parentRotMtx * parentTranslateMtx;
 
-
         XMMATRIX translateMtx = XMMatrixTranslation(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         XMMATRIX rotMtx = XMMatrixRotationRollPitchYaw(_transform._rot.x, _transform._rot.y, _transform._rot.z);
         XMFLOAT4X4 scale = Matrix::CreateScale(_transform._scale);
