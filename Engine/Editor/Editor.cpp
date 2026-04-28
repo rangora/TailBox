@@ -225,7 +225,8 @@ namespace tb
             {
 
                 _renderTexture->Clear(renderer->GetCommmandList());
-                Engine::Get().GetSceneManager()->Render(renderer->GetCommmandList());
+                g_commandContext.SetCommandList(renderer->GetCommmandList());
+                Engine::Get().GetSceneManager()->Render();
             }
 
             renderer->GetCommmandList()->Close();

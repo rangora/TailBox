@@ -28,7 +28,7 @@ namespace tb
         void OnEndFrame();
 
         // Render
-        void Render(ID3D12GraphicsCommandList* cmdList);
+        void Render();
         void OnRenderBegin();
 
         XMMATRIX GetProjectionMatrix();

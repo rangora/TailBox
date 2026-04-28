@@ -47,14 +47,16 @@ namespace tb
         _staticMesh = g_graphicsResources._cubeMesh;
     }
 
-    void StaticMeshComponent::Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList)
+    void StaticMeshComponent::Render(const XMMATRIX& vpMtx)
     {
+        ID3D12GraphicsCommandList* cmdList = g_commandContext.GetCommandList();
+
         if (!CheckResourceValidation())
         {
             return;
         }
 
-        SceneComponent::Render(vpMtx, cmdList);
+        SceneComponent::Render(vpMtx);
 
         cmdList->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
 
@@ -132,7 +134,7 @@ namespace tb
         cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
         cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);
 
-        g_renderAPI->Draw(g_graphicsResources._cubeMesh->_VOI, cmdList);
+        g_renderAPI->Draw(g_graphicsResources._cubeMesh->_VOI);
     }
 
     void StaticMeshComponent::Clear()

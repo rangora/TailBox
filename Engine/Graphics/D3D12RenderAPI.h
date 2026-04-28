@@ -22,7 +22,7 @@ namespace tb
         ~D3D12RenderAPI();
 
         void SetupStaticMesh(unsigned int& VOI, const std::vector<Vertex>& vertices, const std::vector<uint32>& indices) final;
-        void Draw(uint32 VOI, ID3D12GraphicsCommandList* cmdList) final;
+        void Draw(uint32 VOI) final;
 
         // Init / Shutdown
         void CreateSwapChain(const HWND& hWnd);

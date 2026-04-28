@@ -20,7 +20,7 @@ namespace tb
 
         // proxy functions
         virtual bool CheckResourceValidation() const { return true; }
-        virtual void Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList);
+        virtual void Render(const XMMATRIX& vpMtx);
         virtual void Clear();
 
     protected:

@@ -52,11 +52,11 @@ namespace tb
     {
     }
 
-    void Scene::Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList)
-{
+    void Scene::Render(const XMMATRIX& vpMtx)
+    {
         for (const auto cube : _actors)
         {
-            cube->Render(vpMtx, cmdList);
+            cube->Render(vpMtx);
         }
     }
 

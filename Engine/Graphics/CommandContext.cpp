@@ -57,11 +57,11 @@ namespace tb
         }
     }
 
-    void CommandContext::SetRootSignature(const std::string& name, ID3D12GraphicsCommandList* cmdList)
+    void CommandContext::SetRootSignature(const std::string& name)
     {
         if (ID3D12RootSignature* rs = g_renderer.GetRootSignature(name))
         {
-            cmdList->SetGraphicsRootSignature(rs);
+            _commandList->SetGraphicsRootSignature(rs);
         }
     }
 } // namespace tb

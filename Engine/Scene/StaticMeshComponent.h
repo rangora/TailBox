@@ -23,7 +23,7 @@ namespace tb
         Material* GetMaterial() { return _renderResource.GetMaterial(); }
 
         // proxy functions
-        void Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList) final;
+        void Render(const XMMATRIX& vpMtx) final;
         void Clear() final;
 
     private:

@@ -18,7 +18,7 @@ namespace tb
         void ReleaseAllActors();
 
         void Update(float deltaTime);
-        void Render(const XMMATRIX& vpMtx, ID3D12GraphicsCommandList* cmdList);
+        void Render(const XMMATRIX& vpMtx);
         void Clear();
 
         void RegisterActor(Actor* actor);

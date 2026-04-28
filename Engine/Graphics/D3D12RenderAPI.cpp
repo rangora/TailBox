@@ -142,10 +142,11 @@ namespace tb
         }
     }
 
-    void D3D12RenderAPI::Draw(uint32 VOI, ID3D12GraphicsCommandList* cmdList)
+    void D3D12RenderAPI::Draw(uint32 VOI)
     {
         _drawCommands.emplace_back(VOI);
 
+        ID3D12GraphicsCommandList* cmdList = g_commandContext.GetCommandList();
         cmdList->IASetVertexBuffers(0, 1, &_VOs[VOI]->_vertexBufferView);
         cmdList->IASetIndexBuffer(&_VOs[VOI]->_indexBufferView);
         cmdList->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);

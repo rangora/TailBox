@@ -116,16 +116,13 @@ namespace tb
         }
     }
 
-    void SceneManager::Render(ID3D12GraphicsCommandList* cmdList)
+    void SceneManager::Render()
     {
         XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         Scene* scene = _scenes[_activeIndex];
 
-        /* sceneManager가 Renderer에게 전달하고
-        * Renderer가 CommandContext를 호출하는 방식??
-        */
-        g_commandContext.SetRootSignature("Material", cmdList);
-        scene->Render(vpMtx, cmdList);
+        g_commandContext.SetRootSignature("Material");
+        scene->Render(vpMtx);
     }
 
     void SceneManager::OnRenderBegin()
