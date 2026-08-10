@@ -23,6 +23,7 @@ namespace tb
 
         void SetupStaticMesh(unsigned int& VOI, const std::vector<Vertex>& vertices, const std::vector<uint32>& indices) final;
         void Draw(uint32 VOI) final;
+        void CopyTextureDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE dstHandle, D3D12_CPU_DESCRIPTOR_HANDLE srcHandle);
 
         // Init / Shutdown
         void CreateSwapChain(const HWND& hWnd);
@@ -32,6 +33,8 @@ namespace tb
         // Frame loop
         void BeginFrame();
         void EndFrame();
+        ID3D12GraphicsCommandList* BeginMainCommandList();
+        void EndMainCommandList();
         void PostRenderEnd();
         void UpdateTimer();
         bool IsScreenLocked();

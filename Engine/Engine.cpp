@@ -139,6 +139,7 @@ namespace tb
         g_renderAPI->BeginFrame();
         _sceneManager->OnRenderBegin();
 
+        g_editor.RenderScene();
         g_renderer.Render();
         EditorRenderer::Get()->Render();
 

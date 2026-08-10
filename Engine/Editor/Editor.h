@@ -18,13 +18,14 @@ namespace tb
         void BindDevice();
         void CreateDefaultLayout();
 
+        void RenderScene();
+
         Window* GetWinWindow() const { return _window; } // TEMP
         HWND& GetWndRef() const { return _window->GetWndRef(); }
 
     private:
         void ProcessKeyInput();
 
-        void TestFunc2();
         CD3DX12_CPU_DESCRIPTOR_HANDLE _cpuHandle = {};
         CD3DX12_GPU_DESCRIPTOR_HANDLE _gpuHandle = {};
 

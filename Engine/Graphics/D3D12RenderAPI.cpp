@@ -152,6 +152,11 @@ namespace tb
         cmdList->DrawIndexedInstanced(_VOs[VOI]->_indexCount, 1, 0, 0, 0);
     }
 
+    void D3D12RenderAPI::CopyTextureDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE dstHandle, D3D12_CPU_DESCRIPTOR_HANDLE srcHandle)
+    {
+        _device->CopyDescriptorsSimple(1, dstHandle, srcHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
     void D3D12RenderAPI::Signal()
     {
         uint64 fenceValue = _fenceLastSignalValue + 1;
@@ -524,6 +529,19 @@ namespace tb
         _commandList->ClearRenderTargetView(_mainRtvCpuHandle[_backBufferIndex], clearColors, 0, nullptr);
         _commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
 
+        _commandList->Close();
+        ID3D12CommandList* cmdLists[] = {_commandList.Get()};
+        _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+    }
+
+    ID3D12GraphicsCommandList* D3D12RenderAPI::BeginMainCommandList()
+    {
+        _commandList->Reset(_nextFrameCtx->_commandAllocator.Get(), nullptr);
+        return _commandList.Get();
+    }
+
+    void D3D12RenderAPI::EndMainCommandList()
+    {
         _commandList->Close();
         ID3D12CommandList* cmdLists[] = {_commandList.Get()};
         _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);

@@ -65,7 +65,6 @@ namespace tb
 
         _window->Update();
 
-        TestFunc2();
         ImGui::Begin("Scene");
 
         ImTextureID textureID = (ImTextureID)_gpuHandle.ptr;
@@ -211,36 +210,20 @@ namespace tb
         }
     }
 
-    void Editor::TestFunc2()
+    void Editor::RenderScene()
     {
-        auto renderer = EditorRenderer::Get();
-        auto renderAPI = g_renderAPI;
+        ID3D12GraphicsCommandList* cmdList = g_renderAPI->BeginMainCommandList();
 
-        ID3D12CommandList* ppCommandLists[] = {renderer->GetCommmandList()};
-
-        renderer->Flush();
-        if (_renderTexture->TransitionTo(renderer->GetCommmandList(), D3D12_RESOURCE_STATE_RENDER_TARGET))
+        if (_renderTexture->TransitionTo(cmdList, D3D12_RESOURCE_STATE_RENDER_TARGET))
         {
-            // Draw
-            {
-
-                _renderTexture->Clear(renderer->GetCommmandList());
-                g_commandContext.SetCommandList(renderer->GetCommmandList());
-                Engine::Get().GetSceneManager()->Render();
-            }
-
-            renderer->GetCommmandList()->Close();
-            renderAPI->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-            renderAPI->Signal();
+            _renderTexture->Clear(cmdList);
+            g_commandContext.SetCommandList(cmdList);
+            Engine::Get().GetSceneManager()->Render();
         }
 
-        renderer->Flush();
-        if (_renderTexture->TransitionTo(renderer->GetCommmandList(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE))
-        {
-            renderer->GetCommmandList()->Close();
-            renderAPI->GetCommandQueue()->ExecuteCommandLists(1, ppCommandLists);
-            renderAPI->Signal();
-        }
+        _renderTexture->TransitionTo(cmdList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+
+        g_renderAPI->EndMainCommandList();
     }
 
 } // namespace tb

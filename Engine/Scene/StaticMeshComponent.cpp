@@ -124,8 +124,7 @@ namespace tb
             TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
             if (textureResource && textureResource->_srvCpuHandle.ptr)
             {
-                g_renderAPI->GetDevice()->CopyDescriptorsSimple(1, cpuHandle, textureResource->_srvCpuHandle,
-                                                                D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+                g_renderAPI->CopyTextureDescriptor(cpuHandle, textureResource->_srvCpuHandle);
             }
         }
 
