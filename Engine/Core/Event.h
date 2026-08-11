@@ -7,9 +7,7 @@ namespace tb
 {
     enum class EventType
     {
-        RenderInfoDisplay,
-        CameraInfoDisplay,
-        PassDeltaTime
+        CameraInfoDisplay
     };
 
     #define EVENT_TYPE(type) static EventType GetStaticType() { return EventType::type; } \
@@ -47,20 +45,6 @@ namespace tb
         Event & _e;
     };
 
-    struct RenderInfoDisplayEvent : public Event
-    {
-        RenderInfoDisplayEvent(int32 fps, float deltaTime) : _fps(fps), _deltaTime(deltaTime) {}
-
-        float GetDeltaTime() { return _deltaTime; }
-        int32 GetFps() { return _fps; }
-
-        EVENT_TYPE(RenderInfoDisplay)
-
-    private:
-        int32 _fps = 0;
-        float _deltaTime = 0.f;
-    };
-
     struct CameraInfoDisplayEvent : public Event
     {
         CameraInfoDisplayEvent(XMFLOAT3 pos, XMFLOAT3 rot) : _pos(pos), _rot(rot) {}
@@ -73,17 +57,5 @@ namespace tb
     private:
         XMFLOAT3 _pos;
         XMFLOAT3 _rot;
-    };
-
-    struct PassDeltaTimeEvent : public Event
-    {
-        PassDeltaTimeEvent(float deltaTime) : _deltaTime(deltaTime) {}
-
-        float GetDeltaTime() { return _deltaTime; }
-
-        EVENT_TYPE(PassDeltaTime)
-
-    private:
-        float _deltaTime = 0.f;
     };
 } // namespace tb

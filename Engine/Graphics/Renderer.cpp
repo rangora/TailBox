@@ -15,7 +15,7 @@ namespace tb
 
     void Renderer::Initialize()
     {
-        new D3D12RenderAPI();
+        // D3D12RenderAPI는 Engine이 소유·생성한다 (Engine::Launch 참고)
         RenderPassManager::Create();
 
         RenderPassManager::Get()->SetupRenderPass(RenderPiplineType::Forward);

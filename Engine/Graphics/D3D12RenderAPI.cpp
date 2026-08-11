@@ -1,17 +1,8 @@
 #include "D3D12RenderAPI.h"
 #include "GraphicsCore.h"
 #include "Resources/BaseResource.h"
-#include "Engine.h"
-#include "Editor/EditorCore.h"
-#include "Editor/Window/Window.h"
-#include "Core/Event.h"
-#include "Editor/imgui/imgui.h"
-#include "Editor/imgui/imgui_impl_dx12.h"
 
 #include "MemoryAllocator.h"
-
-#include <mmsystem.h>
-#pragma comment(lib, "winmm.lib")
 
 #ifdef _DEBUG
 #include <dxgidebug.h>
@@ -102,9 +93,6 @@ namespace tb
         }
 
         CreateRenderStages();
-
-        timeBeginPeriod(1);
-        _lastTime = timeGetTime();
 
         g_renderAPI = this;
     }
@@ -564,14 +552,10 @@ namespace tb
 
         ID3D12CommandList* cmdLists[] = {_immediateCommandList.Get()};
         _commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+    }
 
-        ImGuiIO& io = ImGui::GetIO();
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-        }
-
+    void D3D12RenderAPI::Present()
+    {
         HRESULT hr = _swapChain->Present(1, 0);
         _bSwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
 
@@ -579,42 +563,6 @@ namespace tb
         _commandQueue->Signal(_fence.Get(), fenceValue);
         _fenceLastSignalValue = fenceValue;
         _nextFrameCtx->_fenceValue = fenceValue;
-    }
-
-    void D3D12RenderAPI::PostRenderEnd()
-    {
-        RenderInfoDisplayEvent event(_currentFPS, _deltaTime);
-        EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<RenderInfoDisplayEvent>(
-            [](RenderInfoDisplayEvent& e)
-            {
-                g_editor.GetWinWindow()->OnUpdateRenderTime(e.GetFps(), e.GetDeltaTime());
-                return true;
-            });
-    }
-
-    void D3D12RenderAPI::UpdateTimer()
-    {
-        DWORD now = timeGetTime();
-        _deltaTime = (now - _lastTime) * 0.001f;
-        _lastTime = now;
-
-        _frameCount++;
-        _fpsTimer += _deltaTime;
-        if (_fpsTimer >= 1.f)
-        {
-            _currentFPS = _frameCount;
-            _frameCount = 0;
-            _fpsTimer -= 1.f;
-        }
-
-        PassDeltaTimeEvent event(_deltaTime);
-        EventDispatcher dispatcher(event);
-        dispatcher.Dispatch<PassDeltaTimeEvent>([](PassDeltaTimeEvent& e)
-        {
-            Engine::Get().OnUpdateRenderTick(e.GetDeltaTime());
-            return true;
-        });
     }
 
     void D3D12RenderAPI::CreateRenderTarget()

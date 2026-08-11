@@ -33,10 +33,9 @@ namespace tb
         // Frame loop
         void BeginFrame();
         void EndFrame();
+        void Present();
         ID3D12GraphicsCommandList* BeginMainCommandList();
         void EndMainCommandList();
-        void PostRenderEnd();
-        void UpdateTimer();
         bool IsScreenLocked();
         void WaitForLastSubmittedFrame();
 
@@ -110,12 +109,5 @@ namespace tb
         uint32 _frameIndex = 0;
         uint32 _backBufferIndex = 0;
         bool _bSwapChainOccluded = false;
-
-        // Timer
-        DWORD _lastTime = 0;
-        float _deltaTime = 0.f;
-        float _fpsTimer = 0.f;
-        int32 _frameCount = 0;
-        int32 _currentFPS = 0;
     };
 }

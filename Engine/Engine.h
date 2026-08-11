@@ -16,6 +16,7 @@ namespace tb
 {
     class SceneManager;
     class Window;
+    class D3D12RenderAPI;
 
     class ENGINE_API Engine
     {
@@ -34,15 +35,21 @@ namespace tb
         void Launch();
         void EngineTick(const float tick);
 
-        void OnUpdateRenderTick(float deltaTime) { _renderTick = deltaTime; }
-
     private:
         void LoadModules();
+        void UpdateTimer();
 
         inline static Engine* _instance = nullptr;
         static SceneManager* _sceneManager;
 
-        float _renderTick = 0.f;
+        std::unique_ptr<D3D12RenderAPI> _renderAPI;
+
+        // Timer
+        DWORD _lastTime = 0;
+        float _deltaTime = 0.f;
+        float _fpsTimer = 0.f;
+        int32 _frameCount = 0;
+        int32 _currentFPS = 0;
 
         bool _bQuit = false;
     };

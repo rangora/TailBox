@@ -1,13 +1,17 @@
 #include "Engine.h"
 #include "Graphics/Shader.h"
 #include "Graphics/GraphicsCore.h"
+#include "Graphics/D3D12RenderAPI.h"
 #include "Graphics/EditorRenderer.h"
 #include "Editor/Window/Window.h"
 #include "Editor/EditorCore.h"
+#include "Editor/imgui/imgui.h"
 #include "Scene/SceneManager.h"
 #include <vector>
 #include <ShlObj.h>
 #include <filesystem>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 namespace tb
 {
@@ -76,10 +80,14 @@ namespace tb
 
         g_editor.CreateWinWindow({"TailBox", VIEWPORT_WIDTH, VIEWPORT_HEIGHT});
 
-        g_renderer.Initialize();  // D3D12RenderAPI 생성 (g_renderAPI 설정)
+        _renderAPI = std::make_unique<D3D12RenderAPI>(); // 생성자 내부에서 g_renderAPI = this로 자기 등록
+        timeBeginPeriod(1);
+        _lastTime = timeGetTime();
 
-        g_renderAPI->CreateSwapChain(g_editor.GetWndRef());
-        g_renderAPI->PostSwapChainCreated();
+        g_renderer.Initialize(); // RenderPassManager 등 초기화 (D3D12RenderAPI는 Engine이 이미 생성)
+
+        _renderAPI->CreateSwapChain(g_editor.GetWndRef());
+        _renderAPI->PostSwapChainCreated();
 
         g_commandContext.Initialize();
         g_graphicsResources.Initialize();
@@ -92,11 +100,11 @@ namespace tb
 
         while (!_bQuit)
         {
-            EngineTick(_renderTick);
+            EngineTick(_deltaTime);
         }
 
         // Sutting down
-        g_renderAPI->WaitForLastSubmittedFrame();
+        _renderAPI->WaitForLastSubmittedFrame();
 
         _sceneManager->ReleaseAllScenes();
         delete _sceneManager;
@@ -105,7 +113,7 @@ namespace tb
         g_graphicsResources.Release();
         g_renderer.Release();
         g_editor.ShutDown();
-        g_renderAPI->ReleaseDevice();
+        _renderAPI->ReleaseDevice();
     }
 
     void Engine::EngineTick(const float tick)
@@ -127,7 +135,7 @@ namespace tb
             return;
         }
 
-        if (g_renderAPI->IsScreenLocked())
+        if (_renderAPI->IsScreenLocked())
         {
             ::Sleep(10);
             return;
@@ -136,7 +144,7 @@ namespace tb
         g_editor.Update(tick);
         _sceneManager->Update(tick);
 
-        g_renderAPI->BeginFrame();
+        _renderAPI->BeginFrame();
         _sceneManager->OnRenderBegin();
 
         g_editor.RenderScene();
@@ -144,9 +152,36 @@ namespace tb
         EditorRenderer::Get()->Render();
 
         _sceneManager->OnEndFrame();
-        g_renderAPI->EndFrame();
-        g_renderAPI->PostRenderEnd();
-        g_renderAPI->UpdateTimer();
+        _renderAPI->EndFrame();
+
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        _renderAPI->Present();
+
+        UpdateTimer();
+    }
+
+    void Engine::UpdateTimer()
+    {
+        DWORD now = timeGetTime();
+        _deltaTime = (now - _lastTime) * 0.001f;
+        _lastTime = now;
+
+        _frameCount++;
+        _fpsTimer += _deltaTime;
+        if (_fpsTimer >= 1.f)
+        {
+            _currentFPS = _frameCount;
+            _frameCount = 0;
+            _fpsTimer -= 1.f;
+        }
+
+        g_editor.GetWinWindow()->OnUpdateRenderTime(_currentFPS, _deltaTime);
     }
 
     void Engine::LoadModules()
