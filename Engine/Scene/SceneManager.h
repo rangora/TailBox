@@ -34,6 +34,7 @@ namespace tb
         XMMATRIX GetProjectionMatrix();
         XMMATRIX GetViewMatrix();
         Vector3 GetCameraPosition();
+        Vector3 GetCameraRotation();
 
     private:
         enum

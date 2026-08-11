@@ -1,5 +1,4 @@
 #include "SceneManager.h"
-#include "Core/Event.h"
 #include "Core/Input.h"
 #include "Graphics/GraphicsCore.h"
 #include "Scene.h"
@@ -103,17 +102,6 @@ namespace tb
 
     void SceneManager::OnEndFrame()
     {
-        // CameraInfo event
-        {
-            CameraInfoDisplayEvent event(_camera._pos, _camera._rot);
-            EventDispatcher dispatcher(event);
-
-            dispatcher.Dispatch<CameraInfoDisplayEvent>([](CameraInfoDisplayEvent& e)
-                {
-                    g_editor.GetWinWindow()->OnUpdateCameraInfo(e.GetPos(), e.GetRot());
-                    return true;
-                });
-        }
     }
 
     void SceneManager::Render()
@@ -143,6 +131,11 @@ namespace tb
     Vector3 SceneManager::GetCameraPosition()
     {
         return _camera._pos;
+    }
+
+    Vector3 SceneManager::GetCameraRotation()
+    {
+        return _camera._rot;
     }
 
 } // namespace tb

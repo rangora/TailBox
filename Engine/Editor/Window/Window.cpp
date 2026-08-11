@@ -1,4 +1,6 @@
 #include "Window.h"
+#include "Engine.h"
+#include "Scene/SceneManager.h"
 #include "Graphics/GraphicsCore.h"
 #include "Graphics/TextureResource.h"
 #include "Graphics/MemoryAllocator.h"
@@ -142,12 +144,6 @@ namespace tb
         _deltaTime = deltaTime;
     }
 
-    void Window::OnUpdateCameraInfo(const XMFLOAT3& pos, const XMFLOAT3& rot)
-    {
-        _cameraPos = pos;
-        _cameraRot = rot;
-    }
-
     void Window::Overlay()
     {
         static bool bRenderInfo = true;
@@ -189,8 +185,11 @@ namespace tb
             }
             if (bCameraInfo)
             {
-                ImGui::Text("CameraPos:(%0.2f,%0.2f,%0.2f), CameraPot:(%0.2f,%0.2f,%0.2f)", _cameraPos.x, _cameraPos.y,
-                            _cameraPos.z, _cameraRot.x, _cameraRot.y, _cameraRot.z);
+                SceneManager* sceneManager = Engine::GetSceneManager();
+                Vector3 cameraPos = sceneManager->GetCameraPosition();
+                Vector3 cameraRot = sceneManager->GetCameraRotation();
+                ImGui::Text("CameraPos:(%0.2f,%0.2f,%0.2f), CameraPot:(%0.2f,%0.2f,%0.2f)", cameraPos.x, cameraPos.y,
+                            cameraPos.z, cameraRot.x, cameraRot.y, cameraRot.z);
             }
             ImGui::Separator();
 
