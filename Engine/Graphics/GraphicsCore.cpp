@@ -6,4 +6,5 @@ namespace tb
     Renderer g_renderer;
     RawResourceStorage g_graphicsResources;
     D3D12RenderAPI* g_renderAPI = nullptr;
+    RenderQueue g_renderQueue;
 }

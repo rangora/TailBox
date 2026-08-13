@@ -3,6 +3,7 @@
 #include "RawResourceStorage.h"
 #include "Renderer.h"
 #include "D3D12RenderAPI.h"
+#include "RenderQueue.h"
 
 namespace tb
 {
@@ -10,4 +11,5 @@ namespace tb
     extern Renderer g_renderer;
     extern RawResourceStorage g_graphicsResources;
     extern D3D12RenderAPI* g_renderAPI;
+    extern RenderQueue g_renderQueue;
 } // namespace tb
