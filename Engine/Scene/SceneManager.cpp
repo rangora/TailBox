@@ -109,7 +109,6 @@ namespace tb
         XMMATRIX vpMtx = _camera._viewMtx * _camera._projMtx;
         Scene* scene = _scenes[_activeIndex];
 
-        g_commandContext.SetRootSignature("Material");
         scene->Render(vpMtx);
     }
 

@@ -219,6 +219,7 @@ namespace tb
             _renderTexture->Clear(cmdList);
             g_commandContext.SetCommandList(cmdList);
             Engine::Get().GetSceneManager()->Render();
+            g_renderer.Render();
         }
 
         _renderTexture->TransitionTo(cmdList, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);

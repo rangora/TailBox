@@ -49,16 +49,12 @@ namespace tb
 
     void StaticMeshComponent::Render(const XMMATRIX& vpMtx)
     {
-        ID3D12GraphicsCommandList* cmdList = g_commandContext.GetCommandList();
-
         if (!CheckResourceValidation())
         {
             return;
         }
 
         SceneComponent::Render(vpMtx);
-
-        cmdList->SetPipelineState(g_renderer.GetPipelineState("Material").Get());
 
         const Transform& parentTransform = _ownerActor->GetTrnasform();
 
@@ -72,68 +68,12 @@ namespace tb
         XMFLOAT4X4 scale = Matrix::CreateScale(_transform._scale);
         XMMATRIX worldMtx = parentWorldMtx * (XMLoadFloat4x4(&scale) * rotMtx * translateMtx);
 
-        worldMtx = XMMatrixTranspose(worldMtx);
+        DrawCall drawCall;
+        drawCall._meshId = g_graphicsResources._cubeMesh->_VOI;
+        drawCall._worldMtx = XMMatrixTranspose(worldMtx);
+        drawCall._material = _renderResource.GetMaterial();
 
-        MeshConstants meshConst;
-        XMStoreFloat4x4(&meshConst._worldMtx, worldMtx);
-
-        GlobalConstants globalConst;
-        auto projMtx = Engine::GetActiveProjectionMatrix();
-        auto viewMtx = Engine::GetActiveViewMatrix();
-        XMMATRIX viewProjMtx = viewMtx * projMtx;
-        XMStoreFloat4x4(&globalConst._viewProj, XMMatrixTranspose(viewProjMtx));
-        globalConst._cameraPosition = Engine::GetActiveCameraPosition();
-        globalConst._time = 0.f;
-
-        MaterialConstants materialConst = {};
-        Material* material = _renderResource.GetMaterial();
-        if (material)
-        {
-            material->UpdateMaterialConstantBuffer(materialConst);
-        }
-
-        CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle = {};
-        CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle = {};
-
-        if (!g_commandContext._descriptorPool->AllocDescriptor(&cpuHandle, &gpuHandle, 1))
-        {
-            return;
-        }
-
-        CBBlock* meshCB = g_commandContext._constantBufferPool->Allocate();
-        CBBlock* globalCB = g_commandContext._constantBufferPool->Allocate();
-        CBBlock* materialCB = g_commandContext._constantBufferPool->Allocate();
-        if (!meshCB || !globalCB || !materialCB)
-        {
-            return;
-        }
-
-        *reinterpret_cast<MeshConstants*>(meshCB->_cpuMemAddr) = meshConst;
-        *reinterpret_cast<GlobalConstants*>(globalCB->_cpuMemAddr) = globalConst;
-        *reinterpret_cast<MaterialConstants*>(materialCB->_cpuMemAddr) = materialConst;
-
-        cmdList->SetGraphicsRootConstantBufferView(0, meshCB->_gpuMemAddr);
-        cmdList->SetGraphicsRootConstantBufferView(1, globalCB->_gpuMemAddr);
-        cmdList->SetGraphicsRootConstantBufferView(2, materialCB->_gpuMemAddr);
-
-        ID3D12DescriptorHeap* descriptorHeap = g_commandContext._descriptorPool->GetDescriptorHeap();
-        cmdList->SetDescriptorHeaps(1, &descriptorHeap);
-
-        if (material)
-        {
-            TextureResource* textureResource = material->GetTextureResource(TextureType::BASECOLOR);
-            if (textureResource && textureResource->_srvCpuHandle.ptr)
-            {
-                g_renderAPI->CopyTextureDescriptor(cpuHandle, textureResource->_srvCpuHandle);
-            }
-        }
-
-        g_graphicsResources._cubeMesh->_VOI;
-        auto geometryBuffer = _renderResource.GetGeometryBuffer();
-        cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        cmdList->SetGraphicsRootDescriptorTable(3, gpuHandle);
-
-        g_renderAPI->Draw(g_graphicsResources._cubeMesh->_VOI);
+        g_renderQueue.Submit(drawCall);
     }
 
     void StaticMeshComponent::Clear()
